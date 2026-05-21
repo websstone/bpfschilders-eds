@@ -1,0 +1,12 @@
+[
+  {
+    "id": "main",
+    "components": [
+      "site-header",
+      "coverage-teaser",
+      "life-event-carousel",
+      "teaser-cards",
+      "site-footer"
+    ]
+  }
+]

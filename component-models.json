@@ -1,0 +1,51 @@
+[
+  {
+    "id": "site-header",
+    "fields": [
+      { "component": "text", "name": "brandLink", "label": "Brand Logo Link URL", "valueType": "string" },
+      { "component": "text", "name": "brandLabel", "label": "Brand Logo Alt Label", "valueType": "string" },
+      { "component": "text", "name": "primaryNavItems", "label": "Primary Nav Items (one per line)", "valueType": "string" },
+      { "component": "text", "name": "secondaryNavItems", "label": "Secondary Nav Items (one per line)", "valueType": "string" },
+      { "component": "text", "name": "searchInputName", "label": "Search Input Parameter Name", "valueType": "string" },
+      { "component": "text", "name": "searchPlaceholder", "label": "Search Placeholder Text", "valueType": "string" },
+      { "component": "text", "name": "searchSubmitLabel", "label": "Search Submit Button Label", "valueType": "string" },
+      { "component": "text", "name": "searchActionUrl", "label": "Search Form Action URL", "valueType": "string" }
+    ]
+  },
+  {
+    "id": "coverage-teaser",
+    "fields": [
+      { "component": "text", "name": "metricValue", "label": "Coverage Metric Value", "valueType": "string" },
+      { "component": "text", "name": "metricYearLabel", "label": "Metric Year Label", "valueType": "string" },
+      { "component": "text", "name": "loginCtaLabel", "label": "Login CTA Label", "valueType": "string" },
+      { "component": "text", "name": "loginCtaTarget", "label": "Login CTA Target", "valueType": "string" }
+    ]
+  },
+  {
+    "id": "life-event-carousel",
+    "fields": [
+      { "component": "text", "name": "sectionHeading", "label": "Section Heading", "valueType": "string" },
+      { "component": "text", "name": "itemLabel", "label": "Item Labels (one per line)", "valueType": "string" },
+      { "component": "text", "name": "itemLinkUrl", "label": "Item Link URLs (one per line)", "valueType": "string" },
+      { "component": "text", "name": "itemIconClass", "label": "Item Icon Classes (one per line)", "valueType": "string" }
+    ]
+  },
+  {
+    "id": "teaser-cards",
+    "fields": [
+      { "component": "text", "name": "cardTitle", "label": "Card Titles (one per line)", "valueType": "string" },
+      { "component": "text", "name": "cardDescription", "label": "Card Descriptions (one per line)", "valueType": "string" },
+      { "component": "text", "name": "cardImageSrc", "label": "Card Image URLs (one per line)", "valueType": "string" },
+      { "component": "text", "name": "cardCtaLabel", "label": "CTA Labels (one per line)", "valueType": "string" },
+      { "component": "text", "name": "cardCtaHref", "label": "CTA URLs (one per line)", "valueType": "string" }
+    ]
+  },
+  {
+    "id": "site-footer",
+    "fields": [
+      { "component": "text", "name": "navLinks", "label": "Footer Nav Links (one per line)", "valueType": "string" },
+      { "component": "text", "name": "navLinkUrls", "label": "Footer Nav Link URLs (one per line)", "valueType": "string" },
+      { "component": "text", "name": "copyrightText", "label": "Copyright Text", "valueType": "string" }
+    ]
+  }
+]

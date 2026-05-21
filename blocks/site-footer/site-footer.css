@@ -1,0 +1,92 @@
+/* site-footer block — BPF Schilders legal footer */
+/* Source: white background, centered layout, pipe-separated nav links */
+
+.site-footer {
+  background-color: rgb(255, 255, 255);
+  border-top: 1px solid rgb(220, 220, 220);
+  padding: 1.25rem 1.5rem 1.5rem;
+  text-align: center;
+  font-family: Lato, Arial, sans-serif;
+}
+
+/* Copyright text */
+.site-footer .footer-copyright {
+  margin: 0 0 0.5rem;
+  color: rgb(33, 33, 33);
+  font-size: 0.875rem; /* 14px ~ source 13.7px */
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+/* Nav: horizontal list with pipe separators */
+.site-footer .footer-nav {
+  display: flex;
+  justify-content: center;
+}
+
+.site-footer .footer-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.site-footer .footer-nav li {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: rgb(33, 33, 33);
+}
+
+/* Pipe separator between items */
+.site-footer .footer-nav li + li::before {
+  content: '|';
+  margin: 0 0.5rem;
+  color: rgb(33, 33, 33);
+  opacity: 0.5;
+}
+
+.site-footer .footer-nav a {
+  color: rgb(33, 33, 33);
+  text-decoration: none;
+  transition: text-decoration 0.1s;
+}
+
+.site-footer .footer-nav a:hover {
+  text-decoration: underline;
+}
+
+/* Cookie preference button — styled to look like a link */
+.site-footer .footer-nav-btn {
+  background: none;
+  border: none;
+  color: rgb(33, 33, 33);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+.site-footer .footer-nav-btn:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .site-footer {
+    padding: 1rem;
+  }
+
+  .site-footer .footer-nav ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .site-footer .footer-nav li + li::before {
+    display: none;
+  }
+}

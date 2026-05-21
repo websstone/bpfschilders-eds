@@ -1,0 +1,172 @@
+/* life-event-carousel block — BPF Schilders life-event carousel */
+
+.life-event-carousel {
+  background-color: rgb(255, 255, 255);
+  max-width: 75rem; /* 1200px */
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem; /* 40px 24px */
+  font-family: Lato, Arial, sans-serif;
+}
+
+/* Section heading */
+.life-event-carousel .section-heading {
+  color: rgb(68, 35, 89);
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+  text-align: center;
+  font-family: Lato, Arial, sans-serif;
+}
+
+/* Slider outer wrapper — enables absolute positioning of arrows */
+.life-event-carousel .slider-outer {
+  position: relative;
+}
+
+/* Track (ul) with inset to prevent arrow overlap */
+.life-event-carousel .slider-track {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  list-style: none;
+  margin: 0 3.875rem; /* 62px inset desktop */
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+
+/* Each carousel tile (li) */
+.life-event-carousel .carousel-item {
+  flex: 0 0 auto;
+  display: flex;
+}
+
+/* Tile link */
+.life-event-carousel .item-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem; /* 16px */
+  width: 11.25rem; /* 180px */
+  color: rgb(68, 35, 89);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.life-event-carousel .item-link:hover {
+  opacity: 0.8;
+}
+
+/* Icon area — BPFicons pseudo-element placeholder */
+.life-event-carousel .item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.75rem; /* 60px */
+  height: 3.75rem;
+  border-radius: 50%;
+  background-color: rgb(68, 35, 89);
+  color: rgb(255, 255, 255);
+  margin-bottom: 0.75rem;
+  font-family: BPFicons, Lato, Arial, sans-serif;
+  font-size: 1.5rem;
+}
+
+/* BPFicons — deployment prerequisite: icon glyphs rendered via ::before on class */
+/* When BPFicons font is deployed, add icon class to .item-icon e.g. icon-bpf-pensioen */
+.life-event-carousel [class*='icon-bpf']::before {
+  font-family: BPFicons, Lato, Arial, sans-serif;
+  content: attr(data-icon-char);
+}
+
+/* Item label text */
+.life-event-carousel .item-label {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  color: rgb(68, 35, 89);
+  line-height: 1.4;
+}
+
+/* Arrow buttons */
+.life-event-carousel .slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5rem; /* 40px */
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: rgb(68, 35, 89);
+  color: rgb(255, 255, 255);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-family: Lato, Arial, sans-serif;
+  transition: opacity 0.25s ease;
+  z-index: 1;
+}
+
+.life-event-carousel .slider-btn:hover {
+  opacity: 0.8;
+}
+
+.life-event-carousel .slider-btn:focus {
+  outline: 2px solid rgb(255, 255, 255);
+  outline-offset: 2px;
+}
+
+.life-event-carousel .btn-prev {
+  left: 0;
+}
+
+.life-event-carousel .btn-next {
+  right: 0;
+}
+
+/* Pagination dots */
+.life-event-carousel .slider-paging {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.life-event-carousel .paging-dot {
+  width: 0.625rem; /* 10px */
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: rgb(204, 204, 204);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+.life-event-carousel .paging-dot.active {
+  background-color: rgb(68, 35, 89);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .life-event-carousel .slider-track {
+    margin: 0 2.75rem; /* 44px inset mobile */
+  }
+
+  .life-event-carousel .item-link {
+    width: 9rem; /* 144px */
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .life-event-carousel {
+    padding: 1.5rem 1rem;
+  }
+
+  .life-event-carousel .section-heading {
+    font-size: 1.5rem;
+  }
+}

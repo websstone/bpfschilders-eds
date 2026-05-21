@@ -1,0 +1,44 @@
+/* stylelint-disable max-line-length */
+/* BPF Schilders brand fonts — sourced from cdn.infodesk.nl */
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdn.infodesk.nl/assets/fonts/lato-regular-webfont.woff') format('woff');
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdn.infodesk.nl/assets/fonts/lato-italic-webfont.woff') format('woff');
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://cdn.infodesk.nl/assets/fonts/lato-bold-webfont.woff') format('woff');
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://cdn.infodesk.nl/assets/fonts/lato-bolditalic-webfont.woff') format('woff');
+}
+
+/* BPFicons — DEPLOYMENT PREREQUISITE: proprietary icon font */
+/* CSS class names and @font-face are correctly authored; font file must be hosted at /fonts/bpficons.woff at deployment time */
+@font-face {
+  font-family: BPFicons;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdn.infodesk.nl/assets/fonts/bpficons.woff') format('woff'),
+       url('https://cdn.infodesk.nl/assets/fonts/bpficons.ttf') format('truetype');
+}
