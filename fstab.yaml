@@ -1,0 +1,4 @@
+mountpoints:
+  /:
+    url: http://localhost:4502/bin/franklin.delivery/websstone/bpfschilders-eds/main
+    type: markup
