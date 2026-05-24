@@ -326,29 +326,7 @@
   },
   {
     "id": "tiles",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "tile_heading",
-        "label": "Tile Headings",
-        "valueType": "string",
-        "required": true
-      },
-      {
-        "component": "richtext",
-        "name": "tile_body",
-        "label": "Tile Descriptions",
-        "valueType": "string",
-        "required": false
-      },
-      {
-        "component": "reference",
-        "name": "tile_image",
-        "label": "Tile Images",
-        "valueType": "string",
-        "required": false
-      }
-    ]
+    "fields": []
   },
   {
     "id": "carousel",
