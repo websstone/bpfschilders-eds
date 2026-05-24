@@ -47,7 +47,8 @@
                 }
               }
             }
-          }
+          },
+          "model": "tiles"
         },
         {
           "title": "Sidebar",

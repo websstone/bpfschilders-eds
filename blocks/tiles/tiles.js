@@ -29,7 +29,23 @@ export default function decorate(block) {
   grid.className = 'tiles-grid';
 
   rows.forEach((row) => {
-    const cells = [...row.children];
+    // Cell extraction handles two content shapes:
+    //   1) DA / block-gallery — row has N sibling <div> cells, one per field.
+    //   2) AEM franklin.delivery — row has one wrapper <div> containing <p>
+    //      elements (one per field). Detect by checking for a single wrapper
+    //      whose children are all <p>.
+    let cells;
+    const onlyChild = row.children.length === 1 ? row.children[0] : null;
+    if (
+      onlyChild
+      && onlyChild.tagName === 'DIV'
+      && onlyChild.children.length > 0
+      && [...onlyChild.children].every((c) => c.tagName === 'P')
+    ) {
+      cells = [...onlyChild.children];
+    } else {
+      cells = [...row.children];
+    }
 
     // Helper: extract text content of a cell (trimmed)
     const text = (cell) => (cell ? cell.textContent.trim() : '');
@@ -46,8 +62,14 @@ export default function decorate(block) {
     const richHtml = (cell) => (cell ? cell.innerHTML : '');
 
     const tileLink = href(cells[0]);
+    // tile_image: prefer a real <img>; fall back to an anchor href (franklin.delivery
+    // renders @reference fields as <a href="…">…</a> rather than <img>).
     const tileImage = cells[1] ? cells[1].querySelector('img') : null;
-    const tileImageSrc = tileImage ? tileImage.getAttribute('src') : '';
+    const tileImageSrc = tileImage
+      ? tileImage.getAttribute('src')
+      : (cells[1] && cells[1].querySelector('a')
+        ? cells[1].querySelector('a').getAttribute('href') || ''
+        : '');
     const tileImageAlt = tileImage ? (tileImage.getAttribute('alt') || '') : '';
     const tileHeadingHtml = richHtml(cells[2]);
     const tileBodyHtml = richHtml(cells[3]);
