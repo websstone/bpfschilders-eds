@@ -108,27 +108,65 @@ function setPage(track, wrapperEl, pageDots, page, slideCount, animate) {
 
 export default function decorate(block) {
   // ── 1. Read model rows ────────────────────────────────────────────────────
-  const propRows = [...block.children].filter((r) => !r.dataset.aueComponent);
+  const allRows = [...block.children];
 
-  const headingCell = propRows[0] ? propRows[0].children[0] : null;
-  const iconCell    = propRows[1] ? propRows[1].children[0] : null;
-  const labelCell   = propRows[2] ? propRows[2].children[0] : null;
-  const hrefCell    = propRows[3] ? propRows[3].children[0] : null;
+  // Separate parent-model rows (block properties) from child-item rows (slides).
+  // Child items have data-aue-model="carousel-slide" or data-aue-component attributes.
+  const parentRows = [];
+  const childRows = [];
+  allRows.forEach((row) => {
+    if (row.dataset.aueModel === 'carousel-slide' || row.dataset.aueComponent) {
+      childRows.push(row);
+    } else {
+      parentRows.push(row);
+    }
+  });
 
-  const headingText = cellText(headingCell);
-  const iconClasses = splitLines(iconCell);
-  const labels      = splitLines(labelCell);
-  // Each href line is plain text (e.g. "/werknemer/wat-doe-ik-bij/met-pensioen-gaan/").
-  // If authored as <a> elements, textContent gives the URL text — correct for EDS plain.html.
-  const hrefs = splitLines(hrefCell);
+  let headingText = '';
+  let slides = [];
 
-  // Build slides array: pair labels + hrefs; skip slides with no href.
-  const slides = labels.reduce((acc, label, idx) => {
-    const href = hrefs[idx] || '';
-    if (!href) return acc; // hard constraint: no placeholder anchors
-    acc.push({ label, iconClass: iconClasses[idx] || '', href });
-    return acc;
-  }, []);
+  if (childRows.length > 0) {
+    // Container format: parent row has heading, each child row is a slide.
+    headingText = cellText(parentRows[0] ? parentRows[0].children[0] : null);
+    slides = childRows.map((row) => {
+      const cells = [...row.children];
+      const iconClass = cellText(cells[0] || null);
+      const labelCell = cells[1] || cells[0];
+      const label = labelCell ? (labelCell.querySelector('p')?.textContent?.trim() || cellText(labelCell)) : '';
+      const linkEl = labelCell ? labelCell.querySelector('a') : null;
+      const href = linkEl ? linkEl.getAttribute('href') : '';
+      return { label, iconClass, href };
+    }).filter((s) => s.href && s.label);
+  } else if (parentRows.length >= 3) {
+    // Multi-row flat format: row 0=heading, 1=icons, 2=labels, 3=links
+    headingText = cellText(parentRows[0] ? parentRows[0].children[0] : null);
+    const iconClasses = splitLines(parentRows[1] ? parentRows[1].children[0] : null);
+    const labels = splitLines(parentRows[2] ? parentRows[2].children[0] : null);
+    const hrefs = splitLines(parentRows[3] ? parentRows[3].children[0] : null);
+    slides = labels.reduce((acc, label, idx) => {
+      const href = hrefs[idx] || '';
+      if (!href) return acc;
+      acc.push({ label, iconClass: iconClasses[idx] || '', href });
+      return acc;
+    }, []);
+  } else {
+    // AEM EDS vertical format: all fields as siblings in one cell.
+    const firstRow = parentRows[0];
+    const cell0 = firstRow ? (firstRow.children[0] || firstRow) : null;
+    if (cell0) {
+      const children = [...cell0.children];
+      headingText = children.length > 0 ? cellText(children[0]) : cellText(cell0);
+      const iconClasses = splitLines(children[1] || null);
+      const labels = splitLines(children[2] || null);
+      const hrefs = splitLines(children[3] || null);
+      slides = labels.reduce((acc, label, idx) => {
+        const href = hrefs[idx] || '';
+        if (!href) return acc;
+        acc.push({ label, iconClass: iconClasses[idx] || '', href });
+        return acc;
+      }, []);
+    }
+  }
 
   if (slides.length === 0) return; // nothing to render
 

@@ -247,25 +247,42 @@ export default async function decorate(block) {
   let searchPlaceholder = 'Heeft u een vraag?';
   let loginUrl = '/pensioenadministratie/inloggen/#!/login/redirect?';
 
+  let usedFragment = false;
   if (navDoc) {
     // /nav.plain.html renders as a single <div> containing one <div> per row.
     // Each row: <div><div> cell-content </div></div>
-    const rows = [...navDoc.body.querySelectorAll(':scope > div')];
-    const getCell = (n) => cell(rows[n]);
+    let rows = [...navDoc.body.querySelectorAll(':scope > div')];
 
-    if (rows[0]) logoHref = cellText(getCell(0)) || '/';
-    if (rows[1]) logoAlt = cellText(getCell(1)) || 'BPF Schilders';
-    if (rows[2]) {
-      const c = getCell(2);
-      audienceSwitcherHtml = c ? c.innerHTML : '';
+    // When the AEM SDK returns a full HTML page instead of a plain fragment,
+    // the body contains <header>/<main>/<footer> — no direct <div> children.
+    // Try extracting rows from the <main> content area instead.
+    if (rows.length === 0) {
+      const main = navDoc.querySelector('main');
+      if (main) {
+        rows = [...main.querySelectorAll(':scope > div > div > div > div')];
+      }
     }
-    if (rows[3]) {
-      const c = getCell(3);
-      mainNavHtml = c ? c.innerHTML : '';
+
+    if (rows.length >= 2) {
+      usedFragment = true;
+      const getCell = (n) => cell(rows[n]);
+
+      if (rows[0]) logoHref = cellText(getCell(0)) || '/';
+      if (rows[1]) logoAlt = cellText(getCell(1)) || 'BPF Schilders';
+      if (rows[2]) {
+        const c = getCell(2);
+        audienceSwitcherHtml = c ? c.innerHTML : '';
+      }
+      if (rows[3]) {
+        const c = getCell(3);
+        mainNavHtml = c ? c.innerHTML : '';
+      }
+      if (rows[4]) searchPlaceholder = cellText(getCell(4)) || searchPlaceholder;
+      if (rows[5]) loginUrl = cellText(getCell(5)) || loginUrl;
     }
-    if (rows[4]) searchPlaceholder = cellText(getCell(4)) || searchPlaceholder;
-    if (rows[5]) loginUrl = cellText(getCell(5)) || loginUrl;
-  } else {
+  }
+
+  if (!usedFragment) {
     // Fallback: render source nav structure verbatim so the block is
     // usable even without an authored /nav fragment.
     audienceSwitcherHtml = `<ul>

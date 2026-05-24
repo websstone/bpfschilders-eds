@@ -146,6 +146,21 @@
   font-weight: 400;
 }
 
+.carousel .icon-bpf-pensioen::before { content: '\e604'; }
+.carousel .icon-bpf-trouwen::before { content: '\e607'; }
+.carousel .icon-bpf-verhuizen::before { content: '\e609'; }
+.carousel .icon-bpf-scheiden::before { content: '\e606'; }
+.carousel .icon-bpf-ontslag::before { content: '\e602'; }
+.carousel .icon-bpf-veranderenvanbaan::before,
+.carousel .icon-bpf-baan::before { content: '\e608'; }
+.carousel .icon-bpf-uitzendkracht::before { content: '\e902'; }
+.carousel .icon-bpf-voorjezelfbeginnen::before,
+.carousel .icon-bpf-uzelf::before { content: '\e60a'; }
+.carousel .icon-bpf-arbeidsongeschikt::before,
+.carousel .icon-bpf-arbeidsongeschiktheid::before { content: '\e600'; }
+.carousel .icon-bpf-verlof::before { content: '\e903'; }
+.carousel .icon-bpf-overlijden::before { content: '\e603'; }
+
 /* ── Prev / Next arrow buttons ───────────────────────────────────────────── */
 /*
  * Buttons are appended inside .carrousel-wrapper (position:relative per above),

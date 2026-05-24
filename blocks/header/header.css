@@ -79,7 +79,7 @@
   flex-shrink: 0;
   width: var(--header-logo-w);
   height: var(--header-logo-h);
-  background-image: url('/icons/logo.svg');
+  background-image: url('/icons/logo.png');
   background-repeat: no-repeat;
   background-size: contain;
   background-position: left center;
