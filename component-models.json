@@ -359,6 +359,27 @@
         "label": "Section Heading",
         "valueType": "string",
         "required": false
+      },
+      {
+        "component": "text",
+        "name": "slide_icon_class",
+        "label": "Slide Icon Classes",
+        "valueType": "string",
+        "required": false
+      },
+      {
+        "component": "text",
+        "name": "slide_label",
+        "label": "Slide Labels",
+        "valueType": "string",
+        "required": false
+      },
+      {
+        "component": "text",
+        "name": "slide_link",
+        "label": "Slide Link URLs",
+        "valueType": "string",
+        "required": false
       }
     ]
   },
