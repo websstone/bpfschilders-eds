@@ -1,20 +1,152 @@
-footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+/* ==========================================================================
+   BPF Schilders — footer block
+   Source: SiteFooterLegalLinks (decomposer_api)
+   Design tokens (design-tokens.yaml / tokens.css):
+     background:  rgb(68, 35, 89)   -> var(--color-background)
+     text:        rgb(255, 255, 255) -> var(--color-text)
+     link-hover:  rgba(255,255,255,0.8) -> var(--color-link-hover)
+   Responsive contracts (ba-spec behavioral-spec.yaml):
+     Mobile-first (flex-column default); desktop row at min-width 1024px
+   CSS transitions (ba-spec css_transitions[]):
+     color 0.2s ease on footer a
+   Pseudo-elements (visual-spec.yaml pseudo_elements):
+     footer::before — top gradient separator
+   ========================================================================== */
+
+/* --- Block-scoped custom properties ---
+   Values from computed-styles.desktop.json + design-tokens.yaml.
+   14px font size is explicit — smaller than the 16px body baseline.
+   Token-drift: no global token covers 0.875rem footer font-size;
+   block-scoped --footer-font-size used instead. */
+.footer {
+  --footer-bg:          rgb(68, 35, 89);          /* design-tokens color.background    */
+  --footer-text:        rgb(255, 255, 255);        /* design-tokens color.text          */
+  --footer-link-hover:  rgba(255, 255, 255, 0.75); /* ba-spec interaction_states hover  */
+  --footer-font:        Lato, Arial, sans-serif;   /* design-tokens typography          */
+  --footer-font-size:   0.875rem;                  /* 14px / 16 — computed-styles       */
+  --footer-padding-y:   1.25rem;                   /* 20px / 16 — computed-styles       */
+  --footer-gap:         1rem;                      /* 16px gap copyright <-> links      */
+  --footer-separator-h: 0.4375rem;                 /* ~7px — visual-spec pseudo_element */
+  --footer-transition:  color 0.2s ease;           /* ba-spec css_transitions[]         */
 }
 
-footer .footer > div {
-  margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+/* ==========================================================================
+   Root footer element — full-width purple bar, mobile-first
+   ========================================================================== */
+.footer {
+  position: relative;
+  width: 100%;
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  font-family: var(--footer-font);
+  font-size: var(--footer-font-size);
+  padding: var(--footer-padding-y) 0;
+  box-sizing: border-box;
 }
 
-footer .footer p {
-  margin: 0;
+/* Top gradient separator — visual-spec.yaml pseudo_elements[0]
+   "linear-gradient from rgba(0,0,0,0.25) to transparent, height ~7px" */
+.footer::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-separator-h);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent);
+  pointer-events: none;
 }
 
-@media (width >= 900px) {
-  footer .footer > div {
-    padding: 40px 32px 24px;
+/* ==========================================================================
+   Inner nav container — flex-column mobile-first
+   ========================================================================== */
+.footer .footer-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--footer-gap);
+  max-width: 75rem;        /* 1200px */
+  margin: 0 auto;
+  padding: 0 0.9375rem;    /* 15px lateral gutter */
+  box-sizing: border-box;
+}
+
+/* Desktop: copyright + links side by side in a row
+   Breakpoint: 1024px per ba-spec responsive_contracts + visual-spec.yaml */
+@media (min-width: 1024px) {
+  .footer .footer-nav {
+    flex-direction: row;
+    align-items: center;
   }
+}
+
+/* ==========================================================================
+   Copyright paragraph
+   ========================================================================== */
+.footer .footer-copyright {
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  color: var(--footer-text);
+  font-size: var(--footer-font-size);
+}
+
+/* ==========================================================================
+   Legal link list
+   ========================================================================== */
+.footer .footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem; /* 20px horizontal gap between items */
+}
+
+.footer .footer-links li {
+  margin: 0;
+  padding: 0;
+}
+
+.footer .footer-links a {
+  color: var(--footer-text);
+  text-decoration: none;
+  font-size: var(--footer-font-size);
+  transition: var(--footer-transition);
+}
+
+/* Hover state — ba-spec interaction_states + visual-spec nav_item_states.hover */
+.footer .footer-links a:hover,
+.footer .footer-links a:focus-visible {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   OneTrust button placeholder — hides the empty container when SDK absent
+   ========================================================================== */
+.footer #ot-sdk-btn-container:empty {
+  display: none;
+}
+
+/* Style the OneTrust button to blend with footer links when injected */
+.footer #ot-sdk-btn-container button,
+.footer #ot-sdk-btn-container #ot-sdk-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--footer-text);
+  font-family: var(--footer-font);
+  font-size: var(--footer-font-size);
+  padding: 0;
+  margin: 0;
+  transition: var(--footer-transition);
+}
+
+.footer #ot-sdk-btn-container button:hover,
+.footer #ot-sdk-btn-container #ot-sdk-btn:hover {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
 }

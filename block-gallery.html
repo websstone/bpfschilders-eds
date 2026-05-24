@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Block Gallery — BPF Schilders EDS</title>
   <link rel="stylesheet" href="/styles/styles.css">
-  <link rel="stylesheet" href="/styles/fonts.css">
   <style>
-    body { margin: 0; padding: 0; background: white; font-family: Lato, Arial, sans-serif; }
+    body { margin: 0; padding: 0; background: white; font-family: sans-serif; }
     .gallery-section { margin: 0; padding: 0; border-top: 2px solid #e8e8e8; }
-    .gallery-label { font-family: monospace; font-size: 10px; color: #999; padding: 3px 6px; background: #f0f0f0; text-transform: uppercase; letter-spacing: .05em; }
+    .gallery-label {
+      font-family: monospace;
+      font-size: 10px;
+      color: #999;
+      padding: 3px 6px;
+      background: #f0f0f0;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
     .gallery-label a { color: inherit; text-decoration: none; }
     [data-block-status="error"] { outline: 2px solid red; }
   </style>
@@ -20,46 +27,423 @@
   <main>
   <!-- BLOCKS START -->
 
-  <section class="gallery-section" id="site-header">
-    <div class="gallery-label"><a href="#site-header">site-header</a></div>
-    <link rel="stylesheet" href="/blocks/site-header/site-header.css">
-    <div class="site-header block" data-block-name="site-header">
-      <div><div>/</div></div>
-      <div><div>BPF Schilders</div></div>
-      <div><div>Werknemer
-Ondernemer
-Werkgever
-Over ons
-Klacht
-Translate
-Contact</div></div>
-      <div><div>Home
-Het pensioen
-Wat is pensioen?
-Pensioenpakket
-Pensioen 1-2-3</div></div>
-      <div><div>k</div></div>
-      <div><div>Heeft u een vraag?</div></div>
+  <section class="gallery-section" id="header" data-section-status="loaded">
+    <div class="gallery-label"><a href="#header">header</a></div>
+    <link rel="stylesheet" href="/blocks/header/header.css">
+    <!--
+      The header block is global chrome loaded from /nav fragment at runtime.
+      decorate() fetches /nav.plain.html; the block element is intentionally
+      empty — JS populates it using the fallback nav structure when /nav is absent.
+    -->
+    <div class="header block" data-block-name="header"></div>
+  </section>
+
+  <section class="gallery-section" id="accordion" data-section-status="loaded">
+    <div class="gallery-label"><a href="#accordion">accordion</a></div>
+    <link rel="stylesheet" href="/blocks/accordion/accordion.css">
+    <!--
+      Fixture content: verbatim from FaqAccordion/captures/dom-snapshot.json (3 items)
+      + InfodeskCapabilitiesList (1 item with ul body)
+      + NewsUpdateList date-prefix title sample (1 item)
+
+      EDS child-item block structure:
+        Each child div = one accordion item (data-aue-component="accordion-item" in UE).
+        cell[0] = item_title (plain text)
+        cell[1] = item_body  (rich text HTML)
+    -->
+    <div class="accordion block" data-block-name="accordion" style="max-width:760px;margin:0 auto;padding:0 1.5rem;">
+
+      <!-- Item 1: FaqAccordion item 1 -->
+      <div>
+        <div>Hoe lang duurt het voordat ik antwoord krijg?</div>
+        <div><p>Heeft u ons een vraag via het contactformulier of per e-mail gesteld? Dan ontvangt u binnen twee werkdagen een reactie. Heeft u ons een brief gestuurd? Dan streven wij ernaar om u binnen tien werkdagen te antwoorden.</p></div>
+      </div>
+
+      <!-- Item 2: FaqAccordion item 2 (inline link) -->
+      <div>
+        <div>Ik heb een klacht. Hoe geef ik die door aan BPF Schilders?</div>
+        <div>
+          <p>Bent u niet tevreden? Laat het ons weten.</p>
+          <p><a href="/klacht/" title="Klacht">Lees meer over hoe u een klacht kunt indienen</a>.</p>
+          <p>Uw klacht wordt met de grootste zorgvuldigheid door ons behandeld.</p>
+        </div>
+      </div>
+
+      <!-- Item 3: FaqAccordion item 3 (multiple inline links) -->
+      <div>
+        <div>Waar geef ik mijn e-mailadres en andere persoonlijke gegevens door?</div>
+        <div>
+          <p>Ontvangt u uw persoonlijke pensioenpost al digitaal? Digitale post heeft voordelen. U ontvangt direct een e-mail als er nieuws voor u is.</p>
+          <p><a href="https://www.infodesk.nl/homepage-infodesk/profiel/">Dit doet u door in te loggen op Infodesk</a>.</p>
+          <p>Op de beveiligde omgeving van Infodesk kunt u met uw DigiD ook uw persoonlijke gegevens wijzigen en controleren of deze nog kloppen.</p>
+          <p><a href="/ondernemer/administratie/uw-pensioenadministratie/profiel/">Ga naar Uw pensioenadministratie</a></p>
+        </div>
+      </div>
+
+      <!-- Item 4: InfodeskCapabilitiesList (ul body — EC-accordion-002) -->
+      <div>
+        <div>Wat kunt u doen op Infodesk?</div>
+        <div>
+          <p>Op Infodesk&nbsp;</p>
+          <ul>
+            <li>bekijkt u uw persoonlijke pensioensituatie.</li>
+            <li>berekent u met de pensioenplanner bij iedere gewenste pensioenleeftijd hoeveel pensioen u kunt verwachten.</li>
+            <li>kunt u uw jaarlijkse, digitale pensioenoverzicht bekijken.</li>
+            <li>kunt u uw persoonlijke gegevens zoals uw (e-mail)adres of bankrekeningnummer wijzigen.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Item 5: NewsUpdateList date-prefix title (EC-accordion-004) -->
+      <div>
+        <div>11-05-2026 - Update datacenterbrand: pensioendiensten weer beschikbaar</div>
+        <div>
+          <p>Na de brand in het datacenter zijn de pensioendiensten van BPF Schilders weer volledig beschikbaar. U kunt weer inloggen op Infodesk en Uw pensioenadministratie.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="gallery-section" id="breadcrumbs" data-section-status="loaded">
+    <div class="gallery-label"><a href="#breadcrumbs">breadcrumbs</a></div>
+    <link rel="stylesheet" href="/blocks/breadcrumbs/breadcrumbs.css">
+    <!--
+      Content model (2 rows, vertical AEM format):
+        Row 0 — breadcrumb_links : one cell containing <a> elements for ancestor pages
+        Row 1 — current_page_label : plain text cell (the current page, no href)
+
+      Instance: Over ons > Dit presteren we > Dekkingsgraad
+      (from AboutNavigationLinks/captures/dom-snapshot.json — canonical source)
+    -->
+    <div class="breadcrumbs block" data-block-name="breadcrumbs">
+      <div><div><a href="/over-ons/">Over ons</a><a href="/over-ons/dit-presteren-we/">Dit presteren we</a></div></div>
+      <div><div>Dekkingsgraad</div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="sidebar" data-section-status="loaded">
+    <div class="gallery-label"><a href="#sidebar">sidebar</a></div>
+    <link rel="stylesheet" href="/blocks/sidebar/sidebar.css">
+    <!--
+      Content model fields (vertical AEM format — one row per field):
+        col[0] section_heading | col[1] icon_type | col[2] item_label | col[3] item_href
+        col[4] opening_hours   | col[5] image
+
+      Instance: ContactInfoSidebar (primary) — contact/
+      Two contact groups (werknemer + ondernemer), opening hours, no image (default variant).
+    -->
+    <div class="sidebar block" data-block-name="sidebar">
+      <!-- Group 1 heading -->
+      <div><div>Bent u werknemer?</div><div></div><div></div><div></div><div></div><div></div></div>
+      <!-- Group 1 — phone -->
+      <div><div></div><div>phone</div><div>030-277 56 00</div><div>tel:030-2775600</div><div></div><div></div></div>
+      <!-- Group 1 — email -->
+      <div><div></div><div>envelope</div><div>Mail ons</div><div>/werknemer/contact/stel-uw-vraag/</div><div></div><div></div></div>
+      <!-- Group 1 — facebook -->
+      <div><div></div><div>facebook</div><div>Volg ons</div><div>https://www.facebook.com/bpfschilders</div><div></div><div></div></div>
+      <!-- Group 2 heading -->
+      <div><div>Bent u ondernemer of werkgever?</div><div></div><div></div><div></div><div></div><div></div></div>
+      <!-- Group 2 — phone -->
+      <div><div></div><div>phone</div><div>030-277 56 10</div><div>tel:030-2775610</div><div></div><div></div></div>
+      <!-- Group 2 — email -->
+      <div><div></div><div>envelope</div><div>Mail ons</div><div>/ondernemer/contact/stel-uw-vraag/</div><div></div><div></div></div>
+      <!-- Group 2 — facebook -->
+      <div><div></div><div>facebook</div><div>Volg ons</div><div>https://www.facebook.com/bpfschilders</div><div></div><div></div></div>
+      <!-- Opening hours -->
+      <div><div></div><div></div><div></div><div></div><div>Openingstijden:
+maandag tot en met vrijdag van 08:30 tot 17:00 uur</div><div></div></div>
+    </div>
+  </section>
+
+  <!-- ── tiles: default variant (InfoTilesWithCtas) ──────────────────────── -->
+  <section class="gallery-section" id="tiles" data-section-status="loaded">
+    <div class="gallery-label"><a href="#tiles">tiles (default)</a></div>
+    <link rel="stylesheet" href="/blocks/tiles/tiles.css">
+    <div class="tiles block" data-block-name="tiles">
+      <!-- Tile 1: Webinar nieuwe pensioenregeling -->
+      <div>
+        <div>/werknemer/actueel/nieuw-pensioenstelsel/webinar-nieuwe-pensioenregeling/</div>
+        <div><img src="/media/3zulmjv3/webinar-nieuwe-pensioenregeling.jpg" alt="Webinar nieuwe pensioenregeling" loading="lazy"></div>
+        <div>Webinar nieuwe pensioenregeling</div>
+        <div>Heeft u vragen over de definitieve berekeningsbrief? Of over de nieuwe pensioenregeling? Bekijk ons webinar.</div>
+        <div>Naar het webinar</div>
+        <div></div>
+      </div>
+      <!-- Tile 2: Met pensioen gaan? -->
+      <div>
+        <div>/werknemer/wat-doe-ik-bij/met-pensioen-gaan/</div>
+        <div><img src="/media/jpaibxoa/man-met-brief-in-zijn-handen-blog-jd-home.jpg" alt="Met pensioen gaan" loading="lazy"></div>
+        <div>Met pensioen gaan?</div>
+        <div>Komt uw pensioen eraan? Lees hoe u uw pensioen aanvraagt en welke keuzes u maakt als u met pensioen gaat.</div>
+        <div>Lees meer</div>
+        <div></div>
+      </div>
+      <!-- Tile 3: BPF Schilders 75 jaar -->
+      <div>
+        <div>/werknemer/actueel/nieuws/nieuws-2026/20-04-2026-75-jaar-bpf-schilders-uw-pensioen-goed-geregeld-toen-nu-en-straks/</div>
+        <div><img src="/media/0drl35n5/bpfschilders-infographic-75-jaar-260401.png" alt="BPF Schilders 75 jaar" loading="lazy"></div>
+        <div>BPF Schilders 75 jaar</div>
+        <div>BPF Schilders zorgt al sinds 1951 voor uw pensioen. Dat doen we nu. En dat blijven we ook in de toekomst voor u doen.</div>
+        <div>Lees meer</div>
+        <div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── tiles: inverted variant (PolicyCoverageLoginTeaser) ─────────────── -->
+  <section class="gallery-section" id="tiles-inverted" data-section-status="loaded">
+    <div class="gallery-label"><a href="#tiles-inverted">tiles (inverted)</a></div>
+    <div class="tiles inverted block" data-block-name="tiles">
+      <!-- Tile 1: Dekkingsgraad (BPFicons: area-chart) -->
+      <div>
+        <div>/over-ons/dit-presteren-we/dekkingsgraad/</div>
+        <div></div>
+        <div>Eindstand beleidsdekkingsgraad 2025</div>
+        <div></div>
+        <div></div>
+        <div>area-chart</div>
+      </div>
+      <!-- Tile 2: Inloggen (BPFicons: user) -->
+      <div>
+        <div>/inloggen/</div>
+        <div></div>
+        <div>INLOGGEN</div>
+        <div></div>
+        <div></div>
+        <div>user</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       text — default variant (ArticleRichText source)
+       ================================================================ -->
+  <section class="gallery-section" id="text" data-section-status="loaded">
+    <div class="gallery-label"><a href="#text">text</a></div>
+    <link rel="stylesheet" href="/blocks/text/text.css">
+    <div class="text block" data-block-name="text">
+      <div>
+        <div>
+          <h1>Blog van bestuurders</h1>
+          <p class="intro">De bestuurders van BPF Schilders schrijven om beurten een maandelijkse blog. Daarin delen ze hun persoonlijke gedachten, mening en visie op werk- en pensioengebied met u.</p>
+          <h2>Blog: &#x27;Voorjaar in volle gang: tijd voor onderhoud én financiële administratie&#x27;</h2>
+          <p><strong>Ronald van Oostrom</strong></p>
+          <p>Het voorjaar laat zich van zijn beste kant zien. De zon komt vaker door, de temperaturen lopen op en dat betekent voor onderhoudsschilders en glaszetters maar één ding: drukte. Dit is dé periode waarin woningen en panden weer aangepakt worden. Houtrot herstellen, kozijnen schilderen, glas vervangen – klanten staan te popelen om hun huis weer fris en strak de zomer in te laten gaan.&nbsp;Maar terwijl de agenda zich vult met mooie opdrachten, loopt er nog een belangrijke taak parallel: de financiële administratie, zegt bestuurder Ronald van Oostrom in zijn blog.</p>
+          <p><a rel="noopener" href="https://bpfschilders.weebly.com/blog/voorjaar-in-volle-gang-tijd-voor-onderhoud-en-financiele-administratie" target="_blank" title="Bestuurdersblog">Lees verder in de blog</a></p>
+          <h2>Bestuurders schrijven de blogs</h2>
+          <p>De bestuurders van BPF Schilders schrijven om beurten een maandelijkse blog. Daarin delen ze hun persoonlijke gedachten, mening en visie op werk- en pensioengebied met u.</p>
+          <p>De bestuurders vragen daarmee aandacht voor onderwerpen die belangrijk zijn voor uw pensioen en die u aan het denken zet. Waarom? Omdat zij nieuwsgierig zijn naar wat u bezig houdt of zorgen baart.</p>
+          <h2>Ook een onderwerp doorgeven?</h2>
+          <p>Heeft u ideeën voor een onderwerp voor een blog? Laat het ons weten via het contactformulier.</p>
+          <p><a href="/werknemer/contact/stel-uw-vraag/" title="Stel uw vraag">Naar het contactformulier</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       text intro — intro variant (LoginPageHeading source)
+       ================================================================ -->
+  <section class="gallery-section" id="text-intro" data-section-status="loaded">
+    <div class="gallery-label"><a href="#text-intro">text (intro variant)</a></div>
+    <link rel="stylesheet" href="/blocks/text/text.css">
+    <div class="text intro block" data-block-name="text">
+      <div>
+        <div>
+          <h1>Inloggen op Infodesk of Uw pensioenadministratie</h1>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── content-block (default variant — BenefitsArticleTeaser data) ─────── -->
+  <section class="gallery-section" id="content-block" data-section-status="loaded">
+    <div class="gallery-label"><a href="#content-block">content-block</a></div>
+    <link rel="stylesheet" href="/blocks/content-block/content-block.css">
+    <!--
+      9 rows (vertical AEM format, one per model field):
+        0 section_heading  1 left_heading  2 left_body  3 left_cta_text
+        4 left_cta_url     5 right_heading 6 right_body 7 right_cta_text
+        8 right_cta_url
+      Instance: BenefitsArticleTeaser (primary, 12 nodes, single-column)
+    -->
+    <div class="content-block block" data-block-name="content-block">
+      <div><div></div></div>
+      <div><div><h2>Meer blogs lezen?</h2></div></div>
+      <div><div>
+        <p>Bent u benieuwd naar eerdere blogs? Onze bestuurders schrijven over onderwerpen die belangrijk zijn voor uw pensioen. Bijvoorbeeld over het verhogen van uw pensioen. Of over de nieuwe pensioenregeling. Onderwerpen die u aan het denken zetten. Waarom? Omdat zij nieuwsgierig zijn naar wat u bezig houdt of zorgen baart.</p>
+        <p>U leest de blogs op onze blogwebsite. U kunt daar ook reageren op de blogs van de bestuurders.</p>
+      </div></div>
+      <div><div>Naar de andere blogs</div></div>
+      <div><div><a href="https://bpfschilders.weebly.com/">https://bpfschilders.weebly.com/</a></div></div>
+      <div><div></div></div>
+      <div><div></div></div>
       <div><div></div></div>
       <div><div></div></div>
     </div>
   </section>
 
-  <section class="gallery-section" id="coverage-teaser">
-    <div class="gallery-label"><a href="#coverage-teaser">coverage-teaser</a></div>
-    <link rel="stylesheet" href="/blocks/coverage-teaser/coverage-teaser.css">
-    <div class="coverage-teaser block" data-block-name="coverage-teaser">
-      <div><div>140,7%</div></div>
-      <div><div>Eindstand beleidsdekkingsgraad 2025</div></div>
-      <div><div>INLOGGEN</div></div>
+  <!-- ── content-block (with-link-list variant — RelatedArticlesTeaser data) ─ -->
+  <section class="gallery-section" id="content-block-with-link-list" data-section-status="loaded">
+    <div class="gallery-label"><a href="#content-block-with-link-list">content-block (with link list)</a></div>
+    <!--
+      Variant: with-link-list. Left: RelatedArticlesTeaser left col.
+      Right column renders a styled ul of related-page links.
+    -->
+    <div class="content-block with-link-list block" data-block-name="content-block">
+      <div><div></div></div>
+      <div><div><h2>Zelf een onderwerp doorgeven?</h2></div></div>
+      <div><div>
+        <p>Heeft u ideeën voor een onderwerp voor een blog? Laat het ons weten via het contactformulier.</p>
+      </div></div>
+      <div><div>Naar het contactformulier</div></div>
+      <div><div><a href="/werknemer/contact/stel-uw-vraag/">/werknemer/contact/stel-uw-vraag/</a></div></div>
+      <div><div><h2>Ook interessant</h2></div></div>
+      <div><div>
+        <p>Heeft u nog niet alle antwoorden op uw vragen? Bekijk dan eens deze pagina's:</p>
+        <ul>
+          <li><a href="/werknemer/actueel/nieuws/">Nieuws</a></li>
+          <li><a href="/werknemer/actueel/nieuwsbrieven/">Digitale nieuwsbrief</a></li>
+          <li><a href="/werknemer/actueel/pensioenblad/">Pensioenblad</a></li>
+          <li><a href="/werknemer/actueel/downloads/">Downloads voor werknemers</a></li>
+        </ul>
+      </div></div>
+      <div><div></div></div>
+      <div><div></div></div>
     </div>
   </section>
 
-  <section class="gallery-section" id="life-event-carousel">
-    <div class="gallery-label"><a href="#life-event-carousel">life-event-carousel</a></div>
-    <link rel="stylesheet" href="/blocks/life-event-carousel/life-event-carousel.css">
-    <div class="life-event-carousel block" data-block-name="life-event-carousel">
+  <!-- article-card: default variant (ArticleTeaser — image + title + summary + CTA) -->
+  <section class="gallery-section" id="article-card" data-section-status="loaded">
+    <div class="gallery-label"><a href="#article-card">article-card (default)</a></div>
+    <link rel="stylesheet" href="/blocks/article-card/article-card.css">
+    <!--
+      Source: ArticleTeaser/captures/dom-snapshot.json (verbatim content)
+      EDS 2-column table layout:
+        Row 0: image cell (col 0) | image_alt cell (col 1)
+        Row 1: title cell
+        Row 2: summary cell
+        Row 3: cta href (col 0) | cta_label (col 1)
+    -->
+    <div style="max-width:320px;margin:0 auto;padding:1.5rem;">
+      <div class="article-card block" data-block-name="article-card">
+        <div>
+          <div><img src="https://www.bpfschilders.nl/media/in4l4cx2/hans-van-oostrum-4.jpg?rmode=max&amp;width=258&amp;height=388" alt="" width="258" height="388"></div>
+          <div></div>
+        </div>
+        <div>
+          <div>Vakwerk: &#x201C;Doe alsof het je eigen huis is&#x201D;</div>
+          <div></div>
+        </div>
+        <div>
+          <div><p>Van de Nijmeegse Vierdaagse tot conditietraining en bootcamp. Hans van Oostrum (66) doet het en staat nog altijd fit op de steiger. Op deze manier hoopt hij nog een aantal jaar door te kunnen als zelfstandig schilder.</p><p>Benieuwd naar het verhaal van Hans?</p></div>
+          <div></div>
+        </div>
+        <div>
+          <div>/werknemer/actueel/pensioenblad/vakwerk/vakwerk-interview-hans-van-oostrum/</div>
+          <div>Lees het interview</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- article-card: horizontal variant (NewsletterMagazineTeaser — no image) -->
+  <section class="gallery-section" id="article-card-horizontal" data-section-status="loaded">
+    <div class="gallery-label"><a href="#article-card-horizontal">article-card (horizontal)</a></div>
+    <link rel="stylesheet" href="/blocks/article-card/article-card.css">
+    <!--
+      Source: NewsletterMagazineTeaser/captures/dom-snapshot.json
+      No image row present — title is first row.
+    -->
+    <div style="max-width:760px;margin:0 auto;padding:1.5rem;">
+      <div class="article-card horizontal block" data-block-name="article-card">
+        <div>
+          <div>Pensioenblad</div>
+          <div></div>
+        </div>
+        <div>
+          <div><p>BPF Schilders publiceert drie keer per jaar het Pensioenblad. Daarin staat allerlei nieuws over uw pensioen.</p></div>
+          <div></div>
+        </div>
+        <div>
+          <div>/werknemer/actueel/pensioenblad/</div>
+          <div>Naar het Pensioenblad</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- article-card: horizontal bordered (RelatedLinksTeaser — inline link in summary) -->
+  <section class="gallery-section" id="article-card-horizontal-bordered" data-section-status="loaded">
+    <div class="gallery-label"><a href="#article-card-horizontal-bordered">article-card (horizontal bordered)</a></div>
+    <link rel="stylesheet" href="/blocks/article-card/article-card.css">
+    <!--
+      Source: RelatedLinksTeaser/captures/dom-snapshot.json
+      Summary contains inline anchor element (no explicit CTA row).
+    -->
+    <div style="max-width:760px;margin:0 auto;padding:1.5rem;">
+      <div class="article-card horizontal bordered block" data-block-name="article-card">
+        <div>
+          <div>Meer weten over het bestuur van BPF Schilders?</div>
+          <div></div>
+        </div>
+        <div>
+          <div><p>Het bestuur van BPF Schilders bestaat uit leden van werkgevers- en werknemersorganisaties in de sector. Daarnaast zit er ook een lid in namens de ondernemers en een lid namens de gepensioneerden.</p><p><a href="/over-ons/dit-zijn-we/organisatie/bestuur-bpf-schilders/" title="Bestuur BPF Schilders">Lees meer over ons bestuur</a></p></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── footer (SiteFooterLegalLinks — global chrome fragment) ──────────── -->
+  <section class="gallery-section" id="footer" data-section-status="loaded">
+    <div class="gallery-label"><a href="#footer">footer</a></div>
+    <link rel="stylesheet" href="/blocks/footer/footer.css">
+    <!--
+      The footer block is global chrome loaded from /footer fragment at runtime.
+      decorate() fetches /footer.plain.html; the block element is intentionally
+      empty — JS populates it (copyright + link list) from the fragment, then
+      injects the OneTrust <li id="ot-sdk-btn-container"> placeholder.
+      When /footer is absent the fallback hardcoded nav (from dom-snapshot.json)
+      is rendered instead.
+
+      Content model rows (vertical AEM format):
+        Row 0 — copyright_text : "Copyright © BPF Schilders 2026"
+        Row 1 — footer_links   : <ul> with Disclaimer, Privacy, Cookiebeleid, Contact
+    -->
+    <div class="footer block" data-block-name="footer"></div>
+  </section>
+
+  <!-- ── carousel (WatDoeIkBijLinkList — 11 customer-journey slides) ──────── -->
+  <section class="gallery-section" id="carousel" data-section-status="loaded">
+    <div class="gallery-label"><a href="#carousel">carousel</a></div>
+    <link rel="stylesheet" href="/blocks/carousel/carousel.css">
+    <!--
+      Content model (4 rows, vertical AEM format):
+        Row 0 — section_heading   : plain text heading (optional)
+        Row 1 — slide_icon_class  : one BPFicons suffix per line
+        Row 2 — slide_label       : one label per line
+        Row 3 — slide_link        : one href per line
+
+      Source: WatDoeIkBijLinkList/captures/dom-snapshot.json (11 slides, verbatim)
+    -->
+    <div class="carousel block" data-block-name="carousel">
+      <!-- Row 0: section_heading -->
       <div><div>Wat doe ik bij...</div></div>
+      <!-- Row 1: slide_icon_class (one suffix per line) -->
+      <div><div>pensioen
+trouwen
+verhuizen
+scheiden
+ontslag
+veranderenvanbaan
+uitzendkracht
+voorjezelfbeginnen
+arbeidsongeschikt
+verlof
+overlijden</div></div>
+      <!-- Row 2: slide_label (one label per line) -->
       <div><div>Met pensioen gaan
 Trouwen en samenwonen
 Verhuizen
@@ -71,6 +455,7 @@ Voor uzelf beginnen
 Arbeidsongeschiktheid
 Verlof
 Overlijden</div></div>
+      <!-- Row 3: slide_link (one href per line) -->
       <div><div>/werknemer/wat-doe-ik-bij/met-pensioen-gaan/
 /werknemer/wat-doe-ik-bij/trouwen-of-samenwonen/
 /werknemer/wat-doe-ik-bij/verhuizen/
@@ -82,57 +467,6 @@ Overlijden</div></div>
 /werknemer/wat-doe-ik-bij/arbeidsongeschiktheid/
 /werknemer/wat-doe-ik-bij/verlof/
 /werknemer/wat-doe-ik-bij/overlijden/</div></div>
-      <div><div>icon-bpf-pensioen
-icon-bpf-trouwen
-icon-bpf-verhuizen
-icon-bpf-scheiden
-icon-bpf-ontslag
-icon-bpf-baan
-icon-bpf-uitzend
-icon-bpf-zelfstandig
-icon-bpf-arbeid
-icon-bpf-verlof
-icon-bpf-overlijden</div></div>
-    </div>
-  </section>
-
-  <section class="gallery-section" id="teaser-cards">
-    <div class="gallery-label"><a href="#teaser-cards">teaser-cards</a></div>
-    <link rel="stylesheet" href="/blocks/teaser-cards/teaser-cards.css">
-    <div class="teaser-cards block" data-block-name="teaser-cards">
-      <div><div>Webinar nieuwe pensioenregeling
-Met pensioen gaan?
-BPF Schilders 75 jaar</div></div>
-      <div><div>Heeft u vragen over de definitieve berekeningsbrief? Of over de nieuwe pensioenregeling? Bekijk ons webinar.
-Komt uw pensioen eraan? Lees hoe u uw pensioen aanvraagt en welke keuzes u maakt als u met pensioen gaat.
-BPF Schilders zorgt al sinds 1951 voor uw pensioen. Dat doen we nu. En dat blijven we ook in de toekomst voor u doen.</div></div>
-      <div><div>https://www.bpfschilders.nl/media/3zulmjv3/webinar-nieuwe-pensioenregeling.jpg
-https://www.bpfschilders.nl/media/jpaibxoa/man-met-brief-in-zijn-handen-blog-jd-home.jpg
-https://www.bpfschilders.nl/media/0drl35n5/bpfschilders-infographic-75-jaar-260401.png</div></div>
-      <div><div>Naar het webinar
-Lees meer
-Lees meer</div></div>
-      <div><div>/werknemer/actueel/nieuw-pensioenstelsel/webinar-nieuwe-pensioenregeling/
-/werknemer/wat-doe-ik-bij/met-pensioen-gaan/
-/werknemer/actueel/nieuws/nieuws-2026/20-04-2026-75-jaar-bpf-schilders-uw-pensioen-goed-geregeld-toen-nu-en-straks/</div></div>
-    </div>
-  </section>
-
-  <section class="gallery-section" id="site-footer">
-    <div class="gallery-label"><a href="#site-footer">site-footer</a></div>
-    <link rel="stylesheet" href="/blocks/site-footer/site-footer.css">
-    <div class="site-footer block" data-block-name="site-footer">
-      <div><div>Disclaimer
-Privacy
-Cookiebeleid
-Mijn cookievoorkeur wijzigen
-Contact</div></div>
-      <div><div>/disclaimer/
-/privacy-statement-bpf-schilders/
-/cookiebeleid/
-null
-/contact/</div></div>
-      <div><div>Copyright © BPF Schilders 2026</div></div>
     </div>
   </section>
 
@@ -147,9 +481,7 @@ null
         try {
           const { default: decorate } = await import(`/blocks/${name}/${name}.js`);
           await decorate(block);
-          if (!block.dataset.blockStatus) {
-            block.dataset.blockStatus = 'initialized';
-          }
+          block.dataset.blockStatus = 'initialized';
         } catch (err) {
           block.dataset.blockStatus = 'error';
           console.error(`[block-gallery] ${name} failed:`, err);

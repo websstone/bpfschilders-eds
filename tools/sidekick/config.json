@@ -1,0 +1,11 @@
+{
+  "project": "BPF Schilders EDS",
+  "plugins": [
+    {
+      "id": "block-gallery",
+      "title": "Block Gallery",
+      "url": "/block-gallery.html",
+      "passReferrer": false
+    }
+  ]
+}

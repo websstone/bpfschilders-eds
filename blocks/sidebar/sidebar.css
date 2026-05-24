@@ -1,0 +1,154 @@
+/* Sidebar block — BPF Schilders
+ * Sources: Aside, ContactHoursAside, ContactInfoSidebar
+ *
+ * Token mapping:
+ *   rgb(245, 245, 245)       → var(--color-bg-aside)          [new token, no global match]
+ *   rgb(68, 35, 89)          → var(--color-brand-primary)     [brand purple]
+ *   rgb(51, 51, 51)          → var(--color-text-body)         [charcoal body text]
+ *   Lato, Arial, sans-serif  → var(--typography-font-family)  [from tokens.css]
+ *
+ * token-drift note: --color-bg-aside is a new block-scoped token added to tokens.css;
+ * no global token for rgb(245,245,245) existed prior to this block.
+ */
+
+/* ─── Block-scoped custom properties ──────────────────────────────────────── */
+.sidebar {
+  /* --color-bg-aside comes from tokens.css :root; redeclared here only if overriding */
+  --color-brand-primary: rgb(68, 35, 89);
+  --color-text-body: rgb(51, 51, 51);
+  --sidebar-padding: 1.25rem;       /* 20px ÷ 16 */
+  --sidebar-width: 15.625rem;       /* 250px ÷ 16 */
+  --sidebar-font-size: 0.875rem;    /* 14px ÷ 16 */
+  --sidebar-heading-size: 1rem;     /* 16px ÷ 16 */
+  --sidebar-item-gap: 0.75rem;      /* 12px ÷ 16 */
+  --sidebar-icon-size: 2.5rem;      /* 40px circle diameter */
+  --sidebar-icon-font-size: 1.25rem; /* ~20px icon glyph */
+}
+
+/* ─── Root — mobile-first ──────────────────────────────────────────────────── */
+.sidebar {
+  display: block;
+  width: 100%;                  /* mobile: full width */
+  background-color: var(--color-bg-aside);
+  color: var(--color-text-body);
+  font-family: var(--typography-font-family, Lato, Arial, sans-serif);
+  font-size: var(--sidebar-font-size);
+  line-height: 1.5;
+  padding: var(--sidebar-padding);
+  box-sizing: border-box;
+}
+
+/* ─── Desktop: fixed 250px column ─────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .sidebar {
+    width: var(--sidebar-width);
+  }
+}
+
+/* ─── Section headings (span.contact-title → source span.contactTitle) ──────── */
+.sidebar .contact-title {
+  display: block;
+  font-size: var(--sidebar-heading-size);
+  font-weight: 700;
+  color: var(--color-text-body);
+  margin-bottom: var(--sidebar-item-gap);
+}
+
+/* ─── Contact list ─────────────────────────────────────────────────────────── */
+.sidebar ul.contact {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar ul.contact li {
+  border-bottom: 1px solid rgb(204, 204, 204); /* item separator */
+}
+
+/* ─── Contact link row — icon circle left, text right ─────────────────────── */
+.sidebar ul.contact li a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;                  /* space between circle and text */
+  padding: var(--sidebar-item-gap) 0;
+  color: var(--color-brand-primary);
+  text-decoration: none;
+  font-size: var(--sidebar-font-size);
+  font-family: var(--typography-font-family, Lato, Arial, sans-serif);
+}
+
+.sidebar ul.contact li a:hover {
+  text-decoration: underline;
+}
+
+/* Icon circle — rendered via BPFicons ::before pseudo-element */
+.sidebar ul.contact li a::before {
+  content: '';                   /* overridden per icon class below */
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--sidebar-icon-size);
+  height: var(--sidebar-icon-size);
+  border-radius: 50%;
+  background-color: var(--color-brand-primary);
+  color: var(--color-text); /* tokens.css: rgb(255, 255, 255) */
+  font-family: BPFicons, Lato, Arial, sans-serif;
+  font-size: var(--sidebar-icon-font-size);
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* BPFicons codepoints — phone, envelope, facebook
+ * RISK: Exact codepoints not captured by decomposer_api (pseudo-element content:
+ * not available in computed-styles). Values below are placeholder estimates.
+ * REMEDIATION: Inspect the actual bpficons.woff/ttf at cdn.infodesk.nl with a
+ * font editor (e.g. fonttools) or the live site CSS to confirm codepoints, then
+ * replace the three content values below.
+ * Until confirmed, the purple circle still renders — only the glyph character may differ.
+ * The icon-* classes are added by sidebar.js to the <a> element.
+ */
+.sidebar ul.contact li a.icon-phone::before {
+  content: '\e800'; /* PLACEHOLDER — confirm against bpficons.woff */
+}
+
+.sidebar ul.contact li a.icon-envelope::before {
+  content: '\e801'; /* PLACEHOLDER — confirm against bpficons.woff */
+}
+
+.sidebar ul.contact li a.icon-facebook::before {
+  content: '\e802'; /* PLACEHOLDER — confirm against bpficons.woff */
+}
+
+/* Any unrecognised icon-* still renders the circle (content '' = empty) */
+
+/* ─── Group spacer (br between groups) ────────────────────────────────────── */
+.sidebar br {
+  display: block;
+  margin: var(--sidebar-item-gap) 0;
+}
+
+/* ─── Opening-hours paragraph ─────────────────────────────────────────────── */
+.sidebar p.contacts-add {
+  margin: var(--sidebar-item-gap) 0 0;
+  font-size: var(--sidebar-font-size);
+  color: var(--color-text-body);
+  line-height: 1.5;
+}
+
+/* ─── Optional decorative image ────────────────────────────────────────────── */
+.sidebar .aside-image {
+  margin-top: var(--sidebar-item-gap);
+}
+
+.sidebar .aside-image figure {
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar .aside-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* ~3:2 aspect ratio matching source images (658×439) */
+}

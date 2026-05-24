@@ -2,11 +2,43 @@
   {
     "id": "main",
     "components": [
-      "site-header",
-      "coverage-teaser",
-      "life-event-carousel",
-      "teaser-cards",
-      "site-footer"
+      "accordion",
+      "text",
+      "tiles",
+      "sidebar",
+      "breadcrumbs",
+      "article-card",
+      "content-block",
+      "header",
+      "footer",
+      "carousel"
     ]
+  },
+  {
+    "id": "section",
+    "components": [
+      "accordion",
+      "text",
+      "tiles",
+      "sidebar",
+      "breadcrumbs",
+      "article-card",
+      "content-block",
+      "header",
+      "footer",
+      "carousel"
+    ]
+  },
+  {
+    "id": "accordion",
+    "components": ["accordion-item"]
+  },
+  {
+    "id": "tiles",
+    "components": ["tile-item"]
+  },
+  {
+    "id": "carousel",
+    "components": ["carousel-slide"]
   }
 ]

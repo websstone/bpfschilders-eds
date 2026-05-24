@@ -1,0 +1,184 @@
+/*
+ * Accordion block
+ *
+ * Visual spec: FaqAccordion / NewsUpdateList / FaqIntroBlock / InfodeskCapabilitiesList
+ * Source computed values (decomposer_api, desktop):
+ *   root border-top:  1px solid rgb(204, 204, 204)
+ *   font-family:      Lato, Arial, sans-serif       → var(--typography-font-family)
+ *   font-size:        16px                          → 1rem
+ *   color (body):     rgb(51, 51, 51)               → --accordion-color-text (no global token)
+ *   color (brand):    rgb(68, 35, 89)               → var(--color-background) aliased as --accordion-color-brand
+ *   border/divider:   rgb(204, 204, 204)            → --accordion-color-border (no global token)
+ *
+ * Token drift notes:
+ *   --color-background in tokens.css = rgb(68, 35, 89) (brand purple) — aliased here.
+ *   rgb(51, 51, 51) and rgb(204, 204, 204) are not in the global token set;
+ *   defined as block-scoped custom properties.
+ */
+
+/* ── Block root ─────────────────────────────────────────────────────────────── */
+.accordion {
+  --accordion-color-brand:  var(--color-background);  /* rgb(68, 35, 89) brand purple */
+  --accordion-color-text:   rgb(51, 51, 51);           /* body text; token-drift */
+  --accordion-color-border: rgb(204, 204, 204);        /* divider; token-drift */
+  --accordion-icon-size:    1.5rem;                    /* 24px square icon */
+
+  display: block;
+  width: 100%;
+  border-top: 1px solid var(--accordion-color-border);
+  font-family: var(--typography-font-family);
+  font-size: 1rem;
+  color: var(--accordion-color-text);
+  line-height: 1.5;
+  background-color: transparent;
+}
+
+/* ── Item wrapper ────────────────────────────────────────────────────────────── */
+.accordion .accordion-item {
+  display: block;
+}
+
+/* ── Trigger button ──────────────────────────────────────────────────────────── */
+.accordion .accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 0;
+  border: none;
+  border-bottom: 1px solid var(--accordion-color-border);
+  background: transparent;
+  color: var(--accordion-color-text);
+  font-family: var(--typography-font-family);
+  font-size: 1rem;
+  font-weight: var(--typography-font-weight-body);
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  gap: 0.75rem;
+}
+
+.accordion .accordion-trigger:focus-visible {
+  outline: 2px solid var(--accordion-color-brand);
+  outline-offset: 2px;
+}
+
+/* ── Trigger label (left-aligned; wraps to next line on narrow viewports) ──── */
+.accordion .accordion-trigger-label {
+  flex: 1 1 auto;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ── Icon — purple square with white + / − glyph ────────────────────────────── */
+/*
+ * Rendered as a flex container so the ::after content character is centred.
+ * BA spec css_transitions[1]: transition: "transform 0.2s linear"
+ * Source screenshots: white "+" sign on rgb(68,35,89) square, ~24px.
+ */
+.accordion .accordion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--accordion-icon-size);
+  width: var(--accordion-icon-size);
+  height: var(--accordion-icon-size);
+  background-color: var(--accordion-color-brand);
+  border-radius: 2px;
+  transition: transform 0.2s linear;
+}
+
+/* "+" glyph (collapsed state) */
+.accordion .accordion-icon::after {
+  content: '+';
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-text); /* #fff → token: rgb(255,255,255) */
+}
+
+/* "−" glyph (expanded state) — Unicode minus sign */
+.accordion .accordion-trigger[aria-expanded="true"] .accordion-icon::after {
+  content: '\2212';
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────────── */
+/*
+ * BA spec css_transitions[0]: transition: "height 0.3s ease, opacity 0.25s ease"
+ * Technique: max-height animation (avoids JS height measurement).
+ * accordion.js uses the [hidden] attribute to track state.
+ * The [hidden] override (display:block) enables the CSS transition to work;
+ * visibility:hidden keeps the collapsed panel out of the accessibility tree.
+ */
+.accordion .accordion-panel {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  /* display:block always so transition fires correctly */
+  display: block;
+}
+
+/* When JS removes the [hidden] attribute the panel expands */
+.accordion .accordion-panel:not([hidden]) {
+  max-height: 3000px;  /* generous ceiling; actual content height drives the box */
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Panel content ───────────────────────────────────────────────────────────── */
+.accordion .accordion-panel > div {
+  padding: 0.75rem 0 1rem;
+}
+
+/* Paragraphs */
+.accordion .accordion-panel p {
+  margin: 0 0 0.5rem;
+  color: var(--accordion-color-text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.accordion .accordion-panel p:last-child {
+  margin-bottom: 0;
+}
+
+/* EC-accordion-005: empty <p> elements from CMS must not produce blank space */
+.accordion .accordion-panel p:empty {
+  display: none;
+}
+
+/* Inline links — brand purple (EC-accordion-003) */
+.accordion .accordion-panel a:any-link {
+  color: var(--accordion-color-brand);
+  text-decoration: underline;
+}
+
+.accordion .accordion-panel a:hover,
+.accordion .accordion-panel a:focus-visible {
+  text-decoration: none;
+}
+
+/* Lists — EC-accordion-002: InfodeskCapabilitiesList <ul> with <li> items */
+.accordion .accordion-panel ul,
+.accordion .accordion-panel ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.accordion .accordion-panel li {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+  color: var(--accordion-color-text);
+}
+
+/*
+ * ── Responsive ───────────────────────────────────────────────────────────────
+ * BA spec responsive_contracts: no layout change at any breakpoint.
+ * Block is inherently single-column and full-width. Trigger text wraps naturally.
+ * Mobile-first defaults apply at all viewport widths without overrides.
+ */

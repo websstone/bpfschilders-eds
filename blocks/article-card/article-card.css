@@ -1,0 +1,242 @@
+/*
+ * article-card block
+ *
+ * Visual sources:
+ *   ArticleTeaser (default, flex-column, image top)
+ *   NewsletterMagazineTeaser (horizontal, bordered)
+ *   ChildrenPensionArticle, RelatedLinksTeaser (horizontal)
+ *
+ * Design tokens (from global/design-tokens.yaml + computed-styles):
+ *   --color-brand-purple : rgb(68, 35, 89)   brand primary
+ *   --color-text-default : rgb(51, 51, 51)   body text
+ *   --color-border-light : rgb(220, 220, 220) horizontal-bordered border
+ *   --color-white        : rgb(255, 255, 255)
+ *   --font-family-base   : Lato, Arial, sans-serif
+ *   --font-size-base     : 1rem (16px)
+ *   --font-size-heading  : 1.25rem (20px)
+ *
+ * Responsive contract (ba-specs/article-card/behavioral-spec.yaml):
+ *   breakpoint 768px: .article-card.horizontal → flex-direction: column
+ *   All variants single-column at ≤ 480px.
+ *
+ * Mobile-first: base styles are mobile (single column); desktop overrides use
+ * min-width media queries.
+ */
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Block-scoped custom properties
+   ────────────────────────────────────────────────────────────────────────────── */
+.article-card {
+  --ac-color-brand: rgb(68, 35, 89);
+  --ac-color-text: rgb(51, 51, 51);
+  --ac-color-border: rgb(220, 220, 220);
+  --ac-color-white: rgb(255, 255, 255);
+  --ac-font-family: Lato, Arial, sans-serif;
+  --ac-font-size-body: 1rem;         /* 16px */
+  --ac-font-size-heading: 1.25rem;   /* 20px */
+  --ac-font-weight-heading: 700;
+  --ac-line-height-body: 1.6;
+  --ac-image-ratio: 16 / 9;
+  --ac-card-padding: 1.25rem;        /* 20px */
+  --ac-cta-padding: 0.625rem 1rem;   /* 10px 16px */
+  --ac-border-radius: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Base card (all variants) — mobile first: single column stack
+   ────────────────────────────────────────────────────────────────────────────── */
+.article-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--ac-color-white);
+  color: var(--ac-color-text);
+  font-family: var(--ac-font-family);
+  font-size: var(--ac-font-size-body);
+  line-height: var(--ac-line-height-body);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Card image area
+   ────────────────────────────────────────────────────────────────────────────── */
+.article-card .card-image {
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.article-card .card-image img,
+.article-card .card-image picture {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--ac-image-ratio);
+  object-fit: cover;
+}
+
+/* Ensure <picture> itself does not add gaps */
+.article-card .card-image picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Card body (heading + summary + CTA)
+   ────────────────────────────────────────────────────────────────────────────── */
+.article-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;    /* 12px — gap between heading, summary, cta */
+  padding: 1rem;   /* mobile base (≤480px); 1.25rem restored at min-width: 481px */
+  flex: 1 1 auto;
+}
+
+/* ── Heading ── */
+.article-card .card-heading {
+  margin: 0;
+  font-family: var(--ac-font-family);
+  font-size: 1.125rem;  /* 18px mobile base; 1.25rem restored at min-width: 481px */
+  font-weight: var(--ac-font-weight-heading);
+  line-height: 1.3;
+  color: var(--ac-color-brand);
+}
+
+/* ── Summary richtext ── */
+.article-card .card-summary {
+  margin: 0;
+  color: var(--ac-color-text);
+  font-size: var(--ac-font-size-body);
+  line-height: var(--ac-line-height-body);
+}
+
+.article-card .card-summary p {
+  margin: 0 0 0.75rem;
+}
+
+.article-card .card-summary p:last-child {
+  margin-bottom: 0;
+}
+
+.article-card .card-summary a {
+  color: var(--ac-color-brand);
+  text-decoration: underline;
+}
+
+.article-card .card-summary a:hover {
+  text-decoration: none;
+}
+
+/* Lists inside summary (RelatedLinksTeaser pattern) */
+.article-card .card-summary ul,
+.article-card .card-summary ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.article-card .card-summary li {
+  margin-bottom: 0.25rem;
+}
+
+/* ── CTA button ── */
+/*
+ * Source: ArticleTeaser dom-snapshot.json — <span class="button">Lees het interview</span>
+ * inside an <a>. The screenshot shows a solid purple button with white text and
+ * a right-pointing arrow (›) pseudo-element, consistent with the BPF Schilders
+ * design system.
+ */
+.article-card a.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;   /* 6px */
+  padding: var(--ac-cta-padding);
+  background-color: var(--ac-color-brand);
+  color: var(--ac-color-white);
+  font-family: var(--ac-font-family);
+  font-size: var(--ac-font-size-body);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;  /* do not stretch full width */
+}
+
+/* Right arrow chevron — decorative, matches source BPF button pattern */
+.article-card a.button::after {
+  content: '›';
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+/* BA spec: CTA hover → text-decoration underline (snap, no animation) */
+.article-card a.button:hover {
+  text-decoration: underline;
+  background-color: var(--ac-color-brand);
+  color: var(--ac-color-white);
+}
+
+/* Focus ring for accessibility */
+.article-card a.button:focus-visible {
+  outline: 2px solid var(--ac-color-brand);
+  outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Horizontal variant (desktop: image left ~40%, text right)
+   Mobile: stays single-column (stacked)
+   ────────────────────────────────────────────────────────────────────────────── */
+
+/* Desktop breakpoint: engage flex-row for horizontal variants */
+@media (min-width: 769px) {
+  .article-card.horizontal {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .article-card.horizontal .card-image {
+    width: 40%;
+    flex: 0 0 40%;
+  }
+
+  .article-card.horizontal .card-image img,
+  .article-card.horizontal .card-image picture {
+    aspect-ratio: auto;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .article-card.horizontal .card-image picture img {
+    height: 100%;
+  }
+
+  .article-card.horizontal .card-body {
+    flex: 1 1 60%;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Horizontal-bordered variant
+   Source: NewsletterMagazineTeaser — border: 1px solid rgb(220, 220, 220)
+   ────────────────────────────────────────────────────────────────────────────── */
+.article-card.horizontal.bordered {
+  border: 1px solid var(--ac-color-border);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   Responsive contracts (behavioral-spec.yaml)
+   breakpoint 768px: horizontal → flex-column (already the mobile default above)
+   The @media (min-width: 769px) block above promotes to flex-row at desktop.
+   No max-width rule needed here — mobile defaults are set without a media query.
+   ────────────────────────────────────────────────────────────────────────────── */
+
+/* ≥ 481px: restore standard card body padding and heading size */
+@media (min-width: 481px) {
+  .article-card .card-body {
+    padding: var(--ac-card-padding);  /* 1.25rem (20px) */
+  }
+
+  .article-card .card-heading {
+    font-size: var(--ac-font-size-heading);  /* 1.25rem (20px) */
+  }
+}

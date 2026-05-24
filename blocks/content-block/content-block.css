@@ -1,0 +1,180 @@
+/*
+ * Content Block
+ *
+ * Sources: BenefitsArticleTeaser (primary, 12 nodes) + RelatedArticlesTeaser (supplemental)
+ * Computed values: computed-styles.desktop.json (decomposer_api)
+ *
+ * Design tokens used:
+ *   --cb-color-text:    rgb(51, 51, 51)   — body / heading text color (both sources)
+ *   --cb-color-link:    rgb(68, 35, 89)   — brand purple; CTA links, h2 headings
+ *   --cb-font-family:   Lato, Arial, sans-serif
+ *   --cb-font-size:     1rem              — 16px body (16px / 16 = 1rem)
+ *   --cb-heading-size:  1.375rem          — 22px h2 (22px / 16 = 1.375rem)
+ *   --cb-gap:           2.5rem            — 40px desktop gap (40px / 16 = 2.5rem)
+ *   --cb-padding-y:     2.5rem            — 40px vertical padding (40px / 16 = 2.5rem)
+ *   --cb-gap-compact:   1.875rem          — 30px gap for with-link-list variant
+ *   --cb-padding-y-compact: 1.875rem      — 30px padding-y for with-link-list variant
+ *
+ * Mobile-first: single column by default; flex-row at min-width 1024px.
+ * Breakpoint 1024px is grounded in computed-styles and BA spec
+ * (stacking_breakpoint: "1023px" → flex-column below 1024px).
+ */
+
+/* ── Block-scoped custom properties ─────────────────────────────────────── */
+.content-block {
+  --cb-color-text: rgb(51, 51, 51);
+  --cb-color-link: rgb(68, 35, 89);         /* brand primary purple */
+  --cb-font-family: Lato, Arial, sans-serif;
+  --cb-font-size: 1rem;                      /* 16px */
+  --cb-heading-size: 1.375rem;               /* 22px */
+  --cb-gap: 2.5rem;                          /* 40px */
+  --cb-padding-y: 2.5rem;                    /* 40px */
+  --cb-gap-compact: 1.875rem;                /* 30px */
+  --cb-padding-y-compact: 1.875rem;          /* 30px */
+
+  /* Mobile-first: single-column block */
+  box-sizing: border-box;
+  padding: var(--cb-padding-y) 0;
+  font-family: var(--cb-font-family);
+  font-size: var(--cb-font-size);
+  color: var(--cb-color-text);
+  background-color: transparent;
+}
+
+/* ── with-link-list variant: compact spacing ─────────────────────────────── */
+.content-block.content-block--with-link-list {
+  --cb-gap: var(--cb-gap-compact);
+  --cb-padding-y: var(--cb-padding-y-compact);
+
+  padding: var(--cb-padding-y) 0;
+}
+
+/* ── Optional full-width section heading ────────────────────────────────── */
+.content-block .content-block-section-heading {
+  font-family: var(--cb-font-family);
+  font-size: var(--cb-heading-size);
+  font-weight: 700;
+  color: var(--cb-color-link);
+  margin: 0 0 1rem;
+  line-height: 1.25;
+}
+
+/* ── Two-column wrapper ─────────────────────────────────────────────────── */
+/* Mobile-first: stack columns vertically */
+.content-block .content-block-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;    /* vertical gap between stacked columns on mobile */
+}
+
+/* Desktop: flex-row, equal columns, 40px gap (or 30px for with-link-list) */
+@media (min-width: 1024px) {
+  .content-block .content-block-columns {
+    flex-direction: row;
+    gap: var(--cb-gap);
+  }
+}
+
+/* ── Individual columns ─────────────────────────────────────────────────── */
+.content-block .content-block-col {
+  box-sizing: border-box;
+  min-width: 0;  /* prevent flex overflow */
+}
+
+/* Equal 50/50 split on desktop */
+@media (min-width: 1024px) {
+  .content-block .content-block-col {
+    flex: 1 1 0;
+  }
+}
+
+/* ── Column heading wrapper ─────────────────────────────────────────────── */
+.content-block .content-block-col-heading {
+  margin: 0 0 0.75rem;
+}
+
+/* h2 inside richtext heading cell — 22px, bold, brand purple */
+.content-block .content-block-col-heading h2 {
+  font-family: var(--cb-font-family);
+  font-size: var(--cb-heading-size);
+  font-weight: 700;
+  color: var(--cb-color-link);
+  margin: 0;
+  line-height: 1.25;
+}
+
+/* ── Column body wrapper ────────────────────────────────────────────────── */
+.content-block .content-block-col-body {
+  line-height: 1.6;
+}
+
+/* Paragraphs inside body */
+.content-block .content-block-col-body p {
+  margin: 0 0 0.8em;
+  color: var(--cb-color-text);
+}
+
+/* Inline links inside body text */
+.content-block .content-block-col-body a {
+  color: var(--cb-color-link);
+  text-decoration: underline;
+}
+
+.content-block .content-block-col-body a:hover,
+.content-block .content-block-col-body a:focus-visible {
+  color: var(--cb-color-link);
+  text-decoration: none;
+}
+
+/* ── with-link-list: styled unordered list in right column ──────────────── */
+.content-block.content-block--with-link-list .content-block-col--right .content-block-col-body ul {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.content-block.content-block--with-link-list .content-block-col--right .content-block-col-body li {
+  margin: 0;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgb(204, 204, 204);
+}
+
+.content-block.content-block--with-link-list .content-block-col--right .content-block-col-body li:first-child {
+  border-top: 1px solid rgb(204, 204, 204);
+}
+
+.content-block.content-block--with-link-list .content-block-col--right .content-block-col-body li a {
+  color: var(--cb-color-link);
+  text-decoration: underline;
+  display: block;
+  padding: 0.25rem 0;
+}
+
+.content-block.content-block--with-link-list .content-block-col--right .content-block-col-body li a:hover,
+.content-block.content-block--with-link-list .content-block-col--right .content-block-col-body li a:focus-visible {
+  text-decoration: none;
+}
+
+/* ── Standalone CTA link ────────────────────────────────────────────────── */
+/* Matches source: plain <a> below body text, purple, underlined */
+.content-block .content-block-cta {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--cb-color-link);
+  font-size: var(--cb-font-size);
+  text-decoration: underline;
+  font-family: var(--cb-font-family);
+}
+
+.content-block .content-block-cta:hover,
+.content-block .content-block-cta:focus-visible {
+  text-decoration: none;
+  color: var(--cb-color-link);
+}
+
+/* Edge case: CTA text without href (EC-content-block-001) */
+.content-block .content-block-cta--no-href {
+  cursor: default;
+  text-decoration: underline;
+  opacity: 0.7;
+}

@@ -1,0 +1,273 @@
+/*
+ * carousel.css — BPF Schilders "Wat doe ik bij..." carousel block.
+ *
+ * Design-token sources:
+ *   global/design-tokens.yaml + styles/tokens.css
+ * BPFicons @font-face is declared in styles/fonts.css — do NOT re-declare here.
+ *
+ * Responsiveness contract (ba-specs/Carousel/behavioral-spec.yaml):
+ *   Desktop (≥1024px): track padding 0 3.875rem (62px); 5–6 slides visible.
+ *   Mobile  (<768px):  track padding 0 2.75rem  (44px); 2–3 slides visible.
+ *
+ * All px values from computed-styles.desktop.json are converted to rem (÷ 16).
+ * Structural chrome (border-radius: 50%, 1px borders) stays in px.
+ */
+
+/* ── Block-scoped custom properties (block-local tokens) ─────────────────── */
+.carousel {
+  --carousel-bg:             rgb(68, 35, 89);      /* var(--color-background) */
+  --carousel-color:          rgb(255, 255, 255);   /* var(--color-text) */
+  --carousel-font:           Lato, Arial, sans-serif; /* var(--typography-font-family) */
+  --carousel-font-size:      1rem;                 /* 16px ÷ 16 */
+  --carousel-heading-size:   1.5rem;               /* 24px ÷ 16 */
+  --carousel-heading-weight: 700;
+  --carousel-padding-y:      2.5rem;               /* 40px ÷ 16 */
+  --carousel-icon-bg:        rgba(255, 255, 255, 0.15); /* design-tokens: slide-icon-background */
+  --carousel-link-hover:     rgba(255, 255, 255, 0.8);  /* design-tokens: link-hover */
+  --carousel-dot-inactive:   rgba(255, 255, 255, 0.4);
+  --carousel-dot-active:     rgb(255, 255, 255);
+  --carousel-arrow-bg:       rgb(255, 255, 255);
+  --carousel-arrow-color:    rgb(68, 35, 89);
+  --carousel-arrow-size:     2.5rem;               /* 40px ÷ 16 */
+  --carousel-track-inset:    3.875rem;             /* 62px desktop */
+  --carousel-icon-size:      3.75rem;              /* ~60px */
+  --carousel-icon-font-size: 1.75rem;              /* ~28px */
+}
+
+/* ── Root block element ──────────────────────────────────────────────────── */
+.carousel {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--carousel-bg);
+  color: var(--carousel-color);
+  font-family: var(--carousel-font);
+  font-size: var(--carousel-font-size);
+  padding: var(--carousel-padding-y) 0;
+  overflow: hidden; /* prevent horizontal scroll on the section itself */
+}
+
+/* ── Section heading ─────────────────────────────────────────────────────── */
+.carousel .carousel-heading {
+  font-size: var(--carousel-heading-size);
+  font-weight: var(--carousel-heading-weight);
+  color: var(--carousel-color);
+  font-family: var(--carousel-font);
+  text-align: center;
+  margin: 0 0 1.5rem; /* 24px bottom gap before slider */
+  line-height: 1.25;
+}
+
+/* ── Carousel wrapper (overflow:hidden + arrow inset) ────────────────────── */
+.carousel .carrousel-wrapper {
+  position: relative;
+  overflow: hidden;
+  padding: 0 var(--carousel-track-inset);
+  box-sizing: border-box;
+}
+
+/* ── Slider track ────────────────────────────────────────────────────────── */
+.carousel .slider-wrapper {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* width is set dynamically by JS via flex item widths */
+  transition: transform 500ms ease; /* ba-spec: css_transitions[0] */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* ── Individual slide <li> ───────────────────────────────────────────────── */
+.carousel .slider-wrapper li {
+  /* width/flex are set dynamically by JS (no hardcoded pixel constant) */
+  flex-shrink: 0;
+  padding: 0 0.625rem; /* 10px each side = 20px total slide gap */
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* ── Slide anchor ────────────────────────────────────────────────────────── */
+.carousel .slider-wrapper li a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem; /* 8px between icon and label */
+  color: var(--carousel-color);
+  text-decoration: none;
+  font-size: var(--carousel-font-size);
+  font-family: var(--carousel-font);
+  transition: color 0.2s ease; /* ba-spec: css_transitions[1] */
+}
+
+.carousel .slider-wrapper li a:hover,
+.carousel .slider-wrapper li a:focus-visible {
+  color: var(--carousel-link-hover);
+}
+
+/* ── Slide label text ────────────────────────────────────────────────────── */
+.carousel .carousel-slide-label {
+  font-size: var(--carousel-font-size);
+  font-weight: 400;
+  color: inherit;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+/* ── Slide icon (BPFicons glyph on circular bg) ──────────────────────────── */
+.carousel .costumer-journey-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--carousel-icon-size);
+  height: var(--carousel-icon-size);
+  border-radius: 50%;
+  background-color: var(--carousel-icon-bg); /* rgba(255,255,255,0.15) */
+  font-family: BPFicons, serif; /* token-drift: api returned Lato; actual: BPFicons */
+  font-size: var(--carousel-icon-font-size);
+  color: var(--carousel-color);
+  flex-shrink: 0;
+  font-style: normal;
+}
+
+/* ── BPFicons glyph via ::before pseudo-element ──────────────────────────── */
+/*
+ * The source renders <i class="costumer-journey-icon icon-bpf icon-bpf-pensioen">.
+ * The BPFicons font maps each icon class to a Unicode codepoint via its own CSS.
+ * When those stylesheet rules are present the ::before is populated automatically.
+ * If the icon font CSS is not loaded, the circle renders blank — see EC-carousel-002.
+ * We set font-family here as a safety override; BPFicons @font-face is in fonts.css.
+ */
+.carousel .icon-bpf::before {
+  font-family: BPFicons, serif;
+  font-style: normal;
+  font-weight: 400;
+}
+
+/* ── Prev / Next arrow buttons ───────────────────────────────────────────── */
+/*
+ * Buttons are appended inside .carrousel-wrapper (position:relative per above),
+ * so top:50% + translateY(-50%) centres them on the slider track correctly.
+ * The wrapper's own padding (the track inset) keeps slides clear of arrow circles.
+ */
+.carousel .carrousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--carousel-arrow-size);
+  height: var(--carousel-arrow-size);
+  border-radius: 50%;
+  border: none;
+  background-color: var(--carousel-arrow-bg);
+  color: var(--carousel-arrow-color);
+  cursor: pointer;
+  z-index: 2;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.carousel .carrousel-button-previous {
+  left: 0.5rem;
+}
+
+.carousel .carrousel-button-next {
+  right: 0.5rem;
+}
+
+/* Arrow button chevron glyphs via ::before */
+.carousel .carrousel-button-previous::before {
+  content: '\2039'; /* ‹ single left-pointing angle quotation mark */
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.carousel .carrousel-button-next::before {
+  content: '\203A'; /* › single right-pointing angle quotation mark */
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* Focus styles for keyboard accessibility (AC-carousel-009) */
+.carousel .carrousel-button:focus-visible {
+  outline: 2px solid var(--carousel-color);
+  outline-offset: 2px;
+}
+
+/* ── Paging dots nav ─────────────────────────────────────────────────────── */
+.carousel .carrousel-paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+  margin-top: 1rem; /* 16px */
+  padding: 0;
+}
+
+/* Individual paging dot (rendered as <button> — no href="#" placeholder) */
+.carousel .carrousel-paging-button {
+  display: inline-block;
+  width: 0.625rem;  /* 10px */
+  height: 0.625rem;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background-color: var(--carousel-dot-inactive);
+  text-indent: -9999px; /* hide numeric label (EC-carousel-003) */
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.carousel .carrousel-paging-button.active {
+  background-color: var(--carousel-dot-active);
+}
+
+.carousel .carrousel-paging-button:focus-visible {
+  outline: 2px solid var(--carousel-color);
+  outline-offset: 2px;
+}
+
+/* ── Responsive: mobile-first defaults (< 769px, i.e. narrow / mobile) ─────── */
+/* ba-spec responsive_contracts[0]: track padding 0 44px at mobile */
+.carousel .carrousel-wrapper {
+  padding: 0 2.75rem; /* 44px ÷ 16 — mobile default */
+}
+
+/* Arrow buttons — tighter inset on narrow screens */
+.carousel .carrousel-button-previous {
+  left: 0.25rem;
+}
+
+.carousel .carrousel-button-next {
+  right: 0.25rem;
+}
+
+/* ── Responsive: desktop (≥ 769px) — wider arrow inset ──────────────────── */
+@media (min-width: 769px) {
+  /* ba-spec responsive_contracts[0]: track padding 0 62px at desktop */
+  .carousel .carrousel-wrapper {
+    padding: 0 var(--carousel-track-inset); /* 3.875rem = 62px */
+  }
+
+  .carousel .carrousel-button-previous {
+    left: 0.5rem;
+  }
+
+  .carousel .carrousel-button-next {
+    right: 0.5rem;
+  }
+}
+
+/* ── Responsive: large desktop (≥1200px) — slightly more breathing room ─── */
+@media (min-width: 1200px) {
+  .carousel .carousel-heading {
+    font-size: 1.625rem; /* slightly larger on very wide screens */
+  }
+}

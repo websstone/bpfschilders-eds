@@ -1,272 +1,576 @@
-/* header and nav layout */
-header .nav-wrapper {
-  background-color: var(--background-color);
+/* ==========================================================================
+   BPF Schilders — header block
+   Source: SiteHeaderNavSearch
+   Design tokens (design-tokens.yaml):
+     background:  var(--color-background)
+     text:        rgb(255, 255, 255)
+     link-hover:  rgba(255, 255, 255, 0.8)
+   Responsive contracts (ba-spec):
+     Mobile-first; desktop at min-width 1024px
+   CSS transitions (ba-spec):
+     color 0.2s ease on nav links
+   ========================================================================== */
+
+/* --- Block-scoped custom properties --- */
+.header {
+  --header-bg:           var(--color-background);   /* design-tokens color.background   */
+  --header-overlay-bg:   rgba(255, 255, 255, 0.22); /* search input focused background  */
+  --header-overlay-fg:   rgba(255, 255, 255, 0.85); /* search button hover background   */
+  --header-text:         rgb(255, 255, 255);         /* design-tokens color.text         */
+  --header-text-muted:   rgba(255, 255, 255, 0.7);
+  --header-text-hover:   rgba(255, 255, 255, 0.8);  /* design-tokens color.link-hover   */
+  --header-sep:          rgba(255, 255, 255, 0.15);
+  --header-font:         Lato, Arial, sans-serif;   /* design-tokens typography          */
+  --header-font-size:    1rem;                      /* 16px body                         */
+  --header-font-sm:      0.875rem;                  /* 14px utility/sub links            */
+  --header-search-bg:    rgba(255, 255, 255, 0.15); /* visual-spec search_box            */
+  --header-search-btn:   rgb(68, 35, 89);           /* visual-spec search_box.button_color */
+  --header-active-bdr:   2px solid rgb(255, 255, 255); /* visual-spec nav_item_states.active */
+  --header-z:            100;                       /* design-tokens layout.z-index      */
+  --header-transition:   color 0.2s ease;           /* ba-spec css_transitions[]         */
+  --header-px:           0.9375rem;                 /* 15px lateral padding              */
+  --header-px-desktop:   1.5rem;                    /* 24px lateral padding desktop      */
+  --header-max-w:        75rem;                     /* 1200px content max-width          */
+  --header-top-h:        2.5rem;                    /* 40px top-nav bar height           */
+  --header-main-h:       5.5rem;                    /* 88px main-nav bar height          */
+  --header-logo-w:       9.375rem;                  /* 150px logo width                  */
+  --header-logo-h:       3.125rem;                  /* 50px logo height                  */
+  --header-flyout-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Root header element — sticky at top
+   ========================================================================== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--header-z);
   width: 100%;
-  z-index: 2;
-  position: fixed;
+  background-color: var(--header-bg);
+  color: var(--header-text);
+  font-family: var(--header-font);
+  font-size: var(--header-font-size);
+  line-height: 1.4;
 }
 
-header nav {
-  box-sizing: border-box;
-  display: grid;
-  grid-template:
-    'hamburger brand tools' var(--nav-height)
-    'sections sections sections' 1fr / auto 1fr auto;
-  align-items: center;
-  gap: 0 24px;
-  margin: auto;
-  max-width: 1248px;
-  height: var(--nav-height);
-  padding: 0 24px;
-  font-family: var(--body-font-family);
-}
-
-header nav[aria-expanded='true'] {
-  grid-template:
-    'hamburger brand' var(--nav-height)
-    'sections sections' 1fr
-    'tools tools' var(--nav-height) / auto 1fr;
-  overflow-y: auto;
-  min-height: 100dvh;
-}
-
-@media (width >= 900px) {
-  header .nav-wrapper {
-    position: relative;
-  }
-
-  header nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 0 32px;
-    max-width: 1264px;
-    padding: 0 32px;
-  }
-
-  header nav[aria-expanded='true'] {
-    min-height: 0;
-    overflow: visible;
-  }
-}
-
-header nav p {
-  margin: 0;
-  line-height: 1;
-}
-
-header nav a:any-link {
-  color: currentcolor;
-}
-
-/* hamburger */
-header nav .nav-hamburger {
-  grid-area: hamburger;
-  height: 22px;
+/* ==========================================================================
+   Inner container — mobile: flex row (logo + toggle buttons)
+   Desktop: rebuilt into two horizontal bars via .header-navigation column
+   ========================================================================== */
+.header .container {
   display: flex;
+  flex-direction: row;
   align-items: center;
-}
-
-header nav .nav-hamburger button {
-  height: 22px;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  background-color: var(--background-color);
-  color: inherit;
-  overflow: initial;
-  text-overflow: initial;
-  white-space: initial;
-}
-
-header nav .nav-hamburger-icon,
-header nav .nav-hamburger-icon::before,
-header nav .nav-hamburger-icon::after {
+  flex-wrap: wrap;
+  max-width: var(--header-max-w);
+  margin: 0 auto;
+  padding: 0 var(--header-px);
   box-sizing: border-box;
-  display: block;
+  width: 100%;
+  min-height: 3.5rem;       /* ~56px mobile header height */
   position: relative;
-  width: 20px;
 }
 
-header nav .nav-hamburger-icon::before,
-header nav .nav-hamburger-icon::after {
-  content: '';
-  position: absolute;
-  background: currentcolor;
-}
-
-header nav[aria-expanded='false'] .nav-hamburger-icon,
-header nav[aria-expanded='false'] .nav-hamburger-icon::before,
-header nav[aria-expanded='false'] .nav-hamburger-icon::after {
-  height: 2px;
-  border-radius: 2px;
-  background: currentcolor;
-}
-
-header nav[aria-expanded='false'] .nav-hamburger-icon::before {
-  top: -6px;
-}
-
-header nav[aria-expanded='false'] .nav-hamburger-icon::after {
-  top: 6px;
-}
-
-header nav[aria-expanded='true'] .nav-hamburger-icon {
-  height: 22px;
-}
-
-header nav[aria-expanded='true'] .nav-hamburger-icon::before,
-header nav[aria-expanded='true'] .nav-hamburger-icon::after {
-  top: 3px;
-  left: 1px;
-  transform: rotate(45deg);
-  transform-origin: 2px 1px;
-  width: 24px;
-  height: 2px;
-  border-radius: 2px;
-}
-
-header nav[aria-expanded='true'] .nav-hamburger-icon::after {
-  top: unset;
-  bottom: 3px;
-  transform: rotate(-45deg);
-}
-
-@media (width >= 900px) {
-  header nav .nav-hamburger {
-    display: none;
-    visibility: hidden;
-  }
-}
-
-/* brand */
-header .nav-brand {
-  grid-area: brand;
-  flex-basis: 128px;
-  font-size: var(--heading-font-size-s);
-  font-weight: 700;
-  line-height: 1;
-}
-
-header nav .nav-brand img {
-  width: 128px;
-  height: auto;
-}
-
-/* sections */
-header nav .nav-sections {
-  grid-area: sections;
-  flex: 1 1 auto;
-  display: none;
-  visibility: hidden;
-}
-
-header nav[aria-expanded='true'] .nav-sections {
+/* ==========================================================================
+   Logo
+   ========================================================================== */
+.header .logo {
   display: block;
-  visibility: visible;
-  align-self: start;
+  flex-shrink: 0;
+  width: var(--header-logo-w);
+  height: var(--header-logo-h);
+  background-image: url('/icons/logo.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: left center;
+  text-indent: -9999px;
+  overflow: hidden;
+  order: 0;
+  margin-right: auto;       /* push toggles to the right on mobile */
 }
 
-header nav .nav-sections ul {
+/* ==========================================================================
+   Nav wrapper (#header-navigation)
+   Mobile: collapsed (hidden), full-width below logo bar
+   Desktop: always visible, column of two nav bars, takes remaining width
+   ========================================================================== */
+.header .header-navigation {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  order: 10;               /* renders below logo row on mobile */
+  flex-basis: 100%;
+}
+
+.header .header-navigation.is-visible {
+  display: flex;
+}
+
+/* ==========================================================================
+   Shared nav resets
+   ========================================================================== */
+.header nav ul {
   list-style: none;
-  padding-left: 0;
-  font-size: var(--body-font-size-s);
+  margin: 0;
+  padding: 0;
 }
 
-header nav .nav-sections ul > li {
-  font-weight: 500;
+.header nav a {
+  color: var(--header-text);
+  text-decoration: none;
+  transition: var(--header-transition);  /* ba-spec: color 0.2s ease */
 }
 
-header nav .nav-sections ul > li > ul {
-  margin-top: 0;
+.header nav a:hover {
+  color: var(--header-text-hover);
 }
 
-header nav .nav-sections ul > li > ul > li {
+/* Visually-hidden screen-reader labels on <span> inside <nav> */
+.header nav > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   TOP NAVIGATION — audience switcher (slim utility bar)
+   ========================================================================== */
+.header .top-navigation {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--header-sep);
+}
+
+.header .top-navigation ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.header .top-navigation li {
+  border-bottom: 1px solid var(--header-sep);
+}
+
+.header .top-navigation li:last-child {
+  border-bottom: none;
+}
+
+.header .top-navigation li a {
+  display: block;
+  padding: 0.625rem var(--header-px);
+  font-size: var(--header-font-sm);
   font-weight: 400;
 }
 
-@media (width >= 900px) {
-  header nav .nav-sections {
-    display: block;
-    visibility: visible;
+.header .top-navigation li a:hover {
+  color: var(--header-text-hover);
+}
+
+/* Active state — visual-spec nav_item_states.active */
+.header .top-navigation li.active > a,
+.header .top-navigation a[aria-current="page"] {
+  font-weight: 700;
+  border-bottom: var(--header-active-bdr);
+}
+
+/* Login state web component */
+.header .top-navigation .login-state {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem var(--header-px);
+  font-size: var(--header-font-sm);
+  color: var(--header-text);
+}
+
+/* ==========================================================================
+   MAIN NAVIGATION — primary nav + flyouts
+   ========================================================================== */
+.header .main-navigation {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--header-bg);
+}
+
+.header .main-navigation > ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.header .main-navigation > ul > li {
+  position: relative;
+  border-bottom: 1px solid var(--header-sep);
+}
+
+.header .main-navigation > ul > li > a {
+  display: block;
+  padding: 0.875rem var(--header-px);
+  font-size: var(--header-font-size);
+  font-weight: 400;
+}
+
+.header .main-navigation > ul > li > a:hover {
+  color: var(--header-text-hover);
+}
+
+/* ==========================================================================
+   FLYOUT sub-menus — li.has-children
+   ========================================================================== */
+
+/* Toggle button (injected by JS) */
+.header .flyout-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 3rem;
+  height: 3.5rem;
+  background: none;
+  border: none;
+  color: var(--header-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.header .flyout-toggle::after {
+  content: '\203A'; /* › angle — rotated as chevron */
+  display: inline-block;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+
+.header li.has-children.is-open > .flyout-toggle::after {
+  transform: rotate(270deg);
+}
+
+/* Sub-menu container */
+.header .main-navigation li.has-children > div {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.header .main-navigation li.has-children.is-open > div {
+  display: block;
+}
+
+.header .main-navigation li.has-children > div ul {
+  padding: 0;
+}
+
+.header .main-navigation li.has-children > div li {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header .main-navigation li.has-children > div li a {
+  display: block;
+  padding: 0.625rem var(--header-px) 0.625rem 2rem;
+  font-size: var(--header-font-sm);
+  transition: var(--header-transition);
+}
+
+.header .main-navigation li.has-children > div li a:hover {
+  color: var(--header-text-hover);
+}
+
+/* ==========================================================================
+   SEARCH BOX
+   Mobile: hidden by default, revealed by #searchToggleButton
+   ========================================================================== */
+.header .searchbox {
+  display: none;
+  align-items: center;
+  width: 100%;
+  order: 11;                /* below nav on mobile */
+  flex-basis: 100%;
+  padding: 0.625rem var(--header-px);
+  box-sizing: border-box;
+  background-color: var(--header-bg);
+  border-top: 1px solid var(--header-sep);
+}
+
+.header .searchbox.is-visible {
+  display: flex;
+}
+
+.header .searchbox input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  height: 2.25rem;
+  padding: 0 0.625rem;
+  border: none;
+  border-radius: 2px 0 0 2px;
+  background-color: var(--header-search-bg);
+  color: var(--header-text);
+  font-family: var(--header-font);
+  font-size: var(--header-font-sm);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.header .searchbox input[type="text"]::placeholder {
+  color: var(--header-text-muted);
+}
+
+.header .searchbox input[type="text"]:focus {
+  background-color: var(--header-overlay-bg);
+}
+
+.header .searchbox .search-btn {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 0 2px 2px 0;
+  background-color: rgb(255, 255, 255);  /* visual-spec search_box.button_background */
+  color: var(--header-search-btn);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: BPFicons, var(--header-font);
+  font-size: 1rem;
+  padding: 0;
+}
+
+/* BPFicons search glyph — fallback to magnifying-glass character */
+.header .searchbox .search-btn::before {
+  content: '\e800';        /* BPFicons search — update codepoint to confirmed value */
+  font-family: BPFicons, var(--header-font);
+  line-height: 1;
+}
+
+.header .searchbox .search-btn:hover {
+  background-color: var(--header-overlay-fg);
+}
+
+/* ==========================================================================
+   MOBILE TOGGLE BUTTONS (injected by JS at runtime — not authored)
+   Mobile: visible; Desktop: hidden
+   ========================================================================== */
+.header .pagenav-toggle-button,
+.header .search-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: none;
+  border: none;
+  color: var(--header-text);
+  cursor: pointer;
+  font-family: BPFicons, var(--header-font);
+  font-size: 1.375rem;
+  padding: 0;
+  flex-shrink: 0;
+  order: 5;
+}
+
+.header .pagenav-toggle-button:hover,
+.header .search-toggle-button:hover {
+  color: var(--header-text-hover);
+}
+
+/* BPFicons hamburger / close */
+.header .pagenav-toggle-button::before {
+  content: '\2630';      /* ☰ trigramme for heaven — universal hamburger fallback */
+  font-family: BPFicons, inherit;
+  line-height: 1;
+}
+
+.header .pagenav-toggle-button.is-active::before {
+  content: '\2715';      /* ✕ multiplication sign — close indicator */
+}
+
+/* BPFicons search icon on mobile toggle */
+.header .search-toggle-button::before {
+  content: '\1F50D';     /* 🔍 magnifying glass — universal fallback */
+  font-family: BPFicons, inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   DESKTOP LAYOUT — min-width: 1024px
+   Responsive contract (ba-spec responsive_contracts[]):
+   - nav.main-navigation: display inline-flex (row)
+   - #pageNavToggleButton / #searchToggleButton: hidden
+   - nav collapses → hamburger transition at max-width 1023px
+   Source structure at desktop:
+     .container (flex row)
+       .logo
+       #header-navigation (flex col, flex:1)
+         nav.top-navigation   — slim bar (logo-width offset + full-width links + login)
+         nav.main-navigation  — primary nav links (inline row) + search box right
+       [mobile buttons — hidden]
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .header .container {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    padding: 0 var(--header-px-desktop);
+    min-height: auto;
+  }
+
+  /* Logo — left column, spans both nav rows via align-self: center */
+  .header .logo {
+    flex-shrink: 0;
+    align-self: center;
+    margin-right: 1.5rem;
+    order: 0;
+  }
+
+  /* Nav wrapper — takes remaining width, column of two bars */
+  .header .header-navigation {
+    display: flex;          /* always visible at desktop */
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    order: 1;
+  }
+
+  /* --- Top navigation bar (desktop) --- */
+  .header .top-navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: var(--header-top-h);
+    border-bottom: 1px solid var(--header-sep);
+  }
+
+  .header .top-navigation ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+
+  .header .top-navigation li {
+    border-bottom: none;
+  }
+
+  .header .top-navigation li a {
+    padding: 0.375rem 0.875rem;
     white-space: nowrap;
   }
 
-  header nav[aria-expanded='true'] .nav-sections {
-    align-self: unset;
+  .header .top-navigation .login-state {
+    padding: 0 0.875rem;
+    margin-left: auto;
   }
 
-  header nav .nav-sections .nav-drop {
-    position: relative;
-    padding-right: 16px;
-    cursor: pointer;
-  }
-
-  header nav .nav-sections .nav-drop::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0.5em;
-    right: 2px;
-    transform: rotate(135deg);
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
-    border-radius: 0 1px 0 0;
-    border-width: 2px 2px 0 0;
-  }
-
-  header nav .nav-sections .nav-drop[aria-expanded='true']::after {
-    top: unset;
-    bottom: 0.5em;
-    transform: rotate(315deg);
-  }
-
-  header nav .nav-sections ul {
+  /* --- Main navigation bar (desktop) --- */
+  .header .main-navigation {
     display: flex;
-    gap: 24px;
-    margin: 0;
+    flex-direction: row;
+    align-items: center;
+    min-height: var(--header-main-h);
+    flex: 1;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li {
-    flex: 0 1 auto;
+  .header .main-navigation > ul {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100%;
+    gap: 0;
+    flex: 1;
+  }
+
+  .header .main-navigation > ul > li {
     position: relative;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li > ul {
-    display: none;
-    position: relative;
+  .header .main-navigation > ul > li > a {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    height: 100%;
+    white-space: nowrap;
+    font-weight: 400;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
+  .header .main-navigation > ul > li:hover > a {
+    color: var(--header-text-hover);
+  }
+
+  /* Flyout sub-menu: absolute drop-down below the bar */
+  .header .main-navigation li.has-children > div {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 14rem;
+    z-index: calc(var(--header-z) + 1);
+    box-shadow: var(--header-flyout-shadow);
+    background-color: var(--header-bg);
+  }
+
+  /* Desktop: hover also opens flyout (progressive enhancement) */
+  .header .main-navigation li.has-children:hover > div {
     display: block;
-    position: absolute;
-    left: -24px;
-    width: 200px;
-    top: 150%;
-    padding: 16px;
-    background-color: var(--light-color);
-    white-space: initial;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li > ul::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 16px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--light-color);
+  .header .main-navigation li.has-children > div li a {
+    padding: 0.625rem 1rem;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li > ul > li {
-    padding: 8px 0;
+  /* Flyout toggle button — hidden on desktop */
+  .header .flyout-toggle {
+    display: none;
+  }
+
+  /* Search box — inline at the right of main-nav bar */
+  .header .searchbox {
+    display: flex;          /* always visible at desktop */
+    flex-basis: auto;
+    width: auto;
+    order: 2;               /* right of header-navigation */
+    border-top: none;
+    align-self: center;
+    padding: 0 0 0 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .header .searchbox input[type="text"] {
+    flex: none;
+    width: 11rem;
+  }
+
+  /* Mobile toggle buttons — hidden at desktop */
+  .header .pagenav-toggle-button,
+  .header .search-toggle-button {
+    display: none;
   }
 }
 
-/* tools */
-header nav .nav-tools {
-  grid-area: tools;
+/* ==========================================================================
+   LOGIN STATE web component
+   ========================================================================== */
+.header p-login-state {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--header-font-sm);
+  color: var(--header-text);
+}
+
+/* ==========================================================================
+   ACCESSIBILITY — focus-visible rings
+   ========================================================================== */
+.header a:focus-visible,
+.header button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
