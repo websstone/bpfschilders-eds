@@ -1,1 +1,76 @@
 /* add global styles that can be loaded post LCP here */
+
+/* Auto breadcrumbs */
+.auto-breadcrumbs {
+  padding: 0.75rem 0;
+  font-size: 0.8125rem;
+  color: #666;
+  font-family: Lato, Arial, sans-serif;
+}
+
+.auto-breadcrumbs ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.auto-breadcrumbs li {
+  display: flex;
+  align-items: center;
+}
+
+.auto-breadcrumbs li::after {
+  content: '\203A';
+  margin: 0 0.5rem;
+  color: #999;
+}
+
+.auto-breadcrumbs li:last-child::after {
+  display: none;
+}
+
+.auto-breadcrumbs a {
+  color: #442359;
+  text-decoration: none;
+}
+
+.auto-breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.auto-breadcrumbs li[aria-current="page"] {
+  color: #333;
+}
+
+/* Two-column layout: main content + sidebar on desktop (CSS Grid) */
+@media (min-width: 900px) {
+  main > .section:has(> .sidebar-wrapper) {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 0 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  main > .section:has(> .sidebar-wrapper) > *:not(.sidebar-wrapper) {
+    grid-column: 1;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  main > .section:has(> .sidebar-wrapper) > .sidebar-wrapper {
+    grid-column: 2;
+    grid-row: 1 / span 20;
+    position: sticky;
+    top: 7rem;
+    align-self: start;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+}

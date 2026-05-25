@@ -81,9 +81,9 @@
   text-decoration: underline;
 }
 
-/* Icon circle — rendered via BPFicons ::before pseudo-element */
+/* Icon circle */
 .sidebar ul.contact li a::before {
-  content: '';                   /* overridden per icon class below */
+  content: '';
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -92,8 +92,7 @@
   height: var(--sidebar-icon-size);
   border-radius: 50%;
   background-color: var(--color-brand-primary);
-  color: var(--color-text); /* tokens.css: rgb(255, 255, 255) */
-  font-family: BPFicons, Lato, Arial, sans-serif;
+  color: #fff;
   font-size: var(--sidebar-icon-font-size);
   font-weight: 400;
   line-height: 1;
@@ -109,15 +108,16 @@
  * The icon-* classes are added by sidebar.js to the <a> element.
  */
 .sidebar ul.contact li a.icon-phone::before {
-  content: '\e800'; /* PLACEHOLDER — confirm against bpficons.woff */
+  content: '\260E';
 }
 
 .sidebar ul.contact li a.icon-envelope::before {
-  content: '\e801'; /* PLACEHOLDER — confirm against bpficons.woff */
+  content: '\2709';
 }
 
 .sidebar ul.contact li a.icon-facebook::before {
-  content: '\e802'; /* PLACEHOLDER — confirm against bpficons.woff */
+  content: 'f';
+  font-weight: 700;
 }
 
 /* Any unrecognised icon-* still renders the circle (content '' = empty) */

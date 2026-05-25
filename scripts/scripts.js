@@ -44,6 +44,70 @@ async function loadFonts() {
 }
 
 /**
+ * Auto-inject breadcrumbs on inner pages (depth >= 2).
+ * @param {Element} main
+ */
+function buildBreadcrumbs(main) {
+  const path = window.location.pathname.replace(/\/$/, '');
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length < 2) return;
+  if (main.querySelector('.breadcrumbs')) return;
+
+  const nav = document.createElement('nav');
+  nav.setAttribute('aria-label', 'Breadcrumb');
+  nav.className = 'auto-breadcrumbs';
+  const ol = document.createElement('ol');
+
+  segments.forEach((seg, idx) => {
+    const li = document.createElement('li');
+    const label = seg.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    if (idx < segments.length - 1) {
+      const a = document.createElement('a');
+      a.href = `/${segments.slice(0, idx + 1).join('/')}/`;
+      a.textContent = label;
+      li.append(a);
+    } else {
+      li.textContent = label;
+      li.setAttribute('aria-current', 'page');
+    }
+    ol.append(li);
+  });
+
+  nav.append(ol);
+  const firstSection = main.querySelector('.section') || main.firstElementChild;
+  if (firstSection) firstSection.prepend(nav);
+}
+
+/**
+ * Auto-inject a shared contact sidebar on inner pages.
+ * Skips root-level pages (index, nav, footer) and pages that already have a sidebar.
+ * @param {Element} main
+ */
+function buildContactSidebar(main) {
+  const path = window.location.pathname.replace(/\/$/, '');
+  const slug = path.split('/').filter(Boolean).pop() || '';
+  const skipPages = ['', 'index', 'nav', 'footer', 'werknemer', 'ondernemer', 'werkgever', 'over-ons', 'translate'];
+  if (skipPages.includes(slug) && path.split('/').filter(Boolean).length <= 1) return;
+  if (main.querySelector('.sidebar')) return;
+
+  const section = main.querySelector('.section') || main.lastElementChild;
+  if (!section) return;
+
+  const sidebar = buildBlock('sidebar', [
+    ['Bent u werknemer?', '', '', '', '', ''],
+    ['', 'phone', '030-277 56 00', 'tel:0302775600', '', ''],
+    ['', 'envelope', 'Mail ons', '/contact/', '', ''],
+    ['', 'facebook', 'Volg ons', 'https://www.facebook.com/bpfschilders', '', ''],
+    ['Bent u ondernemer of werkgever?', '', '', '', '', ''],
+    ['', 'phone', '030-277 56 10', 'tel:0302775610', '', ''],
+    ['', 'envelope', 'Mail ons', '/contact/', '', ''],
+    ['', 'facebook', 'Volg ons', 'https://www.facebook.com/bpfschilders', '', ''],
+    ['', '', '', '', 'Openingstijden:\nmaandag tot en met vrijdag van 08:30 tot 17:00 uur', ''],
+  ]);
+  section.append(sidebar);
+}
+
+/**
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
@@ -68,6 +132,8 @@ function buildAutoBlocks(main) {
     }
 
     buildHeroBlock(main);
+    buildBreadcrumbs(main);
+    buildContactSidebar(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);

@@ -11,39 +11,32 @@
      color 0.2s ease on nav links
    ========================================================================== */
 
-/* --- Block-scoped custom properties --- */
 .header {
-  --header-bg:           var(--color-background);   /* design-tokens color.background   */
-  --header-overlay-bg:   rgba(255, 255, 255, 0.22); /* search input focused background  */
-  --header-overlay-fg:   rgba(255, 255, 255, 0.85); /* search button hover background   */
-  --header-text:         rgb(255, 255, 255);         /* design-tokens color.text         */
-  --header-text-muted:   rgba(255, 255, 255, 0.7);
-  --header-text-hover:   rgba(255, 255, 255, 0.8);  /* design-tokens color.link-hover   */
-  --header-sep:          rgba(255, 255, 255, 0.15);
-  --header-font:         Lato, Arial, sans-serif;   /* design-tokens typography          */
-  --header-font-size:    1rem;                      /* 16px body                         */
-  --header-font-sm:      0.875rem;                  /* 14px utility/sub links            */
-  --header-search-bg:    rgba(255, 255, 255, 0.15); /* visual-spec search_box            */
-  --header-search-btn:   rgb(68, 35, 89);           /* visual-spec search_box.button_color */
-  --header-active-bdr:   2px solid rgb(255, 255, 255); /* visual-spec nav_item_states.active */
-  --header-z:            100;                       /* design-tokens layout.z-index      */
-  --header-transition:   color 0.2s ease;           /* ba-spec css_transitions[]         */
-  --header-px:           0.9375rem;                 /* 15px lateral padding              */
-  --header-px-desktop:   1.5rem;                    /* 24px lateral padding desktop      */
-  --header-max-w:        75rem;                     /* 1200px content max-width          */
-  --header-top-h:        2.5rem;                    /* 40px top-nav bar height           */
-  --header-main-h:       5.5rem;                    /* 88px main-nav bar height          */
-  --header-logo-w:       9.375rem;                  /* 150px logo width                  */
-  --header-logo-h:       3.125rem;                  /* 50px logo height                  */
-  --header-flyout-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
+  --header-bg:           rgb(244 244 244);
+  --header-text:         rgb(33 33 33);
+  --header-text-muted:   rgb(100 100 100);
+  --header-text-hover:   rgb(68 35 89);
+  --header-active-color: rgb(68 35 89);
+  --header-sep:          rgb(218 218 218);
+  --header-font:         helvetica, arial, sans-serif;
+  --header-font-size:    1rem;
+  --header-font-sm:      0.875rem;
+  --header-search-bg:    rgb(247 247 247);
+  --header-search-border: 1px solid rgb(175 175 175);
+  --header-search-btn-bg: transparent;
+  --header-search-btn-color: rgb(68 35 89);
+  --header-z:            10;
+  --header-transition:   color 0.2s ease;
+  --header-px:           0.9375rem;
+  --header-px-desktop:   1.5rem;
+  --header-max-w:        75rem;
+  --header-top-h:        2.5rem;
+  --header-main-h:       4rem;
+  --header-logo-w:       9.375rem;
+  --header-logo-h:       3.125rem;
+  --header-flyout-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 
-/* ==========================================================================
-   Root header element — sticky at top
-   ========================================================================== */
-.header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: var(--header-z);
   width: 100%;
   background-color: var(--header-bg);
@@ -59,9 +52,8 @@
    ========================================================================== */
 .header .container {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   align-items: center;
-  flex-wrap: wrap;
   max-width: var(--header-max-w);
   margin: 0 auto;
   padding: 0 var(--header-px);
@@ -75,18 +67,21 @@
    Logo
    ========================================================================== */
 .header .logo {
-  display: block;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
-  width: var(--header-logo-w);
   height: var(--header-logo-h);
-  background-image: url('/icons/logo.png');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: left center;
-  text-indent: -9999px;
-  overflow: hidden;
+  text-decoration: none;
+  color: var(--header-text);
   order: 0;
-  margin-right: auto;       /* push toggles to the right on mobile */
+  margin-right: auto;
+}
+
+.header .logo img {
+  display: block;
+  height: var(--header-logo-h);
+  width: auto;
+  object-fit: contain;
 }
 
 /* ==========================================================================
@@ -116,13 +111,36 @@
 }
 
 .header nav a {
-  color: var(--header-text);
+  color: var(--header-text-muted);
   text-decoration: none;
-  transition: var(--header-transition);  /* ba-spec: color 0.2s ease */
+  transition: var(--header-transition);
+}
+
+.header .main-navigation a {
+  color: var(--header-text);
+}
+
+.header a:focus-visible,
+.header button:focus-visible {
+  outline: 2px solid var(--header-active-color);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .header nav a:hover {
   color: var(--header-text-hover);
+}
+
+.header .icon-home {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.25rem;
+}
+
+.header .icon-home svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentcolor;
 }
 
 /* Visually-hidden screen-reader labels on <span> inside <nav> */
@@ -133,7 +151,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -168,24 +186,22 @@
   font-weight: 400;
 }
 
-.header .top-navigation li a:hover {
+.header .top-navigation a:hover {
   color: var(--header-text-hover);
 }
 
-/* Active state — visual-spec nav_item_states.active */
 .header .top-navigation li.active > a,
 .header .top-navigation a[aria-current="page"] {
+  color: var(--header-active-color);
   font-weight: 700;
-  border-bottom: var(--header-active-bdr);
 }
 
-/* Login state web component */
 .header .top-navigation .login-state {
   display: flex;
   align-items: center;
   padding: 0.5rem var(--header-px);
   font-size: var(--header-font-sm);
-  color: var(--header-text);
+  color: var(--header-text-muted);
 }
 
 /* ==========================================================================
@@ -202,6 +218,7 @@
   flex-direction: column;
 }
 
+/* stylelint-disable no-descending-specificity -- top-navigation and main-navigation never overlap */
 .header .main-navigation > ul > li {
   position: relative;
   border-bottom: 1px solid var(--header-sep);
@@ -215,8 +232,9 @@
 }
 
 .header .main-navigation > ul > li > a:hover {
-  color: var(--header-text-hover);
+  color: var(--header-active-color);
 }
+/* stylelint-enable no-descending-specificity */
 
 /* ==========================================================================
    FLYOUT sub-menus — li.has-children
@@ -231,7 +249,7 @@
   height: 3.5rem;
   background: none;
   border: none;
-  color: var(--header-text);
+  color: var(--header-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -255,7 +273,7 @@
 /* Sub-menu container */
 .header .main-navigation li.has-children > div {
   display: none;
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: rgb(255 255 255);
 }
 
 .header .main-navigation li.has-children.is-open > div {
@@ -267,7 +285,7 @@
 }
 
 .header .main-navigation li.has-children > div li {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--header-sep);
 }
 
 .header .main-navigation li.has-children > div li a {
@@ -279,6 +297,16 @@
 
 .header .main-navigation li.has-children > div li a:hover {
   color: var(--header-text-hover);
+}
+
+/* ==========================================================================
+   SVG icons shared sizes
+   ========================================================================== */
+.header .pagenav-toggle-button svg,
+.header .search-toggle-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentcolor;
 }
 
 /* ==========================================================================
@@ -306,7 +334,8 @@
   min-width: 0;
   height: 2.25rem;
   padding: 0 0.625rem;
-  border: none;
+  border: var(--header-search-border);
+  border-right: none;
   border-radius: 2px 0 0 2px;
   background-color: var(--header-search-bg);
   color: var(--header-text);
@@ -321,35 +350,34 @@
 }
 
 .header .searchbox input[type="text"]:focus {
-  background-color: var(--header-overlay-bg);
+  background-color: rgb(255 255 255);
+  border-color: var(--header-active-color);
 }
 
 .header .searchbox .search-btn {
   flex-shrink: 0;
   width: 2.5rem;
   height: 2.25rem;
-  border: none;
+  border: var(--header-search-border);
+  border-left: none;
   border-radius: 0 2px 2px 0;
-  background-color: rgb(255, 255, 255);  /* visual-spec search_box.button_background */
-  color: var(--header-search-btn);
+  background-color: var(--header-search-btn-bg);
+  color: var(--header-search-btn-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: BPFicons, var(--header-font);
-  font-size: 1rem;
   padding: 0;
 }
 
-/* BPFicons search glyph — fallback to magnifying-glass character */
-.header .searchbox .search-btn::before {
-  content: '\e800';        /* BPFicons search — update codepoint to confirmed value */
-  font-family: BPFicons, var(--header-font);
-  line-height: 1;
+.header .searchbox .search-btn svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentcolor;
 }
 
 .header .searchbox .search-btn:hover {
-  background-color: var(--header-overlay-fg);
+  color: var(--header-text-hover);
 }
 
 /* ==========================================================================
@@ -367,8 +395,6 @@
   border: none;
   color: var(--header-text);
   cursor: pointer;
-  font-family: BPFicons, var(--header-font);
-  font-size: 1.375rem;
   padding: 0;
   flex-shrink: 0;
   order: 5;
@@ -379,23 +405,16 @@
   color: var(--header-text-hover);
 }
 
-/* BPFicons hamburger / close */
-.header .pagenav-toggle-button::before {
-  content: '\2630';      /* ☰ trigramme for heaven — universal hamburger fallback */
-  font-family: BPFicons, inherit;
-  line-height: 1;
+.header .pagenav-toggle-button .icon-close {
+  display: none;
 }
 
-.header .pagenav-toggle-button.is-active::before {
-  content: '\2715';      /* ✕ multiplication sign — close indicator */
+.header .pagenav-toggle-button.is-active .icon-hamburger {
+  display: none;
 }
 
-/* BPFicons search icon on mobile toggle */
-.header .search-toggle-button::before {
-  content: '\1F50D';     /* 🔍 magnifying glass — universal fallback */
-  font-family: BPFicons, inherit;
-  font-size: 1.125rem;
-  line-height: 1;
+.header .pagenav-toggle-button.is-active .icon-close {
+  display: block;
 }
 
 /* ==========================================================================
@@ -412,10 +431,9 @@
          nav.main-navigation  — primary nav links (inline row) + search box right
        [mobile buttons — hidden]
    ========================================================================== */
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   .header .container {
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
     align-items: stretch;
     padding: 0 var(--header-px-desktop);
     min-height: auto;
@@ -503,7 +521,7 @@
   }
 
   .header .main-navigation > ul > li:hover > a {
-    color: var(--header-text-hover);
+    color: var(--header-active-color);
   }
 
   /* Flyout sub-menu: absolute drop-down below the bar */
@@ -514,7 +532,8 @@
     min-width: 14rem;
     z-index: calc(var(--header-z) + 1);
     box-shadow: var(--header-flyout-shadow);
-    background-color: var(--header-bg);
+    background-color: rgb(255 255 255);
+    border: 1px solid var(--header-sep);
   }
 
   /* Desktop: hover also opens flyout (progressive enhancement) */
@@ -562,15 +581,5 @@
   display: inline-flex;
   align-items: center;
   font-size: var(--header-font-sm);
-  color: var(--header-text);
-}
-
-/* ==========================================================================
-   ACCESSIBILITY — focus-visible rings
-   ========================================================================== */
-.header a:focus-visible,
-.header button:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.9);
-  outline-offset: 2px;
-  border-radius: 2px;
+  color: var(--header-text-muted);
 }

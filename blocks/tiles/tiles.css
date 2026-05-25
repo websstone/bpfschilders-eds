@@ -90,6 +90,9 @@
   flex-direction: column;
   background-color: var(--tiles-color-white);
   overflow: hidden;
+  border: 1px solid #e8e8e8;
+  border-radius: var(--tiles-border-radius);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 /* Figure / image link wrapper */
@@ -239,7 +242,7 @@
 }
 
 /* Label text below icon */
-.tiles.inverted .top-panel span:not(.icon) {
+.tiles.inverted .top-panel span:not(.icon):not(.stat-value) {
   font-family: var(--tiles-font-family);
   font-size: var(--tiles-font-size-body);
   font-weight: 700;
@@ -248,8 +251,8 @@
   text-transform: uppercase;
 }
 
-/* Underline decoration below label (replicated from "_______" in source DOM — EC-tiles-004) */
-.tiles.inverted .top-panel span:not(.icon)::after {
+/* Underline decoration below label */
+.tiles.inverted .top-panel span:not(.icon):not(.stat-value)::after {
   content: '';
   display: block;
   width: 2.5rem;
@@ -259,11 +262,51 @@
   opacity: 0.6;
 }
 
+/* Stat/hero banner — single tile with large value */
+.tiles.inverted .top-panel .stat-value {
+  font-family: var(--tiles-font-family);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #d4a843;
+  line-height: 1.1;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.tiles.inverted .top-panel .stat-value::after {
+  display: none;
+}
+
+/* Login/CTA link in inverted tile */
+.tiles.inverted .top-panel .top-panel-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--tiles-color-white);
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.tiles.inverted .top-panel .top-panel-link::before {
+  content: '\e60b';
+  font-family: BPFicons, serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tiles-icon-circle-size);
+  height: var(--tiles-icon-circle-size);
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  font-size: var(--tiles-icon-font-size);
+  color: var(--tiles-color-white);
+}
+
+.tiles.inverted .top-panel .top-panel-link:hover {
+  text-decoration: underline;
+}
+
 /* ── Responsive: mobile stacking for inverted (BA spec responsive_contracts) ── */
 /* Already handled by mobile-first default (1fr); desktop adds 2-col at 900px.   */
-/* Explicit reinforcement for 600px tablet — inverted stays 1-col until 900px:   */
-@media (width >= 600px) {
-  .tiles.inverted .tiles-grid {
-    grid-template-columns: 1fr; /* inverted: stays 1-col until 900px desktop */
-  }
-}

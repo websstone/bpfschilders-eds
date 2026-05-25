@@ -19,6 +19,11 @@
 
 const NAV_FRAGMENT_PATH = '/nav';
 
+const ICON_SEARCH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
+const ICON_HOME = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>';
+const ICON_HAMBURGER = '<svg class="icon-hamburger" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>';
+const ICON_CLOSE = '<svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+
 /**
  * Fetch the plain HTML for a path.
  * @param {string} path
@@ -56,7 +61,11 @@ function cellText(el) {
  * @param {HTMLElement} topNav
  */
 function applyActiveLinkState(topNav) {
-  const currentPath = window.location.pathname;
+  let currentPath = window.location.pathname;
+  // Homepage maps to /werknemer/ (source site default audience)
+  if (currentPath === '/' || currentPath === '/index' || currentPath === '/index.html') {
+    currentPath = '/werknemer/';
+  }
   topNav.querySelectorAll('a').forEach((a) => {
     a.removeAttribute('aria-current');
     const li = a.closest('li');
@@ -155,6 +164,7 @@ function injectMobileButtons(container, headerNav, searchbox) {
   navBtn.title = 'Menu';
   navBtn.setAttribute('aria-label', 'Menu');
   navBtn.setAttribute('aria-expanded', 'false');
+  navBtn.innerHTML = ICON_HAMBURGER + ICON_CLOSE;
 
   const searchBtn = document.createElement('button');
   searchBtn.id = 'searchToggleButton';
@@ -162,6 +172,7 @@ function injectMobileButtons(container, headerNav, searchbox) {
   searchBtn.type = 'button';
   searchBtn.title = 'Zoek';
   searchBtn.setAttribute('aria-label', 'Zoeken');
+  searchBtn.innerHTML = ICON_SEARCH;
 
   container.append(navBtn, searchBtn);
 
@@ -196,6 +207,7 @@ function buildSearchBox(placeholder) {
   btn.type = 'button';
   btn.className = 'search-btn';
   btn.setAttribute('aria-label', 'Zoeken');
+  btn.innerHTML = ICON_SEARCH;
 
   div.append(input, btn);
 
@@ -365,6 +377,11 @@ export default async function decorate(block) {
   logoLink.className = 'logo';
   logoLink.title = logoAlt;
   logoLink.setAttribute('aria-label', logoAlt);
+  const logoImg = document.createElement('img');
+  logoImg.src = '/icons/logo.png';
+  logoImg.alt = logoAlt;
+  logoImg.loading = 'eager';
+  logoLink.append(logoImg);
   container.append(logoLink);
 
   // Nav wrapper (#header-navigation)
@@ -414,6 +431,15 @@ export default async function decorate(block) {
   applyActiveLinkState(topNav);
   decorateFlyouts(mainNav);
   injectMobileButtons(container, headerNav, searchbox);
+
+  // Add home icon to the "Home" nav item
+  const homeLink = mainNav.querySelector('li.home > a');
+  if (homeLink) {
+    const homeIcon = document.createElement('span');
+    homeIcon.className = 'icon-home';
+    homeIcon.innerHTML = ICON_HOME;
+    homeLink.prepend(homeIcon);
+  }
 
   // ------------------------------------------------------------------
   // 5. Ensure the header <header> element has the right height token

@@ -261,9 +261,24 @@ export default function decorate(block) {
   }
 
   // ── 4. Initial render (no animation) ────────────────────────────────────
-  // Use requestAnimationFrame so wrapper.offsetWidth is available after layout.
+  // CSS may not be parsed yet when decorate() runs; wait for the wrapper to
+  // acquire a non-zero width before sizing slides.
+  const ro = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.contentRect.width > 0) {
+        ro.disconnect();
+        applyPage(0, false);
+        return;
+      }
+    }
+  });
+  ro.observe(wrapper);
+  // Fallback: if ResizeObserver never fires (already laid out), kick once.
   requestAnimationFrame(() => {
-    applyPage(0, false);
+    if (wrapper.offsetWidth > 0) {
+      ro.disconnect();
+      applyPage(0, false);
+    }
   });
 
   // ── 5. Event listeners ───────────────────────────────────────────────────
