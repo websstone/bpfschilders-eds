@@ -13,19 +13,19 @@
 @import url('./tokens.css');
 
 :root {
-  /* colors */
+  /* colors — source: bpfschilders.nl computed-styles.desktop.json */
   --background-color: white;
-  --light-color: #f8f8f8;
-  --dark-color: #505050;
-  --text-color: #333;
-  --link-color: #442359;
-  --link-hover-color: #2d1740;
+  --light-color: rgb(248 248 248);
+  --dark-color: rgb(80 80 80);
+  --text-color: rgb(33 33 33);
+  --link-color: rgb(68 35 89);
+  --link-hover-color: rgb(45 23 64);
 
-  /* fonts */
-  --body-font-family: Lato, Arial, sans-serif;
-  --heading-font-family: Lato, Arial, sans-serif;
+  /* fonts — aligned with bpfschilders.nl source: Lato as primary face */
+  --body-font-family: lato, arial, sans-serif;
+  --heading-font-family: lato, arial, sans-serif;
 
-  /* body sizes — aligned with source design tokens (16px base) */
+  /* body sizes — 16px base per ArticleRichText computed-styles.desktop.json */
   --body-font-size-m: 16px;
   --body-font-size-s: 14px;
   --body-font-size-xs: 13px;
@@ -57,7 +57,7 @@
 
 @media (width >= 900px) {
   :root {
-    /* body sizes — desktop same as mobile (source uses 16px throughout) */
+    /* body sizes — desktop same as mobile (16px base) */
     --body-font-size-m: 16px;
     --body-font-size-s: 14px;
     --body-font-size-xs: 13px;
@@ -88,7 +88,18 @@ body.appear {
 
 header {
   height: auto;
-  background-color: rgb(244, 244, 244);
+  background-color: rgb(244 244 244);
+  font-family: helvetica, arial, sans-serif;
+  font-size: 0.857rem;
+  line-height: 1.65;
+}
+
+footer {
+  background-color: rgb(255 255 255);
+  margin-bottom: var(--spacing-footer-margin-bottom);
+  font-family: helvetica, arial, sans-serif;
+  font-size: 0.857rem;
+  line-height: 1.65;
 }
 
 header .header,
@@ -173,7 +184,8 @@ p.button-wrapper {
   margin: 12px 0;
 }
 
-a.button:any-link,
+/* Global button style — sections only; blocks define their own button rules */
+main > .section > div > p > a.button:any-link,
 button.button {
   box-sizing: border-box;
   display: inline-flex;
@@ -194,21 +206,21 @@ button.button {
   white-space: nowrap;
 }
 
-a.button[aria-disabled="true"],
+main > .section > div > p > a.button[aria-disabled="true"],
 button.button:disabled {
   cursor: not-allowed;
   pointer-events: none;
 }
 
-a.button.primary,
+main > .section > div > p > a.button.primary,
 button.button.primary {
   border-color: var(--link-color);
   background-color: var(--link-color);
   color: white;
 }
 
-a.button.primary:hover,
-a.button.primary:focus-visible,
+main > .section > div > p > a.button.primary:hover,
+main > .section > div > p > a.button.primary:focus-visible,
 button.button.primary:hover,
 button.button.primary:focus-visible {
   border-color: var(--link-hover-color);
@@ -216,9 +228,9 @@ button.button.primary:focus-visible {
   color: white;
 }
 
-a.button.primary[aria-disabled="true"],
-a.button.primary[aria-disabled="true"]:hover,
-a.button.primary[aria-disabled="true"]:focus-visible,
+main > .section > div > p > a.button.primary[aria-disabled="true"],
+main > .section > div > p > a.button.primary[aria-disabled="true"]:hover,
+main > .section > div > p > a.button.primary[aria-disabled="true"]:focus-visible,
 button.button.primary:disabled,
 button.button.primary:disabled:hover,
 button.button.primary:disabled:focus-visible {
@@ -227,15 +239,15 @@ button.button.primary:disabled:focus-visible {
   color: var(--dark-color);
 }
 
-a.button.secondary,
+main > .section > div > p > a.button.secondary,
 button.button.secondary {
   border-color: var(--text-color);
   background-color: transparent;
   color: var(--text-color);
 }
 
-a.button.secondary:hover,
-a.button.secondary:focus-visible,
+main > .section > div > p > a.button.secondary:hover,
+main > .section > div > p > a.button.secondary:focus-visible,
 button.button.secondary:hover,
 button.button.secondary:focus-visible {
   border-color: var(--dark-color);
@@ -243,9 +255,9 @@ button.button.secondary:focus-visible {
   color: var(--dark-color);
 }
 
-a.button.secondary[aria-disabled="true"],
-a.button.secondary[aria-disabled="true"]:hover,
-a.button.secondary[aria-disabled="true"]:focus-visible,
+main > .section > div > p > a.button.secondary[aria-disabled="true"],
+main > .section > div > p > a.button.secondary[aria-disabled="true"]:hover,
+main > .section > div > p > a.button.secondary[aria-disabled="true"]:focus-visible,
 button.button.secondary:disabled,
 button.button.secondary:disabled:hover,
 button.button.secondary:disabled:focus-visible {
@@ -255,24 +267,24 @@ button.button.secondary:disabled:focus-visible {
 }
 
 /* high-impact call-to-action */
-a.button.accent,
+main > .section > div > p > a.button.accent,
 button.button.accent {
   border-color: var(--link-color);
   background-color: var(--link-color);
   color: var(--background-color);
 }
 
-a.button.accent:hover,
-a.button.accent:focus-visible,
+main > .section > div > p > a.button.accent:hover,
+main > .section > div > p > a.button.accent:focus-visible,
 button.button.accent:hover,
 button.button.accent:focus-visible {
   border-color: var(--link-hover-color);
   background-color: var(--link-hover-color);
 }
 
-a.button.accent[aria-disabled="true"],
-a.button.accent[aria-disabled="true"]:hover,
-a.button.accent[aria-disabled="true"]:focus-visible,
+main > .section > div > p > a.button.accent[aria-disabled="true"],
+main > .section > div > p > a.button.accent[aria-disabled="true"]:hover,
+main > .section > div > p > a.button.accent[aria-disabled="true"]:focus-visible,
 button.button.accent:disabled,
 button.button.accent:disabled:hover,
 button.button.accent:disabled:focus-visible {

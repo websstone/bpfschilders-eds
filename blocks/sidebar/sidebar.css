@@ -14,8 +14,8 @@
 /* ─── Block-scoped custom properties ──────────────────────────────────────── */
 .sidebar {
   /* --color-bg-aside comes from tokens.css :root; redeclared here only if overriding */
-  --color-brand-primary: rgb(68, 35, 89);
-  --color-text-body: rgb(51, 51, 51);
+  --color-brand-primary: rgb(68 35 89);
+  --color-text-body: rgb(51 51 51);
   --sidebar-padding: 1.25rem;       /* 20px ÷ 16 */
   --sidebar-width: 15.625rem;       /* 250px ÷ 16 */
   --sidebar-font-size: 0.875rem;    /* 14px ÷ 16 */
@@ -23,10 +23,8 @@
   --sidebar-item-gap: 0.75rem;      /* 12px ÷ 16 */
   --sidebar-icon-size: 2.5rem;      /* 40px circle diameter */
   --sidebar-icon-font-size: 1.25rem; /* ~20px icon glyph */
-}
 
-/* ─── Root — mobile-first ──────────────────────────────────────────────────── */
-.sidebar {
+  /* Root — mobile-first */
   display: block;
   width: 100%;                  /* mobile: full width */
   background-color: var(--color-bg-aside);
@@ -39,7 +37,7 @@
 }
 
 /* ─── Desktop: fixed 250px column ─────────────────────────────────────────── */
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .sidebar {
     width: var(--sidebar-width);
   }
@@ -62,7 +60,7 @@
 }
 
 .sidebar ul.contact li {
-  border-bottom: 1px solid rgb(204, 204, 204); /* item separator */
+  border-bottom: 1px solid rgb(204 204 204); /* item separator */
 }
 
 /* ─── Contact link row — icon circle left, text right ─────────────────────── */
@@ -92,7 +90,7 @@
   height: var(--sidebar-icon-size);
   border-radius: 50%;
   background-color: var(--color-brand-primary);
-  color: #fff;
+  color: rgb(255 255 255);
   font-size: var(--sidebar-icon-font-size);
   font-weight: 400;
   line-height: 1;
@@ -150,5 +148,6 @@
   display: block;
   width: 100%;
   height: auto;
+
   /* ~3:2 aspect ratio matching source images (658×439) */
 }

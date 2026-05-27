@@ -23,9 +23,9 @@
 
 /* ─── Block-scoped custom properties ─────────────────────────────────────── */
 .breadcrumbs {
-  --bc-color-link: rgb(68, 35, 89);
-  --bc-color-current: rgb(51, 51, 51);
-  --bc-color-separator: rgb(150, 150, 150);
+  --bc-color-link: rgb(68 35 89);
+  --bc-color-current: rgb(51 51 51);
+  --bc-color-separator: rgb(150 150 150);
   --bc-font-family: lato, arial, sans-serif;
   --bc-font-size: 0.875rem;     /* 14px ÷ 16 */
   --bc-padding-y: 0.5rem;       /* 8px ÷ 16 */
@@ -41,8 +41,7 @@
 /* ─── Ordered list (the trail) ───────────────────────────────────────────── */
 .breadcrumbs .breadcrumbs-trail {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;          /* wraps naturally at narrow viewports — BA spec */
+  flex-flow: row wrap;          /* wraps naturally at narrow viewports — BA spec */
   align-items: center;
   gap: 0;                   /* spacing handled by li margin */
   list-style: none;
@@ -88,7 +87,7 @@
 }
 
 /* Ancestor without a valid href — plain span, same text styling */
-.breadcrumbs .breadcrumb-rootnode--nohref {
+.breadcrumbs .breadcrumb-rootnode-nohref {
   color: var(--bc-color-link);
   font-family: var(--bc-font-family);
   font-size: var(--bc-font-size);
@@ -106,6 +105,7 @@
 }
 
 /* ─── Empty-trail state (no visible items) ───────────────────────────────── */
+
 /* When the nav has no child ol or an empty ol, the block takes no visible space */
 .breadcrumbs .breadcrumbs-nav:not(:has(.breadcrumbs-item)) {
   display: none;

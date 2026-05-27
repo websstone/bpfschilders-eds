@@ -16,7 +16,7 @@
  *   rows[8] — right_cta_url    (plain text / link, optional)
  *
  * DOM output (after decoration):
- *   <div class="content-block block [content-block--with-link-list]">
+ *   <div class="content-block block [content-block-with-link-list]">
  *     [<h2 class="content-block-section-heading">…</h2>]
  *     <div class="content-block-columns">
  *       <div class="content-block-col content-block-col--left">
@@ -24,7 +24,7 @@
  *         …left_body HTML…
  *         [<a class="content-block-cta" href="…">…left_cta_text…</a>]
  *       </div>
- *       <div class="content-block-col content-block-col--right">
+ *       <div class="content-block-col content-block-col-right">
  *         [<h2>…right_heading…</h2>]
  *         …right_body HTML…
  *         [<a class="content-block-cta" href="…">…right_cta_text…</a>]
@@ -70,7 +70,9 @@ function cellHref(cell) {
  * @param {string} opts.ctaHref
  * @returns {HTMLElement}
  */
-function buildColumn(side, { headingHtml, bodyHtml, ctaText, ctaHref }) {
+function buildColumn(side, {
+  headingHtml, bodyHtml, ctaText, ctaHref,
+}) {
   const col = document.createElement('div');
   col.className = `content-block-col content-block-col--${side}`;
 
@@ -103,7 +105,7 @@ function buildColumn(side, { headingHtml, bodyHtml, ctaText, ctaHref }) {
     // eslint-disable-next-line no-console
     console.warn('[content-block] CTA text without URL:', ctaText);
     const cta = document.createElement('span');
-    cta.className = 'content-block-cta content-block-cta--no-href';
+    cta.className = 'content-block-cta content-block-cta-no-href';
     cta.textContent = ctaText;
     col.appendChild(cta);
   }
@@ -120,7 +122,7 @@ export default function decorate(block) {
   // Detect variant — EDS appends modifier class from block header cell
   const isWithLinkList = block.classList.contains('with-link-list');
   if (isWithLinkList) {
-    block.classList.add('content-block--with-link-list');
+    block.classList.add('content-block-with-link-list');
   }
 
   // ── Read model fields in declaration order ───────────────────────────────
@@ -145,14 +147,14 @@ export default function decorate(block) {
   }
 
   const sectionHeadingText = rowCellText(0);
-  const leftHeadingHtml    = rowCellHtml(1);
-  const leftBodyHtml       = rowCellHtml(2);
-  const leftCtaText        = rowCellText(3);
-  const leftCtaHref        = rowCellHref(4);
-  const rightHeadingHtml   = rowCellHtml(5);
-  const rightBodyHtml      = rowCellHtml(6);
-  const rightCtaText       = rowCellText(7);
-  const rightCtaHref       = rowCellHref(8);
+  const leftHeadingHtml = rowCellHtml(1);
+  const leftBodyHtml = rowCellHtml(2);
+  const leftCtaText = rowCellText(3);
+  const leftCtaHref = rowCellHref(4);
+  const rightHeadingHtml = rowCellHtml(5);
+  const rightBodyHtml = rowCellHtml(6);
+  const rightCtaText = rowCellText(7);
+  const rightCtaHref = rowCellHref(8);
 
   // ── Build new DOM structure ──────────────────────────────────────────────
   const fragment = document.createDocumentFragment();

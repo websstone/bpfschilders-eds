@@ -15,11 +15,11 @@
   --header-bg:           rgb(244 244 244);
   --header-text:         rgb(33 33 33);
   --header-text-muted:   rgb(100 100 100);
-  --header-text-hover:   rgb(68 35 89);
+  --header-text-hover:   rgb(33 33 33);
   --header-active-color: rgb(68 35 89);
   --header-sep:          rgb(218 218 218);
   --header-font:         helvetica, arial, sans-serif;
-  --header-font-size:    1rem;
+  --header-font-size:    0.857rem;
   --header-font-sm:      0.875rem;
   --header-search-bg:    rgb(247 247 247);
   --header-search-border: 1px solid rgb(175 175 175);
@@ -43,7 +43,15 @@
   color: var(--header-text);
   font-family: var(--header-font);
   font-size: var(--header-font-size);
-  line-height: 1.4;
+  line-height: 1.65;
+  border: 0;
+  border-bottom: 1px solid var(--color-white);
+}
+
+/* Force font-family inheritance — prevents body lato from leaking into header children */
+.header,
+.header * {
+  font-family: var(--header-font);
 }
 
 /* ==========================================================================
@@ -120,6 +128,14 @@
   color: var(--header-text);
 }
 
+/* Override global a:any-link purple — ensures all header links default to header text color.
+   Selectors .header nav a and .header .main-navigation a above have equal specificity
+   but are more specific by descendant, so they still apply correctly to nav links. */
+.header a:any-link {
+  color: var(--header-text);
+  border-color: var(--header-text);
+}
+
 .header a:focus-visible,
 .header button:focus-visible {
   outline: 2px solid var(--header-active-color);
@@ -129,6 +145,8 @@
 
 .header nav a:hover {
   color: var(--header-text-hover);
+  text-decoration: underline;
+  background-color: var(--header-bg);
 }
 
 .header .icon-home {
@@ -232,7 +250,7 @@
 }
 
 .header .main-navigation > ul > li > a:hover {
-  color: var(--header-active-color);
+  color: var(--header-text-hover);
 }
 /* stylelint-enable no-descending-specificity */
 
@@ -521,7 +539,7 @@
   }
 
   .header .main-navigation > ul > li:hover > a {
-    color: var(--header-active-color);
+    color: var(--header-text-hover);
   }
 
   /* Flyout sub-menu: absolute drop-down below the bar */

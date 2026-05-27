@@ -56,6 +56,21 @@ function cellText(el) {
 }
 
 /**
+ * Check whether the current page belongs to the werknemer audience section.
+ * On the source site, only /werknemer/* pages (and the homepage, which defaults
+ * to the werknemer audience) show the main-navigation sub-nav bar. All other
+ * audience sections (ondernemer, werkgever, over-ons, etc.) show only the
+ * top-navigation audience-switcher bar.
+ * @returns {boolean}
+ */
+function isWerknemerPage() {
+  const p = window.location.pathname;
+  // Homepage maps to werknemer audience on the source site
+  if (p === '/' || p === '/index' || p === '/index.html') return true;
+  // Any path starting with /werknemer/ or exactly /werknemer
+  return p === '/werknemer' || p.startsWith('/werknemer/');
+}
+/**
  * Apply aria-current="page" to the audience-switcher link that matches
  * the current page URL. Remove any existing active class / aria-current.
  * @param {HTMLElement} topNav
@@ -411,6 +426,14 @@ export default async function decorate(block) {
   mainNavLabel.textContent = 'Navigatie';
   mainNav.append(mainNavLabel);
   mainNav.insertAdjacentHTML('beforeend', mainNavHtml);
+
+  // On non-werknemer pages, the source site does not show the werknemer
+  // sub-navigation bar. Hide it to match source layout and reduce header
+  // pixel diff on ~12 non-werknemer pages.
+  if (!isWerknemerPage()) {
+    mainNav.style.display = 'none';
+    mainNav.setAttribute('aria-hidden', 'true');
+  }
 
   headerNav.append(topNav, mainNav);
   container.append(headerNav);

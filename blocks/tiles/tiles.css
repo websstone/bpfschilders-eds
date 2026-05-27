@@ -17,10 +17,12 @@
 
 /* ── Block-scoped custom properties ───────────────────────────────────────── */
 .tiles {
-  --tiles-color-brand:        rgb(68, 35, 89);      /* brand purple */
-  --tiles-color-white:        rgb(255, 255, 255);
-  --tiles-color-text:         rgb(51, 51, 51);       /* body text */
-  --tiles-font-family:        Lato, Arial, sans-serif;
+  --tiles-color-brand:        rgb(68 35 89);      /* brand purple */
+  --tiles-color-white:        rgb(255 255 255);
+  --tiles-color-text:         rgb(51 51 51);       /* body text */
+  --tiles-color-border:       rgb(232 232 232);    /* card border; #e8e8e8 from source */
+  --tiles-color-gold:         rgb(212 168 67);     /* stat-value accent; #d4a843 from source */
+  --tiles-font-family:        lato, arial, sans-serif;
   --tiles-font-size-body:     1rem;                  /* 16px */
   --tiles-font-size-heading:  1.25rem;               /* 20px */
   --tiles-gap:                1.25rem;               /* 20px grid gap (default) */
@@ -31,6 +33,7 @@
   --tiles-icon-font-size:     1.75rem;               /* 28px glyph */
   --tiles-tile-padding-y:     1.875rem;              /* 30px */
   --tiles-tile-padding-x:     1.25rem;               /* 20px */
+
   /*
    * --tiles-bg-hover: semi-transparent white overlay for the inverted tile
    * hover state. tokens.css exposes --color-link-hover (0.8 alpha) and
@@ -39,7 +42,7 @@
    * a future token addition (e.g. --color-white-alpha-10) can replace it in
    * one place.
    */
-  --tiles-bg-hover:           rgba(255, 255, 255, 0.1);
+  --tiles-bg-hover:           rgb(255 255 255 / 10%);
 
   /* Remove inherited EDS section margin for full-bleed control */
   box-sizing: border-box;
@@ -51,6 +54,7 @@
 /* ── Grid wrapper (shared) ────────────────────────────────────────────────── */
 .tiles .tiles-grid {
   display: grid;
+
   /* Mobile-first: 1 column */
   grid-template-columns: 1fr;
   gap: var(--tiles-gap);
@@ -90,9 +94,9 @@
   flex-direction: column;
   background-color: var(--tiles-color-white);
   overflow: hidden;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--tiles-color-border);
   border-radius: var(--tiles-border-radius);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
 }
 
 /* Figure / image link wrapper */
@@ -222,7 +226,7 @@
   width: var(--tiles-icon-circle-size);
   height: var(--tiles-icon-circle-size);
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.15); /* BA spec: icon circle background */
+  background-color: rgb(255 255 255 / 15%); /* BA spec: icon circle background */
   font-family: BPFicons, serif; /* icon_font_override: actual font is BPFicons */
   font-size: var(--tiles-icon-font-size);
   color: var(--tiles-color-white);
@@ -231,6 +235,7 @@
 }
 
 /* BPFicons glyph rendering — ::before pseudo-element carries the glyph */
+
 /* (computed_styles_source: decomposer_api — pseudo_elements listed as present
     in visual-spec.yaml; glyph output is via CSS class + font-family on the span) */
 .tiles.inverted .top-panel .icon::before {
@@ -242,7 +247,7 @@
 }
 
 /* Label text below icon */
-.tiles.inverted .top-panel span:not(.icon):not(.stat-value) {
+.tiles.inverted .top-panel span:not(.icon, .stat-value) {
   font-family: var(--tiles-font-family);
   font-size: var(--tiles-font-size-body);
   font-weight: 700;
@@ -252,7 +257,7 @@
 }
 
 /* Underline decoration below label */
-.tiles.inverted .top-panel span:not(.icon):not(.stat-value)::after {
+.tiles.inverted .top-panel span:not(.icon, .stat-value)::after {
   content: '';
   display: block;
   width: 2.5rem;
@@ -267,7 +272,7 @@
   font-family: var(--tiles-font-family);
   font-size: 2.5rem;
   font-weight: 700;
-  color: #d4a843;
+  color: var(--tiles-color-gold);
   line-height: 1.1;
   letter-spacing: normal;
   text-transform: none;
@@ -299,7 +304,7 @@
   width: var(--tiles-icon-circle-size);
   height: var(--tiles-icon-circle-size);
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgb(255 255 255 / 15%);
   font-size: var(--tiles-icon-font-size);
   color: var(--tiles-color-white);
 }
@@ -309,4 +314,5 @@
 }
 
 /* ── Responsive: mobile stacking for inverted (BA spec responsive_contracts) ── */
+
 /* Already handled by mobile-first default (1fr); desktop adds 2-col at 900px.   */

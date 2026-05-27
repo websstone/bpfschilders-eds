@@ -27,11 +27,11 @@
    Block-scoped custom properties
    ────────────────────────────────────────────────────────────────────────────── */
 .article-card {
-  --ac-color-brand: rgb(68, 35, 89);
-  --ac-color-text: rgb(51, 51, 51);
-  --ac-color-border: rgb(220, 220, 220);
-  --ac-color-white: rgb(255, 255, 255);
-  --ac-font-family: Lato, Arial, sans-serif;
+  --ac-color-brand: rgb(68 35 89);
+  --ac-color-text: rgb(51 51 51);
+  --ac-color-border: rgb(220 220 220);
+  --ac-color-white: rgb(255 255 255);
+  --ac-font-family: lato, arial, sans-serif;
   --ac-font-size-body: 1rem;         /* 16px */
   --ac-font-size-heading: 1.25rem;   /* 20px */
   --ac-font-weight-heading: 700;
@@ -40,12 +40,8 @@
   --ac-card-padding: 1.25rem;        /* 20px */
   --ac-cta-padding: 0.625rem 1rem;   /* 10px 16px */
   --ac-border-radius: 0;
-}
 
-/* ──────────────────────────────────────────────────────────────────────────────
-   Base card (all variants) — mobile first: single column stack
-   ────────────────────────────────────────────────────────────────────────────── */
-.article-card {
+  /* Base card (all variants) — mobile first: single column stack */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -139,6 +135,7 @@
 }
 
 /* ── CTA button ── */
+
 /*
  * Source: ArticleTeaser dom-snapshot.json — <span class="button">Lees het interview</span>
  * inside an <a>. The screenshot shows a solid purple button with white text and
@@ -188,7 +185,7 @@
    ────────────────────────────────────────────────────────────────────────────── */
 
 /* Desktop breakpoint: engage flex-row for horizontal variants */
-@media (min-width: 769px) {
+@media (width >= 769px) {
   .article-card.horizontal {
     flex-direction: row;
     align-items: stretch;
@@ -231,7 +228,7 @@
    ────────────────────────────────────────────────────────────────────────────── */
 
 /* ≥ 481px: restore standard card body padding and heading size */
-@media (min-width: 481px) {
+@media (width >= 481px) {
   .article-card .card-body {
     padding: var(--ac-card-padding);  /* 1.25rem (20px) */
   }

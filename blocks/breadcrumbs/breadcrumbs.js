@@ -111,7 +111,7 @@ function buildTrailNode(entry, isCurrent) {
 
   // No valid href — render plain span (hard constraint: no placeholder anchors)
   const span = document.createElement('span');
-  span.className = 'breadcrumb-rootnode breadcrumb-rootnode--nohref';
+  span.className = 'breadcrumb-rootnode breadcrumb-rootnode-nohref';
   span.textContent = entry.label;
   return span;
 }

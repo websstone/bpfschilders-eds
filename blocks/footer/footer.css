@@ -2,81 +2,70 @@
    BPF Schilders — footer block
    Source: SiteFooterLegalLinks (decomposer_api)
    Design tokens (design-tokens.yaml / tokens.css):
-     background:  rgb(68, 35, 89)   -> var(--color-background)
-     text:        rgb(255, 255, 255) -> var(--color-text)
-     link-hover:  rgba(255,255,255,0.8) -> var(--color-link-hover)
+     background:  rgb(255, 255, 255)  — live source white footer
+     text:        rgb(33, 33, 33)     — live source dark text
+     link-hover:  rgb(33, 33, 33)     — live source no hover color change
    Responsive contracts (ba-spec behavioral-spec.yaml):
-     Mobile-first (flex-column default); desktop row at min-width 1024px
+     Mobile-first; desktop at min-width 1024px
    CSS transitions (ba-spec css_transitions[]):
      color 0.2s ease on footer a
-   Pseudo-elements (visual-spec.yaml pseudo_elements):
-     footer::before — top gradient separator
    ========================================================================== */
 
-/* --- Block-scoped custom properties ---
-   Values from computed-styles.desktop.json + design-tokens.yaml.
-   14px font size is explicit — smaller than the 16px body baseline.
-   Token-drift: no global token covers 0.875rem footer font-size;
-   block-scoped --footer-font-size used instead. */
+/* --- Block-scoped custom properties --- */
 .footer {
-  --footer-bg:          rgb(68, 35, 89);          /* design-tokens color.background    */
-  --footer-text:        rgb(255, 255, 255);        /* design-tokens color.text          */
-  --footer-link-hover:  rgba(255, 255, 255, 0.75); /* ba-spec interaction_states hover  */
-  --footer-font:        Lato, Arial, sans-serif;   /* design-tokens typography          */
-  --footer-font-size:   0.875rem;                  /* 14px / 16 — computed-styles       */
-  --footer-padding-y:   1.25rem;                   /* 20px / 16 — computed-styles       */
-  --footer-gap:         1rem;                      /* 16px gap copyright <-> links      */
-  --footer-separator-h: 0.4375rem;                 /* ~7px — visual-spec pseudo_element */
-  --footer-transition:  color 0.2s ease;           /* ba-spec css_transitions[]         */
-}
+  --footer-bg:          rgb(255 255 255);
+  --footer-text:        rgb(33 33 33);
+  --footer-link-color:  rgb(33 33 33);
+  --footer-link-hover:  rgb(33 33 33);
+  --footer-font:        helvetica, arial, sans-serif;
+  --footer-font-size:   0.857rem;
+  --footer-padding-y:   1.25rem;
+  --footer-gap:         0.5rem;
+  --footer-transition:  color 0.2s ease;
 
-/* ==========================================================================
-   Root footer element — full-width purple bar, mobile-first
-   ========================================================================== */
-.footer {
+  /* Root footer element — full-width white bar */
   position: relative;
   width: 100%;
   background-color: var(--footer-bg);
   color: var(--footer-text);
   font-family: var(--footer-font);
   font-size: var(--footer-font-size);
+  line-height: 1.65;
   padding: var(--footer-padding-y) 0;
   box-sizing: border-box;
 }
 
-/* Top gradient separator — visual-spec.yaml pseudo_elements[0]
-   "linear-gradient from rgba(0,0,0,0.25) to transparent, height ~7px" */
-.footer::before {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--footer-separator-h);
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent);
-  pointer-events: none;
+/* Force font-family inheritance — prevents body lato from leaking */
+.footer,
+.footer * {
+  font-family: var(--footer-font);
+}
+
+/* Override global a:any-link purple color */
+.footer a:any-link {
+  color: var(--footer-text);
+  border-color: var(--footer-text);
 }
 
 /* ==========================================================================
-   Inner nav container — flex-column mobile-first
+   Inner nav container — vertically stacked, centered (matches source)
    ========================================================================== */
 .footer .footer-nav {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--footer-gap);
-  max-width: 75rem;        /* 1200px */
+  max-width: 75rem;
   margin: 0 auto;
-  padding: 0 0.9375rem;    /* 15px lateral gutter */
+  padding: 0 0.9375rem;
   box-sizing: border-box;
+  text-align: center;
 }
 
-/* Desktop: copyright + links side by side in a row
-   Breakpoint: 1024px per ba-spec responsive_contracts + visual-spec.yaml */
-@media (min-width: 1024px) {
+/* Desktop: keep vertical stacked layout, centered (source is stacked) */
+@media (width >= 1024px) {
   .footer .footer-nav {
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
   }
 }
@@ -90,10 +79,11 @@
   white-space: nowrap;
   color: var(--footer-text);
   font-size: var(--footer-font-size);
+  text-align: center;
 }
 
 /* ==========================================================================
-   Legal link list
+   Legal link list — horizontal with pipe separators (matches source)
    ========================================================================== */
 .footer .footer-links {
   list-style: none;
@@ -101,36 +91,47 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0 1.25rem; /* 20px horizontal gap between items */
+  justify-content: center;
+  gap: 0;
 }
 
 .footer .footer-links li {
   margin: 0;
   padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Pipe separator between links (matches source | separators) */
+.footer .footer-links li + li::before {
+  content: "|";
+  color: var(--footer-text);
+  padding: 0 0.625rem;
+  font-size: var(--footer-font-size);
 }
 
 .footer .footer-links a {
-  color: var(--footer-text);
+  color: var(--footer-link-color);
   text-decoration: none;
   font-size: var(--footer-font-size);
   transition: var(--footer-transition);
 }
 
-/* Hover state — ba-spec interaction_states + visual-spec nav_item_states.hover */
+/* Hover state */
 .footer .footer-links a:hover,
 .footer .footer-links a:focus-visible {
-  color: var(--footer-link-hover);
+  color: var(--footer-link-color);
   text-decoration: underline;
+  background-color: var(--footer-bg);
 }
 
 /* ==========================================================================
-   OneTrust button placeholder — hides the empty container when SDK absent
+   OneTrust button placeholder
    ========================================================================== */
 .footer #ot-sdk-btn-container:empty {
   display: none;
 }
 
-/* Style the OneTrust button to blend with footer links when injected */
 .footer #ot-sdk-btn-container button,
 .footer #ot-sdk-btn-container #ot-sdk-btn {
   appearance: none;
@@ -147,6 +148,6 @@
 
 .footer #ot-sdk-btn-container button:hover,
 .footer #ot-sdk-btn-container #ot-sdk-btn:hover {
-  color: var(--footer-link-hover);
+  color: var(--footer-link-color);
   text-decoration: underline;
 }

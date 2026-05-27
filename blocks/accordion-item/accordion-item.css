@@ -1,0 +1,12 @@
+/*
+ * Accordion Item block — standalone variant
+ *
+ * Inherits all styling from the accordion block via the .accordion class
+ * that accordion-item.js adds to the block wrapper. This file adds only
+ * the border-top needed when an accordion-item stands alone (the parent
+ * accordion block provides this on its root; standalone items need it too).
+ */
+
+.accordion-item-wrapper .accordion {
+  border-top: 1px solid var(--color-border-list);
+}

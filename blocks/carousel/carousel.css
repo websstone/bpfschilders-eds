@@ -13,29 +13,26 @@
  * Structural chrome (border-radius: 50%, 1px borders) stays in px.
  */
 
-/* ── Block-scoped custom properties (block-local tokens) ─────────────────── */
+/* ── Block-scoped custom properties + root block element ─────────────────── */
 .carousel {
-  --carousel-bg:             rgb(68, 35, 89);      /* var(--color-background) */
-  --carousel-color:          rgb(255, 255, 255);   /* var(--color-text) */
-  --carousel-font:           Lato, Arial, sans-serif; /* var(--typography-font-family) */
+  --carousel-bg:             rgb(68 35 89);      /* var(--color-background) */
+  --carousel-color:          rgb(255 255 255);   /* var(--color-text) */
+  --carousel-font:           lato, arial, sans-serif; /* var(--typography-font-family) */
   --carousel-font-size:      1rem;                 /* 16px ÷ 16 */
   --carousel-heading-size:   1.5rem;               /* 24px ÷ 16 */
   --carousel-heading-weight: 700;
   --carousel-padding-y:      2.5rem;               /* 40px ÷ 16 */
-  --carousel-icon-bg:        rgba(255, 255, 255, 0.15); /* design-tokens: slide-icon-background */
-  --carousel-link-hover:     rgba(255, 255, 255, 0.8);  /* design-tokens: link-hover */
-  --carousel-dot-inactive:   rgba(255, 255, 255, 0.4);
-  --carousel-dot-active:     rgb(255, 255, 255);
-  --carousel-arrow-bg:       rgb(255, 255, 255);
-  --carousel-arrow-color:    rgb(68, 35, 89);
+  --carousel-icon-bg:        rgb(255 255 255 / 15%); /* design-tokens: slide-icon-background */
+  --carousel-link-hover:     rgb(255 255 255 / 80%);  /* design-tokens: link-hover */
+  --carousel-dot-inactive:   rgb(255 255 255 / 40%);
+  --carousel-dot-active:     rgb(255 255 255);
+  --carousel-arrow-bg:       rgb(255 255 255);
+  --carousel-arrow-color:    rgb(68 35 89);
   --carousel-arrow-size:     2.5rem;               /* 40px ÷ 16 */
   --carousel-track-inset:    3.875rem;             /* 62px desktop */
   --carousel-icon-size:      3.75rem;              /* ~60px */
   --carousel-icon-font-size: 1.75rem;              /* ~28px */
-}
 
-/* ── Root block element ──────────────────────────────────────────────────── */
-.carousel {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -62,7 +59,7 @@
 .carousel .carrousel-wrapper {
   position: relative;
   overflow: hidden;
-  padding: 0 var(--carousel-track-inset);
+  padding: 0 2.75rem; /* 44px ÷ 16 — mobile default; desktop override in @media */
   box-sizing: border-box;
 }
 
@@ -73,6 +70,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+
   /* width is set dynamically by JS via flex item widths */
   transition: transform 500ms ease; /* ba-spec: css_transitions[0] */
   transform: translate3d(0, 0, 0);
@@ -112,7 +110,7 @@
   font-weight: 400;
   color: inherit;
   text-align: center;
-  word-break: break-word;
+  overflow-wrap: break-word;
   line-height: 1.3;
 }
 
@@ -133,6 +131,7 @@
 }
 
 /* ── BPFicons glyph via ::before pseudo-element ──────────────────────────── */
+
 /*
  * The source renders <i class="costumer-journey-icon icon-bpf icon-bpf-pensioen">.
  * The BPFicons font maps each icon class to a Unicode codepoint via its own CSS.
@@ -151,17 +150,21 @@
 .carousel .icon-bpf-verhuizen::before { content: '\e609'; }
 .carousel .icon-bpf-scheiden::before { content: '\e606'; }
 .carousel .icon-bpf-ontslag::before { content: '\e602'; }
+
 .carousel .icon-bpf-veranderenvanbaan::before,
 .carousel .icon-bpf-baan::before { content: '\e608'; }
 .carousel .icon-bpf-uitzendkracht::before { content: '\e902'; }
+
 .carousel .icon-bpf-voorjezelfbeginnen::before,
 .carousel .icon-bpf-uzelf::before { content: '\e60a'; }
+
 .carousel .icon-bpf-arbeidsongeschikt::before,
 .carousel .icon-bpf-arbeidsongeschiktheid::before { content: '\e600'; }
 .carousel .icon-bpf-verlof::before { content: '\e903'; }
 .carousel .icon-bpf-overlijden::before { content: '\e603'; }
 
 /* ── Prev / Next arrow buttons ───────────────────────────────────────────── */
+
 /*
  * Buttons are appended inside .carrousel-wrapper (position:relative per above),
  * so top:50% + translateY(-50%) centres them on the slider track correctly.
@@ -249,23 +252,10 @@
   outline-offset: 2px;
 }
 
-/* ── Responsive: mobile-first defaults (< 769px, i.e. narrow / mobile) ─────── */
-/* ba-spec responsive_contracts[0]: track padding 0 44px at mobile */
-.carousel .carrousel-wrapper {
-  padding: 0 2.75rem; /* 44px ÷ 16 — mobile default */
-}
-
-/* Arrow buttons — tighter inset on narrow screens */
-.carousel .carrousel-button-previous {
-  left: 0.25rem;
-}
-
-.carousel .carrousel-button-next {
-  right: 0.25rem;
-}
+/* ── Responsive: mobile-first defaults (< 769px) are declared above ────── */
 
 /* ── Responsive: desktop (≥ 769px) — wider arrow inset ──────────────────── */
-@media (min-width: 769px) {
+@media (width >= 769px) {
   /* ba-spec responsive_contracts[0]: track padding 0 62px at desktop */
   .carousel .carrousel-wrapper {
     padding: 0 var(--carousel-track-inset); /* 3.875rem = 62px */
@@ -281,7 +271,7 @@
 }
 
 /* ── Responsive: large desktop (≥1200px) — slightly more breathing room ─── */
-@media (min-width: 1200px) {
+@media (width >= 1200px) {
   .carousel .carousel-heading {
     font-size: 1.625rem; /* slightly larger on very wide screens */
   }
