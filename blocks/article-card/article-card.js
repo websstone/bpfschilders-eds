@@ -120,7 +120,8 @@ function parseRows(rows) {
     title = cellText(titleRow ? titleRow.children[0] : null);
     cursor += 1;
 
-    // Summary row (optional — present if remaining rows > 1, or if next row has no 2nd cell with text)
+    // Summary row (optional — present when remaining rows > 1,
+    // or when the next row has no 2nd cell with text)
     const nextRow = arr[cursor];
     if (nextRow) {
       const nextFirstCell = nextRow.children[0];
@@ -189,7 +190,9 @@ function buildCardImage(imageEl, imageAlt) {
  * @param {Element} block
  */
 export default function decorate(block) {
-  const { imageEl, imageAlt, title, summaryEl, ctaHref, ctaLabel } = parseRows(block.children);
+  const {
+    imageEl, imageAlt, title, summaryEl, ctaHref, ctaLabel,
+  } = parseRows(block.children);
 
   // ── card-image ──────────────────────────────────────────────────────────────
   const cardImage = imageEl ? buildCardImage(imageEl, imageAlt) : null;

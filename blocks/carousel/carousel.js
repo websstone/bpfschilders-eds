@@ -264,12 +264,9 @@ export default function decorate(block) {
   // CSS may not be parsed yet when decorate() runs; wait for the wrapper to
   // acquire a non-zero width before sizing slides.
   const ro = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.contentRect.width > 0) {
-        ro.disconnect();
-        applyPage(0, false);
-        return;
-      }
+    if (entries.some((entry) => entry.contentRect.width > 0)) {
+      ro.disconnect();
+      applyPage(0, false);
     }
   });
   ro.observe(wrapper);

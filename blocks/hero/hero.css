@@ -1,0 +1,106 @@
+/*
+ * Hero block — page-level heading section.
+ *
+ * Source: LoginPageHeading (P1 inventory, computed-styles.desktop.json)
+ * + contact-page hero DOM (Wave A scrape of /contact/).
+ *
+ * Token mapping — all values sourced from
+ *   inventory/components/LoginPageHeading/captures/computed-styles.desktop.json
+ *   and inventory/components/LoginPageHeading/design-tokens.yaml
+ *   and matching global tokens already in styles/tokens.css:
+ *
+ *   --hero-color-heading      rgb(68 35 89)   brand purple  (source h1 colour,
+ *                                              matches text block --text-color-link)
+ *   --hero-color-body         rgb(51 51 51)   body text     (source: color: rgb(51,51,51))
+ *   --hero-font-family        lato, arial, sans-serif       (source: Lato, Arial)
+ *   --hero-font-size-h1       2rem            32px / 16     (source: font-size-h1: 32px)
+ *   --hero-font-size-body     1rem            16px / 16     (source: font-size-body: 16px)
+ *   --hero-font-weight-h1     700                           (source: font-weight-h1: 700)
+ *   --hero-line-height        1.5                           (source: line-height: 1.5)
+ *   --hero-padding-top        2.5rem          40px / 16     (source: padding-top: 40px)
+ *   --hero-padding-bottom     1.25rem         20px / 16     (source: padding-bottom: 20px)
+ *   --hero-bg-color           transparent     no source background — inherits section bg
+ */
+
+/* --- Block-scoped design tokens ------------------------------------------- */
+.hero {
+  --hero-color-heading: rgb(68 35 89);
+  --hero-color-body: rgb(51 51 51);
+  --hero-font-family: lato, arial, sans-serif;
+  --hero-font-size-h1: 2rem;
+  --hero-font-size-body: 1rem;
+  --hero-font-weight-h1: 700;
+  --hero-line-height: 1.5;
+  --hero-padding-top: 2.5rem;
+  --hero-padding-bottom: 1.25rem;
+
+  /* Layout — mobile first */
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--hero-padding-top) 0 var(--hero-padding-bottom);
+  background-color: transparent;
+  color: var(--hero-color-body);
+  font-family: var(--hero-font-family);
+  font-size: var(--hero-font-size-body);
+  line-height: var(--hero-line-height);
+}
+
+/* --- Heading -------------------------------------------------------------- */
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: var(--hero-font-size-h1);
+  font-weight: var(--hero-font-weight-h1);
+  color: var(--hero-color-heading);
+  line-height: 1.3;
+}
+
+/* First heading — no top margin so it sits flush with section padding */
+.hero h1:first-child {
+  margin-top: 0;
+}
+
+/* --- Subhead / intro text ------------------------------------------------- */
+.hero .hero-subhead {
+  margin: 0.5rem 0 0;
+  color: var(--hero-color-body);
+  font-size: var(--hero-font-size-body);
+  line-height: var(--hero-line-height);
+}
+
+.hero .hero-subhead p {
+  margin: 0 0 0.75rem;
+}
+
+.hero .hero-subhead p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Background image variant (has-image) --------------------------------- */
+.hero.has-image {
+  position: relative;
+  background-image: var(--hero-bg-image, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Ensure text remains readable over images */
+  color: var(--color-white, rgb(255 255 255));
+}
+
+.hero.has-image h1 {
+  color: var(--color-white, rgb(255 255 255));
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+@media (width >= 600px) {
+  .hero {
+    font-size: var(--hero-font-size-body);
+  }
+}
+
+@media (width >= 900px) {
+  .hero h1 {
+    font-size: var(--hero-font-size-h1);
+  }
+}

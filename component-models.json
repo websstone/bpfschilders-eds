@@ -410,6 +410,32 @@
     ]
   },
   {
+    "id": "hero",
+    "fields": [
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Page Heading",
+        "valueType": "string",
+        "required": true
+      },
+      {
+        "component": "richtext",
+        "name": "subhead",
+        "label": "Subheading / Intro Text",
+        "valueType": "string",
+        "required": false
+      },
+      {
+        "component": "reference",
+        "name": "image",
+        "label": "Background Image (optional)",
+        "valueType": "string",
+        "required": false
+      }
+    ]
+  },
+  {
     "id": "section",
     "fields": [
       {

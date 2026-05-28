@@ -1,42 +1,50 @@
 /* ==========================================================================
    BPF Schilders — header block
-   Source: SiteHeaderNavSearch
-   Design tokens (design-tokens.yaml):
-     background:  var(--color-background)
-     text:        rgb(255, 255, 255)
-     link-hover:  rgba(255, 255, 255, 0.8)
-   Responsive contracts (ba-spec):
+   Source: SiteHeaderNavSearch (live bpfschilders.nl — see wave-b-triage.yaml)
+   Live source canonical values (Wave A validators, all 7/7 batches):
+     background:  rgb(244,244,244)  — light grey (NOT purple; P1 captured stale state)
+     text:        rgb(33,33,33)     — dark charcoal
+     nav-hover:   rgb(68,35,89)     — brand purple on hover
+   Responsive contracts (visual-spec.yaml):
      Mobile-first; desktop at min-width 1024px
-   CSS transitions (ba-spec):
-     color 0.2s ease on nav links
+     Mobile: logo + visible search bar + hamburger inline
+     Desktop: logo left column spanning two bars; top-nav row (right) + main-nav row (right)
+   Heights (spec.yaml layout.approx_height = "134px"):
+     --header-top-h  2.875rem  (46px)  — slim audience-switcher bar
+     --header-main-h 5.5rem    (88px)  — primary nav + search bar
+   Logo: 519×213 source image → rendered at 4.5rem height (72px) → ~11rem width
    ========================================================================== */
 
 .header {
-  --header-bg:           rgb(244 244 244);
-  --header-text:         rgb(33 33 33);
-  --header-text-muted:   rgb(100 100 100);
-  --header-text-hover:   rgb(33 33 33);
-  --header-active-color: rgb(68 35 89);
-  --header-sep:          rgb(218 218 218);
-  --header-font:         helvetica, arial, sans-serif;
-  --header-font-size:    0.857rem;
-  --header-font-sm:      0.875rem;
-  --header-search-bg:    rgb(247 247 247);
-  --header-search-border: 1px solid rgb(175 175 175);
-  --header-search-btn-bg: transparent;
-  --header-search-btn-color: rgb(68 35 89);
-  --header-z:            10;
-  --header-transition:   color 0.2s ease;
-  --header-px:           0.9375rem;
-  --header-px-desktop:   1.5rem;
-  --header-max-w:        75rem;
-  --header-top-h:        2.5rem;
-  --header-main-h:       4rem;
-  --header-logo-w:       9.375rem;
-  --header-logo-h:       3.125rem;
-  --header-flyout-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+  /* ---- component-scoped tokens (resolved through tokens.css) ---- */
+  --header-bg:               var(--color-background);             /* rgb(244 244 244) light grey */
+  --header-text:             var(--color-header-text);             /* rgb(33 33 33) dark charcoal */
+  --header-text-muted:       var(--color-header-text-muted);       /* rgb(80 80 80) */
+  --header-text-hover:       var(--color-header-text-hover);       /* rgb(68 35 89) brand purple */
+  --header-active-color:     var(--color-header-text-hover);       /* active = purple */
+  --header-sep:              var(--color-header-sep);              /* rgb(204 204 204) grey line */
+  --header-font:             var(--typography-font-family);        /* helvetica, arial, sans-serif */
+  --header-font-size:        var(--typography-font-size-base);     /* 0.857rem */
+  --header-font-sm:          0.875rem;
+  --header-search-bg:        var(--color-header-search-bg);        /* white */
+  --header-search-border:    1px solid var(--color-header-search-border); /* grey border */
+  --header-search-btn-bg:    var(--color-header-search-btn-bg);    /* brand purple */
+  --header-search-btn-color: var(--color-header-search-btn-text);  /* white */
+  --header-z:                100;
+  --header-transition:       color 0.2s ease;
+  --header-px:               0.9375rem;
+  --header-px-desktop:       1.5rem;
+  --header-max-w:            75rem;
+  --header-top-h:            2.875rem;
+  --header-main-h:           5.5rem;
+  --header-logo-h:           4.5rem;      /* 72px — matches source screenshot */
+  --header-flyout-shadow:    0 4px 8px var(--color-shadow);
+  --header-flyout-bg:        var(--color-white);
+  --header-flyout-text:      var(--color-text);
+  --header-flyout-sep:       var(--color-border-default);
 
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: var(--header-z);
   width: 100%;
   background-color: var(--header-bg);
@@ -45,17 +53,16 @@
   font-size: var(--header-font-size);
   line-height: 1.65;
   border: 0;
-  border-bottom: 1px solid var(--color-white);
 }
 
-/* Force font-family inheritance — prevents body lato from leaking into header children */
+/* Force font-family inheritance — prevents body font from leaking into header children */
 .header,
 .header * {
   font-family: var(--header-font);
 }
 
 /* ==========================================================================
-   Inner container — mobile: flex row (logo + toggle buttons)
+   Inner container — mobile: flex row (logo + search + toggle buttons)
    Desktop: rebuilt into two horizontal bars via .header-navigation column
    ========================================================================== */
 .header .container {
@@ -67,7 +74,7 @@
   padding: 0 var(--header-px);
   box-sizing: border-box;
   width: 100%;
-  min-height: 3.5rem;       /* ~56px mobile header height */
+  min-height: 3.5rem;
   position: relative;
 }
 
@@ -94,14 +101,14 @@
 
 /* ==========================================================================
    Nav wrapper (#header-navigation)
-   Mobile: collapsed (hidden), full-width below logo bar
+   Mobile: collapsed (hidden), full-width below logo row
    Desktop: always visible, column of two nav bars, takes remaining width
    ========================================================================== */
 .header .header-navigation {
   display: none;
   flex-direction: column;
   width: 100%;
-  order: 10;               /* renders below logo row on mobile */
+  order: 10;
   flex-basis: 100%;
 }
 
@@ -128,12 +135,10 @@
   color: var(--header-text);
 }
 
-/* Override global a:any-link purple — ensures all header links default to header text color.
-   Selectors .header nav a and .header .main-navigation a above have equal specificity
-   but are more specific by descendant, so they still apply correctly to nav links. */
+/* Override global a:any-link — ensures all header links use header text color */
 .header a:any-link {
   color: var(--header-text);
-  border-color: var(--header-text);
+  border-color: var(--header-sep);
 }
 
 .header a:focus-visible,
@@ -146,13 +151,13 @@
 .header nav a:hover {
   color: var(--header-text-hover);
   text-decoration: underline;
-  background-color: var(--header-bg);
 }
 
 .header .icon-home {
   display: inline-flex;
   align-items: center;
   margin-right: 0.25rem;
+  color: var(--color-icon-home);   /* gold home icon — matches source screenshot */
 }
 
 .header .icon-home svg {
@@ -176,6 +181,8 @@
 
 /* ==========================================================================
    TOP NAVIGATION — audience switcher (slim utility bar)
+   Mobile: stacked list inside expanded nav panel
+   Desktop: horizontal flex row with login state pushed right
    ========================================================================== */
 .header .top-navigation {
   display: flex;
@@ -202,6 +209,7 @@
   padding: 0.625rem var(--header-px);
   font-size: var(--header-font-sm);
   font-weight: 400;
+  color: var(--header-text-muted);
 }
 
 .header .top-navigation a:hover {
@@ -247,6 +255,7 @@
   padding: 0.875rem var(--header-px);
   font-size: var(--header-font-size);
   font-weight: 400;
+  color: var(--header-text);
 }
 
 .header .main-navigation > ul > li > a:hover {
@@ -267,7 +276,7 @@
   height: 3.5rem;
   background: none;
   border: none;
-  color: var(--header-text-muted);
+  color: var(--header-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -291,7 +300,7 @@
 /* Sub-menu container */
 .header .main-navigation li.has-children > div {
   display: none;
-  background-color: rgb(255 255 255);
+  background-color: var(--header-flyout-bg);
 }
 
 .header .main-navigation li.has-children.is-open > div {
@@ -303,18 +312,19 @@
 }
 
 .header .main-navigation li.has-children > div li {
-  border-top: 1px solid var(--header-sep);
+  border-top: 1px solid var(--header-flyout-sep);
 }
 
 .header .main-navigation li.has-children > div li a {
   display: block;
   padding: 0.625rem var(--header-px) 0.625rem 2rem;
   font-size: var(--header-font-sm);
+  color: var(--header-flyout-text);
   transition: var(--header-transition);
 }
 
 .header .main-navigation li.has-children > div li a:hover {
-  color: var(--header-text-hover);
+  color: var(--color-link);
 }
 
 /* ==========================================================================
@@ -329,22 +339,18 @@
 
 /* ==========================================================================
    SEARCH BOX
-   Mobile: hidden by default, revealed by #searchToggleButton
+   Mobile: visible inline by default (source shows search always visible)
+   Desktop: always visible inline at right of main-nav bar
    ========================================================================== */
 .header .searchbox {
-  display: none;
-  align-items: center;
-  width: 100%;
-  order: 11;                /* below nav on mobile */
-  flex-basis: 100%;
-  padding: 0.625rem var(--header-px);
-  box-sizing: border-box;
-  background-color: var(--header-bg);
-  border-top: 1px solid var(--header-sep);
-}
-
-.header .searchbox.is-visible {
   display: flex;
+  align-items: center;
+  order: 5;               /* between logo and toggle buttons on mobile */
+  flex: 1;
+  min-width: 0;
+  padding: 0 0.5rem 0 0.75rem;
+  box-sizing: border-box;
+  background-color: transparent;
 }
 
 .header .searchbox input[type="text"] {
@@ -368,8 +374,8 @@
 }
 
 .header .searchbox input[type="text"]:focus {
-  background-color: rgb(255 255 255);
-  border-color: var(--header-active-color);
+  background-color: var(--color-white);
+  border-color: var(--color-header-text-hover);
 }
 
 .header .searchbox .search-btn {
@@ -395,15 +401,17 @@
 }
 
 .header .searchbox .search-btn:hover {
-  color: var(--header-text-hover);
+  background-color: var(--color-header-text-hover);
+  color: var(--color-white);
+  border-color: var(--color-header-text-hover);
 }
 
 /* ==========================================================================
    MOBILE TOGGLE BUTTONS (injected by JS at runtime — not authored)
-   Mobile: visible; Desktop: hidden
+   Mobile: hamburger visible; search-toggle hidden (search always shown)
+   Desktop: both hidden
    ========================================================================== */
-.header .pagenav-toggle-button,
-.header .search-toggle-button {
+.header .pagenav-toggle-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -415,7 +423,12 @@
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
-  order: 5;
+  order: 8;
+}
+
+/* Search toggle is redundant on mobile because search is always visible */
+.header .search-toggle-button {
+  display: none;
 }
 
 .header .pagenav-toggle-button:hover {
@@ -436,17 +449,14 @@
 
 /* ==========================================================================
    DESKTOP LAYOUT — min-width: 1024px
-   Responsive contract (ba-spec responsive_contracts[]):
-   - nav.main-navigation: display inline-flex (row)
-   - #pageNavToggleButton / #searchToggleButton: hidden
-   - nav collapses → hamburger transition at max-width 1023px
    Source structure at desktop:
-     .container (flex row)
-       .logo
+     .container (flex row, stretch)
+       .logo               — left column, align-self center, spans both nav rows visually
        #header-navigation (flex col, flex:1)
-         nav.top-navigation   — slim bar (logo-width offset + full-width links + login)
+         nav.top-navigation   — slim bar: audience links (row) + login state right
          nav.main-navigation  — primary nav links (inline row) + search box right
        [mobile buttons — hidden]
+   Search box lives inside .main-navigation at desktop (sibling to nav ul).
    ========================================================================== */
 @media (width >= 1024px) {
   .header .container {
@@ -456,7 +466,7 @@
     min-height: auto;
   }
 
-  /* Logo — left column, spans both nav rows via align-self: center */
+  /* Logo — left column, aligns to center of overall header */
   .header .logo {
     flex-shrink: 0;
     align-self: center;
@@ -464,9 +474,9 @@
     order: 0;
   }
 
-  /* Nav wrapper — takes remaining width, column of two bars */
+  /* Nav wrapper — takes remaining width, stacks top-nav and main-nav */
   .header .header-navigation {
-    display: flex;          /* always visible at desktop */
+    display: flex;
     flex-direction: column;
     flex: 1;
     min-width: 0;
@@ -487,6 +497,7 @@
     flex-direction: row;
     align-items: center;
     gap: 0;
+    flex: 1;
   }
 
   .header .top-navigation li {
@@ -539,6 +550,7 @@
 
   .header .main-navigation > ul > li:hover > a {
     color: var(--header-text-hover);
+    background-color: var(--color-header-sep);
   }
 
   /* Flyout sub-menu: absolute drop-down below the bar */
@@ -549,11 +561,11 @@
     min-width: 14rem;
     z-index: calc(var(--header-z) + 1);
     box-shadow: var(--header-flyout-shadow);
-    background-color: rgb(255 255 255);
-    border: 1px solid var(--header-sep);
+    background-color: var(--header-flyout-bg);
+    border: 1px solid var(--header-flyout-sep);
   }
 
-  /* Desktop: hover also opens flyout (progressive enhancement) */
+  /* Desktop: hover also opens flyout */
   .header .main-navigation li.has-children:hover > div {
     display: block;
   }
@@ -569,14 +581,12 @@
 
   /* Search box — inline at the right of main-nav bar */
   .header .searchbox {
-    display: flex;          /* always visible at desktop */
-    flex-basis: auto;
+    flex: 0 0 auto;
     width: auto;
-    order: 2;               /* right of header-navigation */
-    border-top: none;
-    align-self: center;
+    order: 2;
     padding: 0 0 0 1.25rem;
     flex-shrink: 0;
+    align-self: center;
   }
 
   .header .searchbox input[type="text"] {

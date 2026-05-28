@@ -6,15 +6,24 @@
    matched rgb(245,245,245). Documented in token-drift.yaml override for ContactInfoSidebar. */
 :root {
   --color-bg-aside: rgb(245 245 245);
-  --color-background: rgb(68 35 89);
+  --color-background: rgb(244 244 244);        /* live source header bg — light grey */
+  --color-background-brand: rgb(68 35 89);     /* BPF brand purple — retained for non-header uses */
   --color-text: rgb(33 33 33);
   --color-body-text: rgb(51 51 51);
   --color-border-default: rgb(204 204 204);
-  --color-heading: rgb(255 255 255);
-  --color-link: rgb(255 255 255);
-  --color-link-hover: rgb(255 255 255 / 80%);
+  --color-heading: rgb(33 33 33);              /* dark on light header */
+  --color-link: rgb(68 35 89);                 /* purple links on body content */
+  --color-link-hover: rgb(45 23 64);           /* darker purple on hover */
+  --color-header-text: rgb(33 33 33);          /* nav link text on light-grey header */
+  --color-header-text-muted: rgb(80 80 80);    /* muted/secondary nav text */
+  --color-header-text-hover: rgb(68 35 89);    /* hover: brand purple on light bg */
+  --color-header-sep: rgb(204 204 204);        /* separator lines on light bg */
+  --color-header-search-bg: rgb(255 255 255);  /* search input bg on light header */
+  --color-header-search-border: rgb(204 204 204); /* search border on light header */
+  --color-header-search-btn-bg: rgb(68 35 89); /* search button: brand purple */
+  --color-header-search-btn-text: rgb(255 255 255); /* search button text: white */
   --color-slide-icon-background: rgb(255 255 255 / 15%);
-  --color-arrow-button: rgb(255 255 255);
+  --color-arrow-button: rgb(68 35 89);
   --typography-font-family: helvetica, arial, sans-serif;
   --typography-font-size-base: 0.857rem;
   --typography-font-size-body: 16px;
@@ -24,6 +33,22 @@
   --spacing-padding-y: 40px;
   --spacing-slide-gap: 20px;
   --spacing-arrow-size: 40px;
-  --spacing-footer-margin-bottom: 27.424px;
+  --spacing-footer-margin-bottom: 27.424px;    /* live source: footer bottom clearance */
+  --color-footer-bg: rgb(255 255 255);
+  --color-footer-text: rgb(33 33 33);
+  --color-footer-link: rgb(33 33 33);
+  --color-footer-link-hover: rgb(33 33 33);
+  --color-footer-separator: rgb(204 204 204);
+  --color-footer-link-hover-bg: rgb(255 255 255); /* live source hover bg = white */
+  --font-footer: helvetica, arial, sans-serif;    /* live source: Helvetica, not Lato */
+  --font-size-footer: 13.712px;                   /* live source exact computed value */
+  --line-height-footer: 22.6248px;                /* live source exact computed value */
+  --spacing-footer-padding-y: 20px;
+  --spacing-footer-nav-gap: 6px;
+  --spacing-footer-link-pipe-pad: 0.5rem;
+  --spacing-footer-nav-padding-mobile: 1rem;
+  --spacing-footer-nav-padding-desktop: 2rem;
   --color-white: rgb(255 255 255);
+  --color-icon-home: rgb(185 135 60);   /* gold home icon in main-nav — from source screenshot */
+  --color-shadow: rgb(0 0 0 / 15%);    /* standard drop shadow alpha for flyout/card shadows */
 }

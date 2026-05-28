@@ -101,13 +101,45 @@ function buildImageWrapper(imgEl) {
 }
 
 /**
- * Loads and decorates the sidebar block.
- * @param {Element} block
+ * Default contact data — mirrors buildContactSidebar() in scripts.js.
+ * Used as a fallback when authored rows contain no field values (empty JCR migration).
  */
-export default function decorate(block) {
-  const rows = [...block.children];
+const DEFAULT_CONTACT_ROWS = [
+  {
+    heading: 'Bent u werknemer?', iconType: '', label: '', href: '',
+  },
+  {
+    heading: '', iconType: 'phone', label: '030-277 56 00', href: 'tel:0302775600',
+  },
+  {
+    heading: '', iconType: 'envelope', label: 'Mail ons', href: '/contact/',
+  },
+  {
+    heading: '', iconType: 'facebook', label: 'Volg ons', href: 'https://www.facebook.com/bpfschilders',
+  },
+  {
+    heading: 'Bent u ondernemer of werkgever?', iconType: '', label: '', href: '',
+  },
+  {
+    heading: '', iconType: 'phone', label: '030-277 56 10', href: 'tel:0302775610',
+  },
+  {
+    heading: '', iconType: 'envelope', label: 'Mail ons', href: '/contact/',
+  },
+  {
+    heading: '', iconType: 'facebook', label: 'Volg ons', href: 'https://www.facebook.com/bpfschilders',
+  },
+  {
+    heading: '', iconType: '', label: '', href: '', hours: 'Openingstijden:\nmaandag tot en met vrijdag van 08:30 tot 17:00 uur',
+  },
+];
 
-  // Parse rows into typed entries
+/**
+ * Parses authored block rows into typed data.
+ * Returns { groups, hoursText, imageEl }.
+ * @param {Element[]} rows
+ */
+function parseRows(rows) {
   const groups = []; // { heading: string, items: [{iconType, label, href}] }
   let currentGroup = null;
   let hoursText = '';
@@ -146,7 +178,7 @@ export default function decorate(block) {
       return;
     }
 
-    // Image row
+    // Image row — guard for media children before accessing querySelector
     if (imgCell) {
       const img = imgCell.querySelector('img, picture');
       if (img) {
@@ -154,6 +186,65 @@ export default function decorate(block) {
       }
     }
   });
+
+  return { groups, hoursText, imageEl };
+}
+
+/**
+ * Parses the DEFAULT_CONTACT_ROWS constant into the same typed structure.
+ * @returns {{ groups: Array, hoursText: string, imageEl: null }}
+ */
+function parseDefaultData() {
+  const groups = [];
+  let currentGroup = null;
+  let hoursText = '';
+
+  DEFAULT_CONTACT_ROWS.forEach((row) => {
+    const {
+      heading, iconType, label, href, hours,
+    } = row;
+
+    if (heading && !iconType && !label) {
+      currentGroup = { heading, items: [] };
+      groups.push(currentGroup);
+      return;
+    }
+
+    if (iconType || label) {
+      if (!currentGroup) {
+        currentGroup = { heading: '', items: [] };
+        groups.push(currentGroup);
+      }
+      currentGroup.items.push({ iconType, label, href });
+      return;
+    }
+
+    if (hours) {
+      hoursText = hours;
+    }
+  });
+
+  return { groups, hoursText, imageEl: null };
+}
+
+/**
+ * Loads and decorates the sidebar block.
+ * @param {Element} block
+ */
+export default function decorate(block) {
+  const rows = [...block.children];
+
+  // Parse rows into typed entries
+  let { groups, hoursText, imageEl } = parseRows(rows);
+
+  // Fallback: if all authored rows were empty (common with P3 migration stubs
+  // that write placeholder rows with no field values), render the default
+  // contact data.  This keeps the sidebar functional on every L3 page while
+  // the P4 aem-developer fills in the real JCR content.
+  const hasAuthoredContent = groups.length > 0 || hoursText || imageEl;
+  if (!hasAuthoredContent) {
+    ({ groups, hoursText, imageEl } = parseDefaultData());
+  }
 
   // Build the new DOM
   const inner = document.createDocumentFragment();

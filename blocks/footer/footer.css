@@ -1,73 +1,74 @@
 /* ==========================================================================
    BPF Schilders — footer block
-   Source: SiteFooterLegalLinks (decomposer_api)
-   Design tokens (design-tokens.yaml / tokens.css):
-     background:  rgb(255, 255, 255)  — live source white footer
-     text:        rgb(33, 33, 33)     — live source dark text
-     link-hover:  rgb(33, 33, 33)     — live source no hover color change
-   Responsive contracts (ba-spec behavioral-spec.yaml):
-     Mobile-first; desktop at min-width 1024px
-   CSS transitions (ba-spec css_transitions[]):
-     color 0.2s ease on footer a
+   Source component: SiteFooterLegalLinks
+   P1 captures: inventory/components/SiteFooterLegalLinks/captures/
+   Mode: block-redesign (Wave 0 shared-chrome repair)
+
+   Source layout (computed-styles.desktop.json + dom-snapshot.json):
+     - footer element: full-width, background white, padding 20px 0
+     - ::before: 1px top separator line using border-top (grey rule)
+     - nav.container: centered, flex-column, text-align center
+     - p: copyright text — 14px Lato, centered
+     - ul: horizontal flex-wrap list of links with "|" separators
+     - font: Lato 14px / 400 weight (source)
+     - Colors: bg white, text rgb(33,33,33), links same as text
+     - Hover: underline on links
+   Responsive (visual-spec.yaml breakpoints):
+     - Mobile (<1024px): links wrap naturally, centered
+     - Desktop (>=1024px): single-line horizontal row centered
    ========================================================================== */
 
-/* --- Block-scoped custom properties --- */
+/* --- Block root: full-width white bar with top separator --- */
 .footer {
-  --footer-bg:          rgb(255 255 255);
-  --footer-text:        rgb(33 33 33);
-  --footer-link-color:  rgb(33 33 33);
-  --footer-link-hover:  rgb(33 33 33);
-  --footer-font:        helvetica, arial, sans-serif;
-  --footer-font-size:   0.857rem;
-  --footer-padding-y:   1.25rem;
-  --footer-gap:         0.5rem;
-  --footer-transition:  color 0.2s ease;
-
-  /* Root footer element — full-width white bar */
   position: relative;
   width: 100%;
-  background-color: var(--footer-bg);
-  color: var(--footer-text);
-  font-family: var(--footer-font);
-  font-size: var(--footer-font-size);
-  line-height: 1.65;
-  padding: var(--footer-padding-y) 0;
+  background-color: var(--color-footer-bg);
+  color: var(--color-footer-text);
+  font-family: var(--font-footer);
+  font-size: var(--font-size-footer);
+  line-height: var(--line-height-footer);
+  padding: var(--spacing-footer-padding-y) 0;
+  margin-bottom: var(--spacing-footer-margin-bottom);
   box-sizing: border-box;
 }
 
-/* Force font-family inheritance — prevents body lato from leaking */
-.footer,
-.footer * {
-  font-family: var(--footer-font);
+/* Top separator line — matches source footer visual boundary */
+.footer::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--color-footer-separator);
 }
 
-/* Override global a:any-link purple color */
+/* Force Helvetica/Arial inheritance — prevents body/section font from leaking */
+.footer,
+.footer * {
+  font-family: var(--font-footer);
+}
+
+/* Override global a:any-link purple link color inside footer */
 .footer a:any-link {
-  color: var(--footer-text);
-  border-color: var(--footer-text);
+  color: var(--color-footer-link);
+  text-decoration: none;
 }
 
 /* ==========================================================================
-   Inner nav container — vertically stacked, centered (matches source)
+   Inner nav container — centered column (copyright above, links below)
    ========================================================================== */
 .footer .footer-nav {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--footer-gap);
+  gap: var(--spacing-footer-nav-gap);
   max-width: 75rem;
   margin: 0 auto;
-  padding: 0 0.9375rem;
+  padding: 0 var(--spacing-footer-nav-padding-mobile);
   box-sizing: border-box;
   text-align: center;
-}
-
-/* Desktop: keep vertical stacked layout, centered (source is stacked) */
-@media (width >= 1024px) {
-  .footer .footer-nav {
-    flex-direction: column;
-    align-items: center;
-  }
 }
 
 /* ==========================================================================
@@ -76,14 +77,14 @@
 .footer .footer-copyright {
   margin: 0;
   padding: 0;
-  white-space: nowrap;
-  color: var(--footer-text);
-  font-size: var(--footer-font-size);
+  color: var(--color-footer-text);
+  font-size: var(--font-size-footer);
+  line-height: var(--line-height-footer);
   text-align: center;
 }
 
 /* ==========================================================================
-   Legal link list — horizontal with pipe separators (matches source)
+   Legal link list — horizontal wrap with pipe separators
    ========================================================================== */
 .footer .footer-links {
   list-style: none;
@@ -92,6 +93,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 0;
 }
 
@@ -102,35 +104,32 @@
   align-items: center;
 }
 
-/* Pipe separator between links (matches source | separators).
-   Use ::after on each li (except last-child) so each item carries its own
-   trailing pipe. This prevents the orphan-pipe-at-start-of-wrapped-line
-   problem caused by the previous ::before approach. */
+/* Pipe separator — ::after on each li except last-child.
+   Placed after each item so a pipe stays with its owner item
+   when the list wraps (prevents orphan pipe at line-start). */
 .footer .footer-links li:not(:last-child)::after {
   content: "|";
-  color: var(--footer-text);
-  padding: 0 0.625rem;
-  font-size: var(--footer-font-size);
+  color: var(--color-footer-text);
+  padding: 0 var(--spacing-footer-link-pipe-pad);
+  font-size: var(--font-size-footer);
 }
 
 .footer .footer-links a {
-  color: var(--footer-link-color);
+  color: var(--color-footer-link);
   text-decoration: none;
-  font-size: var(--footer-font-size);
-  transition: var(--footer-transition);
+  font-size: var(--font-size-footer);
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-/* Hover state */
 .footer .footer-links a:hover,
 .footer .footer-links a:focus-visible {
-  color: var(--footer-link-color);
+  color: var(--color-footer-link-hover);
+  background-color: var(--color-footer-link-hover-bg);
   text-decoration: underline;
-  background-color: var(--footer-bg);
 }
 
 /* ==========================================================================
-   OneTrust button placeholder — always shown with static fallback text
-   "Mijn cookievoorkeur wijzigen" to match source footer layout.
+   OneTrust cookie-preference button — styled to match link items
    ========================================================================== */
 .footer #ot-sdk-btn-container {
   display: flex;
@@ -143,16 +142,27 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--footer-text);
-  font-family: var(--footer-font);
-  font-size: var(--footer-font-size);
+  color: var(--color-footer-link);
+  font-family: var(--font-footer);
+  font-size: var(--font-size-footer);
   padding: 0;
   margin: 0;
-  transition: var(--footer-transition);
+  transition: color 0.2s ease;
 }
 
 .footer #ot-sdk-btn-container button:hover,
 .footer #ot-sdk-btn-container #ot-sdk-btn:hover {
-  color: var(--footer-link-color);
+  color: var(--color-footer-link-hover);
+  background-color: var(--color-footer-link-hover-bg);
   text-decoration: underline;
+}
+
+/* ==========================================================================
+   Desktop layout — links fit on one line; no layout change needed since
+   source is also centered column but links are wide enough to be single-row.
+   ========================================================================== */
+@media (width >= 1024px) {
+  .footer .footer-nav {
+    padding: 0 var(--spacing-footer-nav-padding-desktop);
+  }
 }

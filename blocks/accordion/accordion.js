@@ -16,11 +16,13 @@
  *
  * The decorator transforms each row into:
  *     <div class="accordion-item">
- *       <button class="accordion-trigger" aria-expanded="false" aria-controls="accordion-panel-N" id="accordion-btn-N">
+ *       <button class="accordion-trigger" aria-expanded="false"
+ *               aria-controls="accordion-panel-N" id="accordion-btn-N">
  *         <span class="accordion-trigger-label">…title text…</span>
  *         <span class="accordion-icon" aria-hidden="true"></span>
  *       </button>
- *       <div class="accordion-panel" id="accordion-panel-N" role="region" aria-labelledby="accordion-btn-N" hidden>
+ *       <div class="accordion-panel" id="accordion-panel-N"
+ *            role="region" aria-labelledby="accordion-btn-N" hidden>
  *         …richtext content…
  *       </div>
  *     </div>

@@ -88,18 +88,17 @@ body.appear {
 
 header {
   height: auto;
-  background-color: rgb(244 244 244);
-  font-family: helvetica, arial, sans-serif;
-  font-size: 0.857rem;
+  background-color: var(--color-background);
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-font-size-base);
   line-height: 1.65;
 }
 
 footer {
-  background-color: rgb(255 255 255);
-  margin-bottom: var(--spacing-footer-margin-bottom);
-  font-family: helvetica, arial, sans-serif;
-  font-size: 0.857rem;
-  line-height: 1.65;
+  background-color: var(--color-footer-bg);
+  font-family: var(--font-footer);
+  font-size: var(--font-size-footer);
+  line-height: var(--line-height-footer);
 }
 
 header .header,

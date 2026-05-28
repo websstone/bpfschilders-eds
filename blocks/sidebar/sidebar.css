@@ -14,8 +14,8 @@
 /* ─── Block-scoped custom properties ──────────────────────────────────────── */
 .sidebar {
   /* --color-bg-aside comes from tokens.css :root; redeclared here only if overriding */
-  --color-brand-primary: rgb(68 35 89);
-  --color-text-body: rgb(51 51 51);
+  --color-brand-primary: var(--color-background-brand);
+  --color-text-body: var(--color-body-text);
   --sidebar-padding: 1.25rem;       /* 20px ÷ 16 */
   --sidebar-width: 15.625rem;       /* 250px ÷ 16 */
   --sidebar-font-size: 0.875rem;    /* 14px ÷ 16 */
@@ -60,7 +60,7 @@
 }
 
 .sidebar ul.contact li {
-  border-bottom: 1px solid rgb(204 204 204); /* item separator */
+  border-bottom: 1px solid var(--color-border-default); /* item separator */
 }
 
 /* ─── Contact link row — icon circle left, text right ─────────────────────── */
@@ -90,7 +90,7 @@
   height: var(--sidebar-icon-size);
   border-radius: 50%;
   background-color: var(--color-brand-primary);
-  color: rgb(255 255 255);
+  color: var(--color-white);
   font-size: var(--sidebar-icon-font-size);
   font-weight: 400;
   line-height: 1;
