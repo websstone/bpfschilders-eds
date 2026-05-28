@@ -102,8 +102,11 @@
   align-items: center;
 }
 
-/* Pipe separator between links (matches source | separators) */
-.footer .footer-links li + li::before {
+/* Pipe separator between links (matches source | separators).
+   Use ::after on each li (except last-child) so each item carries its own
+   trailing pipe. This prevents the orphan-pipe-at-start-of-wrapped-line
+   problem caused by the previous ::before approach. */
+.footer .footer-links li:not(:last-child)::after {
   content: "|";
   color: var(--footer-text);
   padding: 0 0.625rem;
@@ -126,10 +129,12 @@
 }
 
 /* ==========================================================================
-   OneTrust button placeholder
+   OneTrust button placeholder — always shown with static fallback text
+   "Mijn cookievoorkeur wijzigen" to match source footer layout.
    ========================================================================== */
-.footer #ot-sdk-btn-container:empty {
-  display: none;
+.footer #ot-sdk-btn-container {
+  display: flex;
+  align-items: center;
 }
 
 .footer #ot-sdk-btn-container button,

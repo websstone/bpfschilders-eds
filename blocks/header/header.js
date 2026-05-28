@@ -25,6 +25,26 @@ const ICON_HAMBURGER = '<svg class="icon-hamburger" xmlns="http://www.w3.org/200
 const ICON_CLOSE = '<svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
 
 /**
+ * Sub-navigation links per audience section. On the source site, each audience
+ * section (over-ons, ondernemer, werkgever) shows a context-specific second bar
+ * with child page links + search box. These match the source site's sub-nav.
+ */
+const AUDIENCE_SUBNAV = {
+  'over-ons': `<ul>
+    <li class="home"><a href="/over-ons/">Home</a></li>
+    <li><a href="/over-ons/">Dit zijn we</a></li>
+    <li><a href="/over-ons/">Dit presteren we</a></li>
+    <li><a href="/over-ons/">Downloads</a></li>
+  </ul>`,
+  ondernemer: `<ul>
+    <li class="home"><a href="/ondernemer/">Home</a></li>
+  </ul>`,
+  werkgever: `<ul>
+    <li class="home"><a href="/werkgever/">Home</a></li>
+  </ul>`,
+};
+
+/**
  * Fetch the plain HTML for a path.
  * @param {string} path
  * @returns {Promise<Document|null>}
@@ -57,19 +77,31 @@ function cellText(el) {
 
 /**
  * Check whether the current page belongs to the werknemer audience section.
- * On the source site, only /werknemer/* pages (and the homepage, which defaults
- * to the werknemer audience) show the main-navigation sub-nav bar. All other
- * audience sections (ondernemer, werkgever, over-ons, etc.) show only the
- * top-navigation audience-switcher bar.
+ * On the source site, werknemer pages (and the homepage, which defaults to
+ * the werknemer audience) show the full werknemer sub-navigation bar.
  * @returns {boolean}
  */
 function isWerknemerPage() {
   const p = window.location.pathname;
-  // Homepage maps to werknemer audience on the source site
   if (p === '/' || p === '/index' || p === '/index.html') return true;
-  // Any path starting with /werknemer/ or exactly /werknemer
   return p === '/werknemer' || p.startsWith('/werknemer/');
 }
+
+/**
+ * Determine the current audience section from the URL path.
+ * Returns the section key (e.g. 'over-ons', 'ondernemer', 'werkgever')
+ * or null for pages that don't belong to a known section (e.g. /klacht).
+ * @returns {string|null}
+ */
+function getAudienceSection() {
+  const p = window.location.pathname;
+  return Object.keys(AUDIENCE_SUBNAV).find(
+    (section) => p === `/${section}`
+      || p === `/${section}/`
+      || p.startsWith(`/${section}/`),
+  ) || null;
+}
+
 /**
  * Apply aria-current="page" to the audience-switcher link that matches
  * the current page URL. Remove any existing active class / aria-current.
@@ -77,7 +109,6 @@ function isWerknemerPage() {
  */
 function applyActiveLinkState(topNav) {
   let currentPath = window.location.pathname;
-  // Homepage maps to /werknemer/ (source site default audience)
   if (currentPath === '/' || currentPath === '/index' || currentPath === '/index.html') {
     currentPath = '/werknemer/';
   }
@@ -120,7 +151,6 @@ function decorateFlyouts(mainNav) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const isOpen = li.classList.contains('is-open');
-      // Close all open flyouts in this nav
       mainNav.querySelectorAll('li.has-children.is-open').forEach((openLi) => {
         openLi.classList.remove('is-open');
         const openBtn = openLi.querySelector(':scope > .flyout-toggle');
@@ -135,7 +165,6 @@ function decorateFlyouts(mainNav) {
     li.insertBefore(btn, submenuDiv);
   });
 
-  // Close any open flyout on outside click
   document.addEventListener('click', () => {
     mainNav.querySelectorAll('li.has-children.is-open').forEach((li) => {
       li.classList.remove('is-open');
@@ -226,7 +255,6 @@ function buildSearchBox(placeholder) {
 
   div.append(input, btn);
 
-  // Wire search — navigate to /zoeken with query param
   const doSearch = () => {
     const q = input.value.trim();
     if (q) window.location.href = `/zoeken?k=${encodeURIComponent(q)}`;
@@ -276,13 +304,8 @@ export default async function decorate(block) {
 
   let usedFragment = false;
   if (navDoc) {
-    // /nav.plain.html renders as a single <div> containing one <div> per row.
-    // Each row: <div><div> cell-content </div></div>
     let rows = [...navDoc.body.querySelectorAll(':scope > div')];
 
-    // When the AEM SDK returns a full HTML page instead of a plain fragment,
-    // the body contains <header>/<main>/<footer> — no direct <div> children.
-    // Try extracting rows from the <main> content area instead.
     if (rows.length === 0) {
       const main = navDoc.querySelector('main');
       if (main) {
@@ -310,8 +333,6 @@ export default async function decorate(block) {
   }
 
   if (!usedFragment) {
-    // Fallback: render source nav structure verbatim so the block is
-    // usable even without an authored /nav fragment.
     audienceSwitcherHtml = `<ul>
       <li class="active"><a href="/werknemer/">Werknemer</a></li>
       <li><a href="/ondernemer/">Ondernemer</a></li>
@@ -425,21 +446,32 @@ export default async function decorate(block) {
   const mainNavLabel = document.createElement('span');
   mainNavLabel.textContent = 'Navigatie';
   mainNav.append(mainNavLabel);
-  mainNav.insertAdjacentHTML('beforeend', mainNavHtml);
 
-  // On non-werknemer pages, the source site does not show the werknemer
-  // sub-navigation bar. Hide it to match source layout and reduce header
-  // pixel diff on ~12 non-werknemer pages.
+  // On non-werknemer pages that belong to a known audience section,
+  // show a section-specific sub-nav bar instead of the werknemer nav.
+  // On pages without a section (klacht, contact, etc.), show a minimal
+  // home link. The search box is always visible (source shows it on all
+  // audience sections).
   if (!isWerknemerPage()) {
-    mainNav.style.display = 'none';
-    mainNav.setAttribute('aria-hidden', 'true');
+    const section = getAudienceSection();
+    if (section && AUDIENCE_SUBNAV[section]) {
+      mainNav.insertAdjacentHTML('beforeend', AUDIENCE_SUBNAV[section]);
+    } else {
+      // Non-section pages (klacht, contact, disclaimer, etc.) — show
+      // a minimal bar so the search box has a visual container row.
+      mainNav.insertAdjacentHTML('beforeend', '<ul></ul>');
+    }
+  } else {
+    mainNav.insertAdjacentHTML('beforeend', mainNavHtml);
   }
+
+  // Search box — always shown. The source site shows the search box in
+  // the second header bar on ALL pages, not just werknemer pages.
+  const searchbox = buildSearchBox(searchPlaceholder);
 
   headerNav.append(topNav, mainNav);
   container.append(headerNav);
 
-  // Search box
-  const searchbox = buildSearchBox(searchPlaceholder);
   container.append(searchbox);
 
   // ------------------------------------------------------------------
@@ -470,7 +502,6 @@ export default async function decorate(block) {
   // ------------------------------------------------------------------
   const headerEl = block.closest('header');
   if (headerEl) {
-    // Remove the boilerplate fixed height; actual height driven by content.
     headerEl.style.height = 'auto';
   }
 }

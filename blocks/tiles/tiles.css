@@ -182,16 +182,21 @@
    INVERTED VARIANT — full-purple icon shortcut grid (PolicyCoverageLoginTeaser)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Block root: full-bleed purple */
+/* Block root: light gray background (live source 2026-05-27) */
 .tiles.inverted {
-  background-color: var(--tiles-color-brand);
-  color: var(--tiles-color-white);
+  --tiles-inv-bg:    rgb(244 244 244);
+  --tiles-inv-text:  rgb(33 33 33);
+  --tiles-inv-icon-bg: var(--tiles-color-brand);
+  --tiles-inv-icon-color: var(--tiles-color-white);
+
+  background-color: var(--tiles-inv-bg);
+  color: var(--tiles-inv-text);
 }
 
 .tiles.inverted .tiles-grid {
   gap: 0;
   padding: 0;
-  background-color: var(--tiles-color-brand);
+  background-color: var(--tiles-inv-bg);
 }
 
 /* Individual tile: full-width anchor */
@@ -202,19 +207,19 @@
   justify-content: center;
   padding: var(--tiles-tile-padding-y) var(--tiles-tile-padding-x);
   text-decoration: none;
-  color: var(--tiles-color-white);
+  color: var(--tiles-inv-text);
   text-align: center;
   transition: background-color 0.2s ease; /* BA spec: css_transitions[0] */
   gap: 0.75rem;
 }
 
 .tiles.inverted .top-panel:hover {
-  background-color: var(--tiles-bg-hover);
+  background-color: rgb(0 0 0 / 5%);
   text-decoration: none;
 }
 
 .tiles.inverted .top-panel:focus-visible {
-  outline: 2px solid var(--tiles-color-white);
+  outline: 2px solid var(--tiles-color-brand);
   outline-offset: -2px;
 }
 
@@ -226,7 +231,7 @@
   width: var(--tiles-icon-circle-size);
   height: var(--tiles-icon-circle-size);
   border-radius: 50%;
-  background-color: rgb(255 255 255 / 15%); /* BA spec: icon circle background */
+  background-color: var(--tiles-color-brand); /* purple circle on gray bg */
   font-family: BPFicons, serif; /* icon_font_override: actual font is BPFicons */
   font-size: var(--tiles-icon-font-size);
   color: var(--tiles-color-white);
@@ -251,7 +256,7 @@
   font-family: var(--tiles-font-family);
   font-size: var(--tiles-font-size-body);
   font-weight: 700;
-  color: var(--tiles-color-white);
+  color: var(--tiles-inv-text);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -263,8 +268,8 @@
   width: 2.5rem;
   height: 2px;
   margin: 0.375rem auto 0;
-  background-color: var(--tiles-color-white);
-  opacity: 0.6;
+  background-color: var(--tiles-inv-text);
+  opacity: 0.3;
 }
 
 /* Stat/hero banner — single tile with large value */
@@ -288,7 +293,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  color: var(--tiles-color-white);
+  color: var(--tiles-inv-text);
   text-decoration: none;
   font-size: 1.125rem;
   font-weight: 700;
@@ -304,7 +309,7 @@
   width: var(--tiles-icon-circle-size);
   height: var(--tiles-icon-circle-size);
   border-radius: 50%;
-  background-color: rgb(255 255 255 / 15%);
+  background-color: var(--tiles-color-brand);
   font-size: var(--tiles-icon-font-size);
   color: var(--tiles-color-white);
 }

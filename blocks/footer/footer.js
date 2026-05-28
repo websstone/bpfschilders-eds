@@ -13,7 +13,8 @@
  * OneTrust placeholder: <li id="ot-sdk-btn-container"> is injected by this
  * module — it MUST NOT be authored in the fragment document.
  * When the OneTrust SDK loads it will insert a <button id="ot-sdk-btn"> inside
- * that container. When the SDK is absent the empty container is hidden by CSS.
+ * that container. When the SDK is absent a static fallback link is shown to
+ * match the source footer layout.
  *
  * No module-scope mutable state — all state lives inside the decorate() closure.
  */
@@ -55,6 +56,11 @@ function cellText(el) {
  * Inject the OneTrust button placeholder <li> after the Cookiebeleid item.
  * Matches on a case-insensitive "cookiebeleid" substring in the link text.
  * Falls back to appending before the last item if no Cookiebeleid item is found.
+ *
+ * When OneTrust SDK is NOT loaded (local dev / preview), a static fallback
+ * link "Mijn cookievoorkeur wijzigen" is shown so the footer link count and
+ * wrapping behavior matches the source site.
+ *
  * @param {HTMLUListElement} ul
  */
 function injectOneTrustPlaceholder(ul) {
@@ -63,6 +69,15 @@ function injectOneTrustPlaceholder(ul) {
 
   const placeholder = document.createElement('li');
   placeholder.id = 'ot-sdk-btn-container';
+
+  // Static fallback — shown when OneTrust SDK doesn't load.
+  // The source site always shows this link in the footer.
+  const fallbackBtn = document.createElement('button');
+  fallbackBtn.id = 'ot-sdk-btn';
+  fallbackBtn.className = 'ot-sdk-show-settings';
+  fallbackBtn.type = 'button';
+  fallbackBtn.textContent = 'Mijn cookievoorkeur wijzigen';
+  placeholder.append(fallbackBtn);
 
   const items = [...ul.querySelectorAll('li')];
   const cookieLi = items.find((li) => /cookiebeleid/i.test(li.textContent));
@@ -151,8 +166,6 @@ export default async function decorate(block) {
   let linksHtml = '';
 
   if (footerDoc) {
-    // /footer.plain.html renders as a single root <div> containing one
-    // <div> per authored row.
     const rows = [...footerDoc.body.querySelectorAll(':scope > div')];
 
     if (rows[0]) {

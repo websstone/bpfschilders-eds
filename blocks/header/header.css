@@ -418,8 +418,7 @@
   order: 5;
 }
 
-.header .pagenav-toggle-button:hover,
-.header .search-toggle-button:hover {
+.header .pagenav-toggle-button:hover {
   color: var(--header-text-hover);
 }
 
