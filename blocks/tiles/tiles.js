@@ -106,10 +106,14 @@ function parseTileItemRow(row) {
   let ctaTextEl = null;
   let iconEl = null;
 
-  // Prefer data-aue-prop when present (UE edit mode).
-  const hasProps = paragraphs.some((p) => p.dataset.aueProp);
+  // Prefer data-aue-prop / data-richtext-prop when present (UE edit mode).
+  const hasProps = paragraphs.some((p) => p.dataset.aueProp || p.dataset.richtextProp);
   if (hasProps) {
-    const byProp = (prop) => paragraphs.find((p) => p.dataset.aueProp === prop) || null;
+    // aem.live emits data-richtext-prop for @richtext-typed fields and data-aue-prop
+    // for everything else (@text, @reference, @aem-content). Match either family.
+    const byProp = (prop) => paragraphs.find(
+      (p) => p.dataset.aueProp === prop || p.dataset.richtextProp === prop,
+    ) || null;
     linkEl = byProp('tile_link');
     imageEl = byProp('tile_image');
     headingEl = byProp('tile_heading');
