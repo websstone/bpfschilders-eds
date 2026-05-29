@@ -1,13 +1,22 @@
 /**
  * BPF Schilders — header block
  *
- * Fetches the shared /nav fragment (plain.html), builds the full header
- * DOM, injects mobile-only toggle buttons at runtime, and wires all
- * interactive behaviours.
+ * Two-mode block:
+ *
+ *   (A) Global chrome (loaded via loadHeader on every page). The block
+ *       element is empty; we fetch /nav.plain.html and render from the
+ *       fragment rows. There are no UE bindings to preserve in this mode.
+ *
+ *   (B) Authoring on /nav itself (UE opens the nav page; the JCR
+ *       Header block renders inline). The block element already carries
+ *       the SSR-emitted data-richtext-* / data-aue-* per-field bindings.
+ *       We MUST read source rows from `block.children` and call
+ *       moveInstrumentation on each source cell so UE retains per-field
+ *       editors after the decorate() rebuild.
  *
  * Fragment row order (authored in /nav document):
- *   Row 0 — logo_href       (plain text, e.g. "/")
- *   Row 1 — logo_alt        (plain text, e.g. "BPF Schilders")
+ *   Row 0 — logo_href                (plain text, e.g. "/")
+ *   Row 1 — logo_alt                 (plain text, e.g. "BPF Schilders")
  *   Row 2 — audience_switcher_links  (rich-text <ul>)
  *   Row 3 — main_nav_links           (rich-text <ul> with nested <ul>s)
  *   Row 4 — search_placeholder       (plain text, optional)
@@ -16,6 +25,8 @@
  * No module-scope mutable state — all state lives on DOM elements or
  * inside the decorate() closure.
  */
+
+import { moveInstrumentation } from '../../scripts/scripts.js';
 
 const NAV_FRAGMENT_PATH = '/nav';
 
@@ -43,6 +54,78 @@ const AUDIENCE_SUBNAV = {
     <li class="home"><a href="/werkgever/">Home</a></li>
   </ul>`,
 };
+
+/**
+ * Hardcoded fallback nav HTML, used only when the /nav fragment fetch
+ * fails entirely AND the block element is empty (e.g. dev-server first
+ * boot before /nav has been authored). Mirrors the source site nav.
+ */
+const FALLBACK_AUDIENCE_SWITCHER_HTML = `<ul>
+  <li class="active"><a href="/werknemer/">Werknemer</a></li>
+  <li><a href="/ondernemer/">Ondernemer</a></li>
+  <li><a href="/werkgever/">Werkgever</a></li>
+  <li><a href="/over-ons/">Over ons</a></li>
+  <li><a href="/klacht/">Klacht</a></li>
+  <li><a href="/translate/">Translate</a></li>
+  <li><a href="/contact/">Contact</a></li>
+</ul>`;
+
+const FALLBACK_MAIN_NAV_HTML = `<ul>
+  <li class="home"><a href="/werknemer/">Home</a></li>
+  <li class="has-children">
+    <a href="/werknemer/het-pensioen/">Het pensioen</a>
+    <div><ul>
+      <li><a href="/werknemer/het-pensioen/wat-is-pensioen/">Wat is pensioen?</a></li>
+      <li><a href="/werknemer/het-pensioen/pensioenpakket/">Pensioenpakket</a></li>
+      <li><a href="/werknemer/het-pensioen/pensioen-1-2-3/">Pensioen 1-2-3</a></li>
+      <li><a href="/werknemer/het-pensioen/uw-pensioenoverzicht/">Uw pensioenoverzicht</a></li>
+      <li><a href="/werknemer/het-pensioen/beleggen-voor-een-goed-pensioen/">Beleggen voor een goed pensioen</a></li>
+      <li><a href="/werknemer/het-pensioen/waardeoverdracht/">Waardeoverdracht</a></li>
+    </ul></div>
+  </li>
+  <li class="has-children">
+    <a href="/werknemer/wat-doe-ik-bij/">Wat doe ik bij...</a>
+    <div><ul>
+      <li><a href="/werknemer/wat-doe-ik-bij/trouwen-of-samenwonen/">Trouwen of samenwonen</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/kinderen/">Kinderen</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/nieuwe-baan/">Nieuwe baan</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/ontslag/">Ontslag</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/scheiden-of-uit-elkaar-gaan/">Scheiden of uit elkaar gaan</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/arbeidsongeschiktheid/">Arbeidsongeschiktheid</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/met-pensioen-gaan/">Met pensioen gaan</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/verhuizen/">Verhuizen</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/overlijden/">Overlijden</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/uitzendkracht-worden/">Uitzendkracht worden</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/voor-uzelf-beginnen/">Voor uzelf beginnen</a></li>
+      <li><a href="/werknemer/wat-doe-ik-bij/verlof/">Verlof</a></li>
+    </ul></div>
+  </li>
+  <li class="has-children">
+    <a href="/werknemer/u-bent-met-pensioen/">U bent met pensioen</a>
+    <div><ul>
+      <li><a href="/werknemer/u-bent-met-pensioen/belangenbehartiging/">Belangenbehartiging</a></li>
+      <li><a href="/werknemer/u-bent-met-pensioen/belastingaangifte/">Belastingaangifte</a></li>
+      <li><a href="/werknemer/u-bent-met-pensioen/betaling-van-uw-pensioen/">Betaling van uw pensioen</a></li>
+      <li><a href="/werknemer/u-bent-met-pensioen/inhoudingen/">Inhoudingen</a></li>
+      <li><a href="/werknemer/u-bent-met-pensioen/jaarlijkse-wijziging-van-uw-pensioen/">Jaarlijkse wijziging van uw pensioen</a></li>
+      <li><a href="/werknemer/u-bent-met-pensioen/u-woont-in-het-buitenland/">U woont in het buitenland</a></li>
+    </ul></div>
+  </li>
+  <li class="has-children">
+    <a href="/werknemer/actueel/">Actueel</a>
+    <div><ul>
+      <li><a href="/werknemer/actueel/blog/">Blog</a></li>
+      <li><a href="/werknemer/actueel/dekkingsgraad/">Dekkingsgraad</a></li>
+      <li><a href="/werknemer/actueel/nieuw-pensioenstelsel/">Nieuw pensioenstelsel</a></li>
+      <li><a href="/werknemer/actueel/nieuws/">Nieuws</a></li>
+      <li><a href="/werknemer/actueel/nieuwsbrieven/">Nieuwsbrieven</a></li>
+      <li><a href="/werknemer/actueel/pensioenblad/">Pensioenblad</a></li>
+      <li><a href="/werknemer/actueel/klantenpanel/">Klantenpanel</a></li>
+      <li><a href="/werknemer/actueel/downloads/">Downloads</a></li>
+    </ul></div>
+  </li>
+  <li><a href="/werknemer/contact/">Contact</a></li>
+</ul>`;
 
 /**
  * Fetch the plain HTML for a path.
@@ -284,125 +367,87 @@ function buildLoginState(loginUrl) {
 
 /**
  * Main decorate function — called by the AEM runtime for the header block.
- * The block element passed in is an empty div; this function fetches the
- * /nav fragment, builds the complete header DOM, and replaces block content.
  *
  * @param {HTMLElement} block
  */
 export default async function decorate(block) {
   // ------------------------------------------------------------------
-  // 1. Fetch the /nav fragment
+  // 1. Resolve source rows.
+  //    Authoring context: block element already holds the SSR-emitted
+  //    Header block rows (with UE bindings). Global chrome: empty block,
+  //    fall back to fetching /nav.plain.html.
   // ------------------------------------------------------------------
-  const navDoc = await fetchFragment(NAV_FRAGMENT_PATH);
+  const blockRows = [...block.children].filter((el) => el.tagName === 'DIV');
+  const isAuthoringContext = blockRows.length >= 2;
 
-  let logoHref = '/';
-  let logoAlt = 'BPF Schilders';
-  let audienceSwitcherHtml = '';
-  let mainNavHtml = '';
-  let searchPlaceholder = 'Heeft u een vraag?';
-  let loginUrl = '/pensioenadministratie/inloggen/#!/login/redirect?';
-
-  let usedFragment = false;
-  if (navDoc) {
-    let rows = [...navDoc.body.querySelectorAll(':scope > div')];
-
-    if (rows.length === 0) {
-      const main = navDoc.querySelector('main');
-      if (main) {
-        rows = [...main.querySelectorAll(':scope > div > div > div > div')];
+  let sourceRows = [];
+  if (isAuthoringContext) {
+    sourceRows = blockRows;
+  } else {
+    const navDoc = await fetchFragment(NAV_FRAGMENT_PATH);
+    if (navDoc) {
+      sourceRows = [...navDoc.body.querySelectorAll(':scope > div')];
+      if (sourceRows.length === 0) {
+        const main = navDoc.querySelector('main');
+        if (main) {
+          sourceRows = [...main.querySelectorAll(':scope > div > div > div > div')];
+        }
       }
     }
-
-    if (rows.length >= 2) {
-      usedFragment = true;
-      const getCell = (n) => cell(rows[n]);
-
-      if (rows[0]) logoHref = cellText(getCell(0)) || '/';
-      if (rows[1]) logoAlt = cellText(getCell(1)) || 'BPF Schilders';
-      if (rows[2]) {
-        const c = getCell(2);
-        audienceSwitcherHtml = c ? c.innerHTML : '';
-      }
-      if (rows[3]) {
-        const c = getCell(3);
-        mainNavHtml = c ? c.innerHTML : '';
-      }
-      if (rows[4]) searchPlaceholder = cellText(getCell(4)) || searchPlaceholder;
-      if (rows[5]) loginUrl = cellText(getCell(5)) || loginUrl;
-    }
   }
-
-  if (!usedFragment) {
-    audienceSwitcherHtml = `<ul>
-      <li class="active"><a href="/werknemer/">Werknemer</a></li>
-      <li><a href="/ondernemer/">Ondernemer</a></li>
-      <li><a href="/werkgever/">Werkgever</a></li>
-      <li><a href="/over-ons/">Over ons</a></li>
-      <li><a href="/klacht/">Klacht</a></li>
-      <li><a href="/translate/">Translate</a></li>
-      <li><a href="/contact/">Contact</a></li>
-    </ul>`;
-
-    mainNavHtml = `<ul>
-      <li class="home"><a href="/werknemer/">Home</a></li>
-      <li class="has-children">
-        <a href="/werknemer/het-pensioen/">Het pensioen</a>
-        <div><ul>
-          <li><a href="/werknemer/het-pensioen/wat-is-pensioen/">Wat is pensioen?</a></li>
-          <li><a href="/werknemer/het-pensioen/pensioenpakket/">Pensioenpakket</a></li>
-          <li><a href="/werknemer/het-pensioen/pensioen-1-2-3/">Pensioen 1-2-3</a></li>
-          <li><a href="/werknemer/het-pensioen/uw-pensioenoverzicht/">Uw pensioenoverzicht</a></li>
-          <li><a href="/werknemer/het-pensioen/beleggen-voor-een-goed-pensioen/">Beleggen voor een goed pensioen</a></li>
-          <li><a href="/werknemer/het-pensioen/waardeoverdracht/">Waardeoverdracht</a></li>
-        </ul></div>
-      </li>
-      <li class="has-children">
-        <a href="/werknemer/wat-doe-ik-bij/">Wat doe ik bij...</a>
-        <div><ul>
-          <li><a href="/werknemer/wat-doe-ik-bij/trouwen-of-samenwonen/">Trouwen of samenwonen</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/kinderen/">Kinderen</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/nieuwe-baan/">Nieuwe baan</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/ontslag/">Ontslag</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/scheiden-of-uit-elkaar-gaan/">Scheiden of uit elkaar gaan</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/arbeidsongeschiktheid/">Arbeidsongeschiktheid</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/met-pensioen-gaan/">Met pensioen gaan</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/verhuizen/">Verhuizen</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/overlijden/">Overlijden</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/uitzendkracht-worden/">Uitzendkracht worden</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/voor-uzelf-beginnen/">Voor uzelf beginnen</a></li>
-          <li><a href="/werknemer/wat-doe-ik-bij/verlof/">Verlof</a></li>
-        </ul></div>
-      </li>
-      <li class="has-children">
-        <a href="/werknemer/u-bent-met-pensioen/">U bent met pensioen</a>
-        <div><ul>
-          <li><a href="/werknemer/u-bent-met-pensioen/belangenbehartiging/">Belangenbehartiging</a></li>
-          <li><a href="/werknemer/u-bent-met-pensioen/belastingaangifte/">Belastingaangifte</a></li>
-          <li><a href="/werknemer/u-bent-met-pensioen/betaling-van-uw-pensioen/">Betaling van uw pensioen</a></li>
-          <li><a href="/werknemer/u-bent-met-pensioen/inhoudingen/">Inhoudingen</a></li>
-          <li><a href="/werknemer/u-bent-met-pensioen/jaarlijkse-wijziging-van-uw-pensioen/">Jaarlijkse wijziging van uw pensioen</a></li>
-          <li><a href="/werknemer/u-bent-met-pensioen/u-woont-in-het-buitenland/">U woont in het buitenland</a></li>
-        </ul></div>
-      </li>
-      <li class="has-children">
-        <a href="/werknemer/actueel/">Actueel</a>
-        <div><ul>
-          <li><a href="/werknemer/actueel/blog/">Blog</a></li>
-          <li><a href="/werknemer/actueel/dekkingsgraad/">Dekkingsgraad</a></li>
-          <li><a href="/werknemer/actueel/nieuw-pensioenstelsel/">Nieuw pensioenstelsel</a></li>
-          <li><a href="/werknemer/actueel/nieuws/">Nieuws</a></li>
-          <li><a href="/werknemer/actueel/nieuwsbrieven/">Nieuwsbrieven</a></li>
-          <li><a href="/werknemer/actueel/pensioenblad/">Pensioenblad</a></li>
-          <li><a href="/werknemer/actueel/klantenpanel/">Klantenpanel</a></li>
-          <li><a href="/werknemer/actueel/downloads/">Downloads</a></li>
-        </ul></div>
-      </li>
-      <li><a href="/werknemer/contact/">Contact</a></li>
-    </ul>`;
-  }
+  const usedFragment = sourceRows.length >= 2;
 
   // ------------------------------------------------------------------
-  // 2. Build DOM
+  // 2. Capture source cell references AND extracted values for each of
+  //    the six Header model fields.
+  //
+  //    Row layout caveat: AEM SSR collapses adjacent text fields into a
+  //    single row's cell when they appear consecutively in the model. For
+  //    the Header model this happens to logo_href + logo_alt, producing
+  //    a row 0 whose cell contains TWO <p> siblings (one per field)
+  //    instead of two separate rows. The shape is identical in nav.html
+  //    (authoring) and nav.plain.html (runtime), so we detect it once.
+  //
+  //    Subsequent rows (rich-text + the trailing single text fields) are
+  //    each rendered in their own row. The cell references carry the
+  //    per-field data-richtext-* / data-aue-* UE bindings that must be
+  //    moved onto the rebuilt elements before block.textContent='' wipes
+  //    them — see step 4.
+  // ------------------------------------------------------------------
+  let logoHrefCell = null;
+  let logoAltCell = null;
+  let nextRowIdx = 1;
+  if (sourceRows[0]) {
+    const row0Cell = cell(sourceRows[0]);
+    const row0Paragraphs = row0Cell ? [...row0Cell.children].filter((c) => c.tagName === 'P') : [];
+    if (row0Paragraphs.length >= 2) {
+      // Collapsed shape: row 0 cell holds both logo_href and logo_alt as <p>s.
+      [logoHrefCell, logoAltCell] = row0Paragraphs;
+      // Remaining fields start at row 1.
+      nextRowIdx = 1;
+    } else {
+      // Separate-row shape: row 0 = logo_href only, row 1 = logo_alt.
+      logoHrefCell = row0Cell;
+      if (sourceRows[1]) logoAltCell = cell(sourceRows[1]);
+      nextRowIdx = 2;
+    }
+  }
+  const cellAt = (offset) => {
+    const row = sourceRows[nextRowIdx + offset];
+    return row ? cell(row) : null;
+  };
+  const audienceSwitcherCell = cellAt(0);
+  const mainNavCell = cellAt(1);
+  const searchPlaceholderCell = cellAt(2);
+  const loginUrlCell = cellAt(3);
+
+  const logoHref = cellText(logoHrefCell) || '/';
+  const logoAlt = cellText(logoAltCell) || 'BPF Schilders';
+  const searchPlaceholder = cellText(searchPlaceholderCell) || 'Heeft u een vraag?';
+  const loginUrl = cellText(loginUrlCell) || '/pensioenadministratie/inloggen/#!/login/redirect?';
+
+  // ------------------------------------------------------------------
+  // 3. Build DOM (do not touch `block` until step 5).
   // ------------------------------------------------------------------
   const container = document.createElement('div');
   container.className = 'container';
@@ -420,7 +465,7 @@ export default async function decorate(block) {
   logoLink.append(logoImg);
   container.append(logoLink);
 
-  // Nav wrapper (#header-navigation)
+  // Nav wrapper
   const headerNav = document.createElement('div');
   headerNav.id = 'header-navigation';
   headerNav.className = 'header-navigation';
@@ -434,10 +479,21 @@ export default async function decorate(block) {
   const topNavLabel = document.createElement('span');
   topNavLabel.textContent = 'Kies een ingang';
   topNav.append(topNavLabel);
-  topNav.insertAdjacentHTML('beforeend', audienceSwitcherHtml);
-  topNav.append(buildLoginState(loginUrl));
 
-  // Main navigation (primary nav)
+  // Move the audience-switcher's rich-text children into topNav so the
+  // source <ul> (and any nested <a> instrumentation) is preserved.
+  if (audienceSwitcherCell) {
+    while (audienceSwitcherCell.firstChild) {
+      topNav.append(audienceSwitcherCell.firstChild);
+    }
+  } else if (!usedFragment) {
+    topNav.insertAdjacentHTML('beforeend', FALLBACK_AUDIENCE_SWITCHER_HTML);
+  }
+
+  const loginState = buildLoginState(loginUrl);
+  topNav.append(loginState);
+
+  // Main navigation
   const mainNav = document.createElement('nav');
   mainNav.setAttribute('role', 'navigation');
   mainNav.setAttribute('aria-label', 'Navigatie');
@@ -447,47 +503,62 @@ export default async function decorate(block) {
   mainNavLabel.textContent = 'Navigatie';
   mainNav.append(mainNavLabel);
 
-  // On non-werknemer pages that belong to a known audience section,
-  // show a section-specific sub-nav bar instead of the werknemer nav.
-  // On pages without a section (klacht, contact, etc.), show a minimal
-  // home link. The search box is always visible (source shows it on all
-  // audience sections).
-  if (!isWerknemerPage()) {
+  // Section-specific nav swap is a RUNTIME behaviour. In UE authoring we
+  // want the editor to see the full authored main_nav_links so they can
+  // edit them — never substitute AUDIENCE_SUBNAV here.
+  if (isAuthoringContext) {
+    if (mainNavCell) {
+      while (mainNavCell.firstChild) mainNav.append(mainNavCell.firstChild);
+    }
+  } else if (!isWerknemerPage()) {
     const section = getAudienceSection();
     if (section && AUDIENCE_SUBNAV[section]) {
       mainNav.insertAdjacentHTML('beforeend', AUDIENCE_SUBNAV[section]);
     } else {
-      // Non-section pages (klacht, contact, disclaimer, etc.) — show
-      // a minimal bar so the search box has a visual container row.
       mainNav.insertAdjacentHTML('beforeend', '<ul></ul>');
     }
-  } else {
-    mainNav.insertAdjacentHTML('beforeend', mainNavHtml);
+  } else if (mainNavCell) {
+    while (mainNavCell.firstChild) mainNav.append(mainNavCell.firstChild);
+  } else if (!usedFragment) {
+    mainNav.insertAdjacentHTML('beforeend', FALLBACK_MAIN_NAV_HTML);
   }
 
-  // Search box — always shown. The source site shows the search box in
-  // the second header bar on ALL pages, not just werknemer pages.
   const searchbox = buildSearchBox(searchPlaceholder);
+  const searchInput = searchbox.querySelector('input');
+
+  // ------------------------------------------------------------------
+  // 4. Move UE instrumentation from source cells onto rebuilt targets.
+  //    Skipped in runtime context — fragment cells have no bindings.
+  // ------------------------------------------------------------------
+  if (isAuthoringContext) {
+    if (logoHrefCell) moveInstrumentation(logoHrefCell, logoLink);
+    if (logoAltCell) moveInstrumentation(logoAltCell, logoImg);
+    if (audienceSwitcherCell) moveInstrumentation(audienceSwitcherCell, topNav);
+    if (mainNavCell) moveInstrumentation(mainNavCell, mainNav);
+    if (searchPlaceholderCell && searchInput) {
+      moveInstrumentation(searchPlaceholderCell, searchInput);
+    }
+    if (loginUrlCell) moveInstrumentation(loginUrlCell, loginState);
+  }
 
   headerNav.append(topNav, mainNav);
   container.append(headerNav);
-
   container.append(searchbox);
 
   // ------------------------------------------------------------------
-  // 3. Replace block content
+  // 5. Replace block content. Safe to clear now — all source-cell refs
+  //    have been read and instrumentation has been moved off them.
   // ------------------------------------------------------------------
   block.textContent = '';
   block.append(container);
 
   // ------------------------------------------------------------------
-  // 4. Decorate interactive behaviours
+  // 6. Decorate interactive behaviours.
   // ------------------------------------------------------------------
   applyActiveLinkState(topNav);
   decorateFlyouts(mainNav);
   injectMobileButtons(container, headerNav, searchbox);
 
-  // Add home icon to the "Home" nav item
   const homeLink = mainNav.querySelector('li.home > a');
   if (homeLink) {
     const homeIcon = document.createElement('span');
@@ -496,10 +567,6 @@ export default async function decorate(block) {
     homeLink.prepend(homeIcon);
   }
 
-  // ------------------------------------------------------------------
-  // 5. Ensure the header <header> element has the right height token
-  //    so the sticky chrome doesn't obscure content.
-  // ------------------------------------------------------------------
   const headerEl = block.closest('header');
   if (headerEl) {
     headerEl.style.height = 'auto';
