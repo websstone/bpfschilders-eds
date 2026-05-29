@@ -386,12 +386,16 @@ export default async function decorate(block) {
   } else {
     const navDoc = await fetchFragment(NAV_FRAGMENT_PATH);
     if (navDoc) {
-      sourceRows = [...navDoc.body.querySelectorAll(':scope > div')];
+      // Preferred shape (post-JCR-repair): the fetched plain.html contains an
+      // explicit `<div class="header">` block whose direct <div> children are
+      // the rows. Use that when present.
+      const fetchedHeaderEl = navDoc.querySelector('.header');
+      if (fetchedHeaderEl) {
+        sourceRows = [...fetchedHeaderEl.children].filter((c) => c.tagName === 'DIV');
+      }
+      // Legacy shape: rows directly under body (Google-Docs-style export).
       if (sourceRows.length === 0) {
-        const main = navDoc.querySelector('main');
-        if (main) {
-          sourceRows = [...main.querySelectorAll(':scope > div > div > div > div')];
-        }
+        sourceRows = [...navDoc.body.querySelectorAll(':scope > div')];
       }
     }
   }
