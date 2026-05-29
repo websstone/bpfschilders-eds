@@ -34,10 +34,9 @@
     "id": "tile-item",
     "fields": [
       {
-        "component": "text",
+        "component": "aem-content",
         "name": "tile_link",
         "label": "Tile Link URL",
-        "valueType": "string",
         "required": true
       },
       {
@@ -326,29 +325,7 @@
   },
   {
     "id": "tiles",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "tile_heading",
-        "label": "Tile Headings",
-        "valueType": "string",
-        "required": true
-      },
-      {
-        "component": "richtext",
-        "name": "tile_body",
-        "label": "Tile Descriptions",
-        "valueType": "string",
-        "required": false
-      },
-      {
-        "component": "reference",
-        "name": "tile_image",
-        "label": "Tile Images",
-        "valueType": "string",
-        "required": false
-      }
-    ]
+    "fields": []
   },
   {
     "id": "carousel",
@@ -357,27 +334,6 @@
         "component": "text",
         "name": "section_heading",
         "label": "Section Heading",
-        "valueType": "string",
-        "required": false
-      },
-      {
-        "component": "text",
-        "name": "slide_icon_class",
-        "label": "Slide Icon Classes",
-        "valueType": "string",
-        "required": false
-      },
-      {
-        "component": "text",
-        "name": "slide_label",
-        "label": "Slide Labels",
-        "valueType": "string",
-        "required": false
-      },
-      {
-        "component": "text",
-        "name": "slide_link",
-        "label": "Slide Link URLs",
         "valueType": "string",
         "required": false
       }
@@ -401,10 +357,9 @@
         "required": true
       },
       {
-        "component": "text",
+        "component": "aem-content",
         "name": "slide_link",
         "label": "Slide Link URL",
-        "valueType": "string",
         "required": true
       }
     ]
@@ -444,8 +399,14 @@
         "label": "Style",
         "valueType": "string",
         "options": [
-          { "name": "Default", "value": "" },
-          { "name": "Highlight", "value": "highlight" }
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Highlight",
+            "value": "highlight"
+          }
         ]
       }
     ]
