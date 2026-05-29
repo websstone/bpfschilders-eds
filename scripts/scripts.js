@@ -82,9 +82,29 @@ async function loadFonts() {
  * Auto-inject breadcrumbs on inner pages (depth >= 2).
  * @param {Element} main
  */
-function buildBreadcrumbs(main) {
-  const path = window.location.pathname.replace(/\/$/, '');
+/**
+ * Resolve the canonical page-path segments regardless of dev-server vs AEM author/preview URL.
+ *
+ * Dev server (and live aem.page/aem.live):  /werknemer/wat-doe-ik-bij           → ['werknemer', 'wat-doe-ik-bij']
+ * AEM author / preview at localhost:4502:   /content/<site>/werknemer/wat-doe-ik-bij.html
+ *                                                                                → ['werknemer', 'wat-doe-ik-bij']
+ *
+ * Auto-block skip checks and breadcrumb depth checks MUST use this — not the raw pathname —
+ * or they fire incorrectly in the UE iframe / AEM author context (the sidebar example: the raw
+ * pathname says `werknemer.html` which doesn't match the `werknemer` entry in skipPages, so the
+ * sidebar gets injected on root pages it shouldn't, triggering the two-column grid and the
+ * apparent "page scaling" behaviour the operator sees).
+ */
+function getPagePathSegments() {
+  const path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '');
   const segments = path.split('/').filter(Boolean);
+  const contentIdx = segments.indexOf('content');
+  // /content/<site>/<page-segments> → drop the first two ("content", "<site>") to get the page slug.
+  return contentIdx >= 0 ? segments.slice(contentIdx + 2) : segments;
+}
+
+function buildBreadcrumbs(main) {
+  const segments = getPagePathSegments();
   if (segments.length < 2) return;
   if (main.querySelector('.breadcrumbs')) return;
 
@@ -119,10 +139,10 @@ function buildBreadcrumbs(main) {
  * @param {Element} main
  */
 function buildContactSidebar(main) {
-  const path = window.location.pathname.replace(/\/$/, '');
-  const slug = path.split('/').filter(Boolean).pop() || '';
+  const segments = getPagePathSegments();
+  const slug = segments[segments.length - 1] || '';
   const skipPages = ['', 'index', 'nav', 'footer', 'werknemer', 'ondernemer', 'werkgever', 'over-ons', 'translate'];
-  if (skipPages.includes(slug) && path.split('/').filter(Boolean).length <= 1) return;
+  if (skipPages.includes(slug) && segments.length <= 1) return;
   if (main.querySelector('.sidebar')) return;
 
   const section = main.querySelector('.section') || main.lastElementChild;
