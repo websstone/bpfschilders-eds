@@ -107,19 +107,36 @@ function parseTileItemRow(row) {
   let iconEl = null;
 
   // Prefer data-aue-prop / data-richtext-prop when present (UE edit mode).
-  const hasProps = paragraphs.some((p) => p.dataset.aueProp || p.dataset.richtextProp);
+  const hasProps = paragraphs.some(
+    (p) => p.dataset.aueProp || p.dataset.richtextProp
+      || p.querySelector('[data-aue-prop], [data-richtext-prop]'),
+  );
   if (hasProps) {
     // aem.live emits data-richtext-prop for @richtext-typed fields and data-aue-prop
-    // for everything else (@text, @reference, @aem-content). Match either family.
-    const byProp = (prop) => paragraphs.find(
-      (p) => p.dataset.aueProp === prop || p.dataset.richtextProp === prop,
-    ) || null;
+    // for everything else (@text, @reference, @aem-content). For media fields, the
+    // binding may live on an inner <img> rather than the <p> — also check descendants.
+    const byProp = (prop) => {
+      const direct = paragraphs.find(
+        (p) => p.dataset.aueProp === prop || p.dataset.richtextProp === prop,
+      );
+      if (direct) return direct;
+      const sel = `[data-aue-prop="${prop}"], [data-richtext-prop="${prop}"]`;
+      return paragraphs.find((p) => p.querySelector(sel)) || null;
+    };
     linkEl = byProp('tile_link');
     imageEl = byProp('tile_image');
     headingEl = byProp('tile_heading');
     bodyEl = byProp('tile_body');
     ctaTextEl = byProp('tile_cta_text');
     iconEl = byProp('tile_icon');
+    // Link fields never get a UE binding in aem.live's rendering — when byProp
+    // returns null, fall back to the first anchor-only paragraph (classifier-positional).
+    if (!linkEl) {
+      linkEl = paragraphs.find((p) => {
+        const a = p.querySelector('a');
+        return a && p.textContent.trim() === a.textContent.trim();
+      }) || null;
+    }
   } else {
     // Classifier-positional reading for dev-server / publish mode.
     const textSlots = [];

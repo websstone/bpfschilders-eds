@@ -130,11 +130,15 @@ export default function decorate(block) {
   });
 
   let headingText = '';
+  let headingEl = null;
   let slides = [];
 
   if (childRows.length > 0) {
     // Container format: parent row has heading, each child row is a slide.
-    headingText = cellText(parentRows[0] ? parentRows[0].children[0] : null);
+    // Capture the actual binding-bearing cell so its data-aue-prop="section_heading"
+    // can survive into the rebuilt <h2>.
+    headingEl = parentRows[0] ? (parentRows[0].children[0] || null) : null;
+    headingText = cellText(headingEl);
     slides = childRows.map((row) => {
       const cells = [...row.children];
       const iconCell = cells[0] || null;
@@ -198,6 +202,8 @@ export default function decorate(block) {
     const h2 = document.createElement('h2');
     h2.className = 'carousel-heading';
     h2.textContent = headingText;
+    // Preserve UE per-property binding for section_heading.
+    if (headingEl) moveInstrumentation(headingEl, h2);
     block.append(h2);
   }
 
