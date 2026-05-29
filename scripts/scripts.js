@@ -13,6 +13,41 @@ import {
 } from './aem.js';
 
 /**
+ * Copy the named attributes from one element to another.
+ * @param {Element} from
+ * @param {Element} to
+ * @param {Array<string>} attributes
+ */
+function moveAttributes(from, to, attributes) {
+  if (!attributes) attributes = [...from.attributes].map(({ nodeName }) => nodeName);
+  attributes.forEach((attr) => {
+    const value = from.getAttribute(attr);
+    if (value) {
+      to.setAttribute(attr, value);
+      from.removeAttribute(attr);
+    }
+  });
+}
+
+/**
+ * Move Universal Editor instrumentation attributes (data-aue-*, data-richtext-*)
+ * from one element to another. Block decorators that rebuild DOM MUST call this
+ * to keep UE per-property authoring bindings alive after decoration.
+ * Mirrors the helper in adobe-rnd/aem-boilerplate-xwalk's scripts.js.
+ * @param {Element} from
+ * @param {Element} to
+ */
+export function moveInstrumentation(from, to) {
+  moveAttributes(
+    from,
+    to,
+    [...from.attributes]
+      .map(({ nodeName }) => nodeName)
+      .filter((attr) => attr.startsWith('data-aue-') || attr.startsWith('data-richtext-')),
+  );
+}
+
+/**
  * Builds hero block and prepends to main in a new section.
  * @param {Element} main The container element
  */

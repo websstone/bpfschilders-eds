@@ -1,6 +1,11 @@
 /**
  * Tiles block — card grid for InfoTilesWithCtas / PolicyCoverageLoginTeaser.
  *
+ * UE-aware decorate() calls moveInstrumentation() so that data-aue-* attributes
+ * on the source tile-item rows and their per-property paragraphs survive into
+ * the final DOM. Without this, Universal Editor sees no editable bindings
+ * post-decoration.
+ *
  * Two variants detected via CSS class on the block element:
  *   default   — white-card promotional tiles with images + CTA buttons
  *   inverted  — full-purple hero/stat banner (single tile, no images)
@@ -8,15 +13,17 @@
  * Child-cascade pattern (mirrors blocks/carousel/carousel.js):
  *   When UE has authored individual tile-item children, each child row has
  *   data-aue-model="tile-item" or data-aue-component set.  decorate() prefers
- *   those rows and reads per-item fields from data-aue-prop attributes.
- *   When no child rows are present it falls back to the original flat-property
- *   parser (multi-line values in a single parent row).
+ *   those rows and reads per-item fields from data-aue-prop attributes when
+ *   present, falling back to classifier-positional parsing for the dev-server
+ *   / publish HTML (where data-aue-prop is absent on paragraphs).
  *
  * tile-item fields (component-models.json):
  *   tile_link, tile_image, tile_heading, tile_body, tile_cta_text, tile_icon
  *
  * @param {Element} block
  */
+import { moveInstrumentation } from '../../scripts/scripts.js';
+
 async function fetchCtaData(block) {
   const urn = block.dataset.aueResource || '';
   if (!urn) return [];
@@ -92,57 +99,63 @@ function extractPicture(el) {
 function parseTileItemRow(row) {
   const paragraphs = [...row.querySelectorAll('p')];
 
+  let linkEl = null;
+  let imageEl = null;
+  let headingEl = null;
+  let bodyEl = null;
+  let ctaTextEl = null;
+  let iconEl = null;
+
   // Prefer data-aue-prop when present (UE edit mode).
   const hasProps = paragraphs.some((p) => p.dataset.aueProp);
   if (hasProps) {
     const byProp = (prop) => paragraphs.find((p) => p.dataset.aueProp === prop) || null;
-    return {
-      link: propText(byProp('tile_link')),
-      imageSrc: extractImageSrc(byProp('tile_image')),
-      picture: extractPicture(byProp('tile_image')),
-      heading: propText(byProp('tile_heading')),
-      body: propText(byProp('tile_body')),
-      ctaText: propText(byProp('tile_cta_text')),
-      icon: propText(byProp('tile_icon')),
-    };
-  }
-
-  // Classifier-positional reading for dev-server / publish mode.
-  let linkEl = null;
-  let imageEl = null;
-  const textSlots = []; // heading, body, cta_text, icon in order
-
-  paragraphs.forEach((p) => {
-    if (!linkEl) {
-      // A link-only paragraph: contains an <a> and no other visible text outside it.
-      const anchor = p.querySelector('a');
-      if (anchor && p.textContent.trim() === anchor.textContent.trim()) {
-        linkEl = p;
+    linkEl = byProp('tile_link');
+    imageEl = byProp('tile_image');
+    headingEl = byProp('tile_heading');
+    bodyEl = byProp('tile_body');
+    ctaTextEl = byProp('tile_cta_text');
+    iconEl = byProp('tile_icon');
+  } else {
+    // Classifier-positional reading for dev-server / publish mode.
+    const textSlots = [];
+    paragraphs.forEach((p) => {
+      if (!linkEl) {
+        // A link-only paragraph: contains an <a> and no other visible text outside it.
+        const anchor = p.querySelector('a');
+        if (anchor && p.textContent.trim() === anchor.textContent.trim()) {
+          linkEl = p;
+          return;
+        }
+      }
+      if (!imageEl && p.querySelector('picture, img')) {
+        imageEl = p;
         return;
       }
-    }
-    if (!imageEl && p.querySelector('picture, img')) {
-      imageEl = p;
-      return;
-    }
-    // Everything else is a text slot.
-    textSlots.push(p);
-  });
-
-  const [headingP, bodyP, ctaTextP, iconP] = textSlots;
+      textSlots.push(p);
+    });
+    [headingEl, bodyEl, ctaTextEl, iconEl] = textSlots;
+  }
 
   // For the link field, prefer the href of the anchor inside linkEl so that
   // buildDefaultCard receives a usable URL string.
   const linkHref = linkEl ? (linkEl.querySelector('a')?.getAttribute('href') || propText(linkEl)) : '';
 
   return {
+    sourceRow: row,
+    linkEl,
+    imageEl,
+    headingEl,
+    bodyEl,
+    ctaTextEl,
+    iconEl,
     link: linkHref,
     imageSrc: extractImageSrc(imageEl),
     picture: extractPicture(imageEl),
-    heading: propText(headingP),
-    body: propText(bodyP),
-    ctaText: propText(ctaTextP),
-    icon: propText(iconP),
+    heading: propText(headingEl),
+    body: propText(bodyEl),
+    ctaText: propText(ctaTextEl),
+    icon: propText(iconEl),
   };
 }
 
@@ -151,20 +164,27 @@ function parseTileItemRow(row) {
  * ctaFromFetch is the legacy fetched CTA object (may be undefined).
  */
 function buildDefaultCard(tileData, ctaFromFetch) {
-  const { imageSrc, picture, heading, body, ctaText, link } = tileData;
+  const {
+    imageSrc, picture, heading, body, ctaText, link,
+    sourceRow, imageEl, headingEl, bodyEl, ctaTextEl,
+  } = tileData;
 
   const card = document.createElement('div');
   card.className = 'panel';
+  // Preserve UE row-level bindings (data-aue-resource, data-aue-model="tile-item").
+  if (sourceRow) moveInstrumentation(sourceRow, card);
 
   if (picture) {
     // Preserve the full <picture> element authored in UE (media guard).
     const figure = document.createElement('figure');
     figure.className = 'box-image';
+    if (imageEl) moveInstrumentation(imageEl, figure);
     figure.append(picture.cloneNode(true));
     card.append(figure);
   } else if (imageSrc) {
     const figure = document.createElement('figure');
     figure.className = 'box-image';
+    if (imageEl) moveInstrumentation(imageEl, figure);
     const img = document.createElement('img');
     img.src = imageSrc;
     img.alt = heading;
@@ -177,6 +197,7 @@ function buildDefaultCard(tileData, ctaFromFetch) {
   if (heading) {
     const h2 = document.createElement('h2');
     h2.textContent = heading;
+    if (headingEl) moveInstrumentation(headingEl, h2);
     card.append(h2);
   }
 
@@ -184,6 +205,7 @@ function buildDefaultCard(tileData, ctaFromFetch) {
     const p = document.createElement('p');
     p.className = 'tile-body';
     p.textContent = body;
+    if (bodyEl) moveInstrumentation(bodyEl, p);
     card.append(p);
   }
 
@@ -195,6 +217,7 @@ function buildDefaultCard(tileData, ctaFromFetch) {
     a.href = finalCtaUrl;
     a.className = 'button';
     a.textContent = finalCtaText;
+    if (ctaTextEl) moveInstrumentation(ctaTextEl, a);
     card.append(a);
   }
 
@@ -206,10 +229,14 @@ function buildDefaultCard(tileData, ctaFromFetch) {
  * data object.
  */
 function buildInvertedPanel(tileData) {
-  const { heading, body, link: ctaUrl } = tileData;
+  const {
+    heading, body, link: ctaUrl,
+    sourceRow, headingEl, bodyEl,
+  } = tileData;
 
   const tile = document.createElement('div');
   tile.className = 'top-panel';
+  if (sourceRow) moveInstrumentation(sourceRow, tile);
 
   const isLink = heading && heading.toUpperCase() === heading && heading.length < 20;
   if (isLink && ctaUrl) {
@@ -218,11 +245,13 @@ function buildInvertedPanel(tileData) {
     a.className = 'top-panel-link';
     const label = document.createElement('span');
     label.textContent = heading;
+    if (headingEl) moveInstrumentation(headingEl, label);
     a.append(label);
     tile.append(a);
   } else if (heading) {
     const label = document.createElement('span');
     label.textContent = heading;
+    if (headingEl) moveInstrumentation(headingEl, label);
     tile.append(label);
   }
 
@@ -230,6 +259,7 @@ function buildInvertedPanel(tileData) {
     const val = document.createElement('span');
     val.className = 'stat-value';
     val.textContent = body;
+    if (bodyEl) moveInstrumentation(bodyEl, val);
     tile.append(val);
   }
 

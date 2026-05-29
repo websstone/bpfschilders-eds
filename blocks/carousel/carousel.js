@@ -1,14 +1,12 @@
 /**
  * carousel.js — BPF Schilders "Wat doe ik bij..." horizontal carousel block.
  *
- * AEM EDS vertical-format model:
- *   Row 0  section_heading   — plain text (optional)
- *   Row 1  slide_icon_class  — one icon suffix per line (e.g. "pensioen\ntrouwen")
- *   Row 2  slide_label       — one label per line
- *   Row 3  slide_link        — one href per line
- *
- * No module-scope mutable state — all counters and state live inside decorate().
+ * UE-aware decorate() calls moveInstrumentation() so that data-aue-* attributes
+ * on the source rows/cells survive into the final DOM. Without this, Universal
+ * Editor sees no editable bindings post-decoration.
  */
+
+import { moveInstrumentation } from '../../scripts/scripts.js';
 
 /** Extract trimmed text from a cell element (first child div of a row). */
 function cellText(cell) {
@@ -24,9 +22,14 @@ function splitLines(cell) {
 }
 
 /** Build a single slide <li> element. */
-function buildSlide(iconClass, label, href, isFirst) {
+function buildSlide(slideData, isFirst) {
+  const {
+    sourceRow, iconCell, labelEl, iconClass, label, href,
+  } = slideData;
   const li = document.createElement('li');
   if (isFirst) li.classList.add('active');
+  // Preserve UE row-level bindings (data-aue-resource, data-aue-model="carousel-slide").
+  if (sourceRow) moveInstrumentation(sourceRow, li);
 
   const a = document.createElement('a');
   a.href = href;
@@ -35,12 +38,16 @@ function buildSlide(iconClass, label, href, isFirst) {
     const i = document.createElement('i');
     i.className = `costumer-journey-icon icon-bpf icon-bpf-${iconClass}`;
     i.setAttribute('aria-hidden', 'true');
+    // Preserve UE per-property binding for icon_class.
+    if (iconCell) moveInstrumentation(iconCell, i);
     a.append(i);
   }
 
   const span = document.createElement('span');
   span.className = 'carousel-slide-label';
   span.textContent = label;
+  // Preserve UE per-property binding for slide_label.
+  if (labelEl) moveInstrumentation(labelEl, span);
   a.append(span);
 
   li.append(a);
@@ -130,12 +137,17 @@ export default function decorate(block) {
     headingText = cellText(parentRows[0] ? parentRows[0].children[0] : null);
     slides = childRows.map((row) => {
       const cells = [...row.children];
-      const iconClass = cellText(cells[0] || null);
+      const iconCell = cells[0] || null;
+      const iconClass = cellText(iconCell);
       const labelCell = cells[1] || cells[0];
-      const label = labelCell ? (labelCell.querySelector('p')?.textContent?.trim() || cellText(labelCell)) : '';
+      // Capture the actual label-bearing <p> element so its data-aue-prop binding can survive.
+      const labelEl = labelCell ? (labelCell.querySelector('p[data-aue-prop="slide_label"]') || labelCell.querySelector('p')) : null;
+      const label = labelEl ? (labelEl.textContent || '').trim() : cellText(labelCell);
       const linkEl = labelCell ? labelCell.querySelector('a') : null;
       const href = linkEl ? linkEl.getAttribute('href') : '';
-      return { label, iconClass, href };
+      return {
+        sourceRow: row, iconCell, labelEl, label, iconClass, href,
+      };
     }).filter((s) => s.href && s.label);
   } else if (parentRows.length >= 3) {
     // Multi-row flat format: row 0=heading, 1=icons, 2=labels, 3=links
@@ -146,7 +158,9 @@ export default function decorate(block) {
     slides = labels.reduce((acc, label, idx) => {
       const href = hrefs[idx] || '';
       if (!href) return acc;
-      acc.push({ label, iconClass: iconClasses[idx] || '', href });
+      acc.push({
+        sourceRow: null, iconCell: null, labelEl: null, label, iconClass: iconClasses[idx] || '', href,
+      });
       return acc;
     }, []);
   } else {
@@ -162,7 +176,9 @@ export default function decorate(block) {
       slides = labels.reduce((acc, label, idx) => {
         const href = hrefs[idx] || '';
         if (!href) return acc;
-        acc.push({ label, iconClass: iconClasses[idx] || '', href });
+        acc.push({
+          sourceRow: null, iconCell: null, labelEl: null, label, iconClass: iconClasses[idx] || '', href,
+        });
         return acc;
       }, []);
     }
@@ -193,8 +209,8 @@ export default function decorate(block) {
   const track = document.createElement('ul');
   track.className = 'slider-wrapper';
 
-  slides.forEach(({ label, iconClass, href }, idx) => {
-    track.append(buildSlide(iconClass, label, href, idx === 0));
+  slides.forEach((slideData, idx) => {
+    track.append(buildSlide(slideData, idx === 0));
   });
 
   wrapper.append(track);
