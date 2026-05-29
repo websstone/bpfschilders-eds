@@ -215,6 +215,37 @@ function applyActiveLinkState(topNav) {
 }
 
 /**
+ * Normalize main-nav <li>s containing a submenu <ul> to the shape the CSS
+ * and decorateFlyouts() expect: add the `has-children` class and wrap the
+ * submenu <ul> in a <div>. Rich-text editors (UE) strip custom classes
+ * and wrapper divs, so the authored main_nav_links property carries only
+ * <ul><li><a/><ul>…</ul></li></ul>; this rebuilds the missing structure.
+ * Also tags the first top-level <li> with `home` if its href matches the
+ * homepage so the home icon decoration runs.
+ * @param {HTMLElement} mainNav
+ */
+function normalizeFlyouts(mainNav) {
+  const topUl = mainNav.querySelector(':scope > ul');
+  if (!topUl) return;
+
+  [...topUl.children]
+    .filter((li) => li.tagName === 'LI')
+    .forEach((li, idx) => {
+      const submenuUl = [...li.children].find((c) => c.tagName === 'UL');
+      if (submenuUl) {
+        li.classList.add('has-children');
+        const wrapper = document.createElement('div');
+        submenuUl.replaceWith(wrapper);
+        wrapper.append(submenuUl);
+      }
+      const a = li.querySelector(':scope > a');
+      if (idx === 0 && a && /^\/?(werknemer\/?)?$/i.test(new URL(a.href, window.location.href).pathname.replace(/\/$/, ''))) {
+        li.classList.add('home');
+      }
+    });
+}
+
+/**
  * Inject a sub-menu toggle <button> before the child <div> in each
  * li.has-children item. The button toggles aria-expanded and the
  * `is-open` class on the parent <li>.
@@ -560,6 +591,7 @@ export default async function decorate(block) {
   // 6. Decorate interactive behaviours.
   // ------------------------------------------------------------------
   applyActiveLinkState(topNav);
+  normalizeFlyouts(mainNav);
   decorateFlyouts(mainNav);
   injectMobileButtons(container, headerNav, searchbox);
 
