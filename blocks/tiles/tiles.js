@@ -332,7 +332,12 @@ export default async function decorate(block) {
       return (el.textContent || '').split('\n').map((s) => s.trim()).filter(Boolean);
     };
 
-    const extractImages = (el) => {
+    // Both @reference (tile_image) and @text URL fields (tile_cta_url) get
+    // auto-wrapped in an <a> by aem.live SSR when their string value looks
+    // like a path. Newlines inside the href arrive URL-encoded as %0A; the
+    // visible textContent has literal %0A too. We must decodeURIComponent the
+    // href to recover the original newline-joined list.
+    const extractListFromAnchor = (el) => {
       if (!el) return [];
       const anchor = el.querySelector('a');
       if (anchor) {
@@ -344,9 +349,9 @@ export default async function decorate(block) {
 
     const headings = splitLines(headingP);
     const bodies = splitLines(bodyP);
-    const images = extractImages(imageP);
+    const images = extractListFromAnchor(imageP);
     const ctaTexts = splitLines(ctaTextP);
-    const ctaUrls = splitLines(ctaUrlP);
+    const ctaUrls = extractListFromAnchor(ctaUrlP);
 
     if (!headings.length) return;
 

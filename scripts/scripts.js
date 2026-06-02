@@ -196,6 +196,45 @@ function buildAutoBlocks(main) {
 }
 
 /**
+ * Strip a single trailing slash from same-origin / path-only hrefs on every
+ * <a> under `root`. Leaves alone: the root path itself, hash-only / mailto: /
+ * tel: / javascript: schemes, and URLs whose pathname is just "/". Preserves
+ * any query string + fragment.
+ *
+ * Why: source content frequently mixes `/foo/` and `/foo` for the same page;
+ * keeping the trailing slash creates duplicate canonical URLs and triggers
+ * extra redirects. Strip once at decoration time so every link points at the
+ * canonical no-trailing-slash form.
+ *
+ * Called from decorateMain (eager) for initial main content, and again from
+ * loadLazy after loadHeader/loadFooter complete so header & footer chrome
+ * also get normalized.
+ *
+ * @param {Element} root
+ */
+export function stripTrailingSlashFromLinks(root) {
+  root.querySelectorAll('a[href]').forEach((a) => {
+    const original = a.getAttribute('href');
+    if (!original) return;
+    if (/^(mailto:|tel:|javascript:|#)/i.test(original)) return;
+    if (original === '/' || original === '') return;
+    try {
+      const url = new URL(original, window.location.href);
+      if (url.pathname.length <= 1 || !url.pathname.endsWith('/')) return;
+      const newPath = url.pathname.replace(/\/+$/, '');
+      if (/^[a-z][a-z0-9+.-]*:\/\//i.test(original)) {
+        url.pathname = newPath;
+        a.setAttribute('href', url.toString());
+      } else {
+        a.setAttribute('href', newPath + url.search + url.hash);
+      }
+    } catch {
+      // malformed href — leave it as the author wrote it
+    }
+  });
+}
+
+/**
  * Decorates formatted links to style them as buttons.
  * @param {HTMLElement} main The main container element
  */
@@ -245,6 +284,7 @@ export function decorateMain(main) {
   decorateSections(main);
   decorateBlocks(main);
   decorateButtons(main);
+  stripTrailingSlashFromLinks(main);
 }
 
 /**
@@ -276,7 +316,7 @@ async function loadEager(doc) {
  * @param {Element} doc The container element
  */
 async function loadLazy(doc) {
-  loadHeader(doc.querySelector('header'));
+  const headerLoaded = loadHeader(doc.querySelector('header'));
 
   const main = doc.querySelector('main');
   await loadSections(main);
@@ -285,10 +325,16 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadFooter(doc.querySelector('footer'));
+  const footerLoaded = loadFooter(doc.querySelector('footer'));
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  // After header & footer chrome finish their async decoration, run the
+  // slash-strip pass over the whole document so their nav links are
+  // normalized too (decorateMain already covered <main>).
+  await Promise.all([headerLoaded, footerLoaded]);
+  stripTrailingSlashFromLinks(doc.body);
 }
 
 /**

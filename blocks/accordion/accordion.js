@@ -39,10 +39,32 @@ export default function decorate(block) {
   const blockId = `accordion-${Math.random().toString(36).slice(2, 8)}`;
 
   const items = rows.map((row, index) => {
-    // Each row has two child divs: title cell and body cell
+    // Two SSR shapes are possible per item:
+    //   (a) Block-gallery / un-collapsed: row has two child cells,
+    //       cells[0] = title, cells[1] = body.
+    //   (b) aem.live SSR row-collapse: when title and body are adjacent
+    //       rich-text fields on the same row, SSR merges them into a single
+    //       cell containing both <p>s. cells.length === 1, inner has the
+    //       title <p> followed by the body content.
+    // Detect (b) and split so titleCell/bodyCell behave the same downstream.
     const cells = [...row.children];
-    const titleCell = cells[0];
-    const bodyCell = cells[1];
+    let titleCell;
+    let bodyCell;
+    if (cells.length >= 2) {
+      [titleCell, bodyCell] = cells;
+    } else if (cells.length === 1) {
+      const inner = cells[0];
+      const innerChildren = [...inner.children];
+      if (innerChildren.length >= 2) {
+        titleCell = document.createElement('div');
+        titleCell.append(innerChildren[0]);
+        bodyCell = document.createElement('div');
+        bodyCell.append(...innerChildren.slice(1));
+      } else {
+        titleCell = inner;
+        bodyCell = null;
+      }
+    }
 
     // ── Build trigger button ─────────────────────────────────────────────────
     const btnId = `${blockId}-btn-${index}`;

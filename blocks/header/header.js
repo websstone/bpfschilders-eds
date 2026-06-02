@@ -191,9 +191,11 @@ function getAudienceSection() {
  * @param {HTMLElement} topNav
  */
 function applyActiveLinkState(topNav) {
-  let currentPath = window.location.pathname;
+  // Normalize: strip a trailing slash so the comparison matches link hrefs
+  // after the global stripTrailingSlashFromLinks pass.
+  let currentPath = window.location.pathname.replace(/\/$/, '') || '/';
   if (currentPath === '/' || currentPath === '/index' || currentPath === '/index.html') {
-    currentPath = '/werknemer/';
+    currentPath = '/werknemer';
   }
   topNav.querySelectorAll('a').forEach((a) => {
     a.removeAttribute('aria-current');
@@ -202,8 +204,9 @@ function applyActiveLinkState(topNav) {
   });
   topNav.querySelectorAll('a').forEach((a) => {
     try {
-      const linkPath = new URL(a.href, window.location.href).pathname;
-      if (linkPath === currentPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+      const linkPath = new URL(a.href, window.location.href).pathname.replace(/\/$/, '') || '/';
+      if (linkPath === currentPath
+        || (linkPath !== '/' && currentPath.startsWith(`${linkPath}/`))) {
         a.setAttribute('aria-current', 'page');
         const li = a.closest('li');
         if (li) li.classList.add('active');
