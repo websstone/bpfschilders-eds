@@ -1,0 +1,10 @@
+{
+  "mappings": [
+    "/content/bpfschilders-eds/:/",
+    "/content/bpfschilders-eds/configuration:/.helix/config.json",
+    "/content/bpfschilders-eds/metadata:/metadata.json"
+  ],
+  "includes": [
+    "/content/bpfschilders-eds/"
+  ]
+}
