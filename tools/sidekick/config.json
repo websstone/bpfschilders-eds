@@ -1,5 +1,25 @@
 {
   "project": "AEM XWalk Boilerplate",
   "editUrlLabel": "AEM Editor",
-  "editUrlPattern": "{{contentSourceUrl}}{{pathname}}?cmd=open"
+  "editUrlPattern": "{{contentSourceUrl}}{{pathname}}?cmd=open",
+  "plugins": [
+    {
+      "id": "block-library",
+      "title": "Block Library",
+      "url": "/tools/sidekick/block-library.html",
+      "isPalette": true,
+      "paletteRect": "top: 2rem; right: 2rem; bottom: 2rem; width: 400px;"
+    }
+  ],
+  "blocks": [
+    "header",
+    "footer",
+    "accordion",
+    "links",
+    "cta",
+    "carousel",
+    "text",
+    "teaser",
+    "cards"
+  ]
 }

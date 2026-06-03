@@ -1,0 +1,119 @@
+/*
+ * CTA block — LoginCallToAction
+ * Visual: person icon (left) + uppercase label text + yellow-green underline accent.
+ * Source: computed-styles.desktop.json (playwright), source-screenshot.desktop.png
+ *
+ * Brand tokens from styles/tokens.css:
+ *   --colors-link-color      = rgb(68, 35, 89)       brand purple
+ *   --colors-text-primary    = rgb(33, 33, 33)
+ *   --typography-font-family = Helvetica, Arial, sans-serif
+ *   --typography-font-size   = 13.712px  (0.857rem)
+ *
+ * Icon: FontAwesome U+F007 (fa-user) — solid filled person silhouette.
+ *   BPFicons was evaluated: U+E900 is a thin stick/pin; U+E604 is a potted plant.
+ *   Neither matches the source. FontAwesome fa-user is an exact visual match.
+ */
+
+/*
+ * FontAwesome — used for the person/user icon (U+F007, fa-user).
+ * BPFicons U+E604 renders a potted plant, not a person silhouette.
+ * FontAwesome is already in /fonts/fontawesome-webfont.woff and U+F007
+ * is confirmed present; it renders as a solid filled person silhouette
+ * matching the source screenshot exactly.
+ */
+@font-face {
+  font-family: FontAwesome;
+  src: url('/fonts/fontawesome-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ─── Block wrapper ─────────────────────────────────────────────────────────── */
+.cta {
+  display: block;
+  background-color: transparent;
+}
+
+/* ─── Inner container (icon + label + underline accent) ─────────────────────── */
+.cta .cta-inner {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 0.375rem; /* space above the accent line */
+  /* Yellow-green underline accent — observed in source screenshot */
+  border-bottom: 2px solid #9aad00;
+}
+
+/* ─── Anchor (when href is present) ────────────────────────────────────────── */
+.cta .cta-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-decoration: none;
+  color: var(--colors-text-primary);
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem; /* 13.712px ÷ 16 */
+  font-weight: 400;
+  line-height: 1.65;
+  cursor: pointer;
+}
+
+.cta .cta-link:hover {
+  opacity: 0.8;
+}
+
+/* Focus — browser default (no custom override per behavioral spec) */
+
+/* ─── User icon (FontAwesome fa-user glyph U+F007) ─────────────────────────── */
+/*
+ * The source uses <span class="icon icon-user">.
+ * We render via ::before pseudo-element using FontAwesome U+F007 (fa-user)
+ * which matches the solid filled person silhouette visible in the source screenshot.
+ * BPFicons U+E604 was tried but renders a potted plant glyph — not a person icon.
+ */
+.cta .icon-user {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Spacing between icon and label text */
+  margin-right: 0.75rem; /* ~12px */
+  width: 2.5rem;  /* ~40px — matches the icon footprint visible in screenshot */
+  height: 2.5rem;
+  color: var(--colors-link-color); /* brand purple rgb(68, 35, 89) */
+  flex-shrink: 0;
+}
+
+.cta .icon-user::before {
+  font-family: FontAwesome, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  speak: none;
+  /* U+F007 — FontAwesome fa-user: solid filled person silhouette matching source */
+  content: '\f007';
+  font-size: 2.25rem; /* ~36px — icon size matching screenshot */
+  line-height: 1;
+  color: var(--colors-link-color);
+}
+
+/* ─── Label text ────────────────────────────────────────────────────────────── */
+.cta .cta-label {
+  display: inline;
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem; /* 13.712px ÷ 16 */
+  font-weight: 400;
+  color: var(--colors-text-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Tablet+ (769px+): no layout change — button stays inline ──────────────── */
+@media (min-width: 769px) {
+  .cta .icon-user::before {
+    font-size: 2.5rem;
+  }
+}

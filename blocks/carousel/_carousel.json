@@ -1,30 +1,30 @@
 {
   "definitions": [
     {
-      "title": "Cards",
-      "id": "cards",
+      "title": "Carousel",
+      "id": "carousel",
       "plugins": {
         "xwalk": {
           "page": {
             "resourceType": "core/franklin/components/block/v1/block",
             "template": {
-              "name": "Cards",
-              "filter": "cards"
+              "name": "Carousel",
+              "filter": "carousel"
             }
           }
         }
       }
     },
     {
-      "title": "Card",
-      "id": "card",
+      "title": "Carousel Item",
+      "id": "carousel-item",
       "plugins": {
         "xwalk": {
           "page": {
             "resourceType": "core/franklin/components/block/v1/block/item",
             "template": {
-              "name": "Card",
-              "model": "card"
+              "name": "Carousel Item",
+              "model": "carousel-item"
             }
           }
         }
@@ -33,47 +33,34 @@
   ],
   "models": [
     {
-      "id": "card",
+      "id": "carousel-item",
       "fields": [
         {
-          "component": "reference",
+          "component": "text",
           "valueType": "string",
-          "name": "image",
-          "label": "Card Image",
-          "multi": false
+          "name": "icon_class",
+          "label": "BPFicons Tile Icon Class"
         },
         {
           "component": "text",
           "valueType": "string",
-          "name": "title",
-          "label": "Card Heading"
-        },
-        {
-          "component": "richtext",
-          "name": "description",
-          "label": "Card Body Text",
-          "valueType": "string"
+          "name": "label",
+          "label": "Tile Visible Label"
         },
         {
           "component": "text",
           "valueType": "string",
-          "name": "cta_url",
-          "label": "Card CTA Href"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "cta_label",
-          "label": "Card CTA Label"
+          "name": "href",
+          "label": "Tile Link Href"
         }
       ]
     }
   ],
   "filters": [
     {
-      "id": "cards",
+      "id": "carousel",
       "components": [
-        "card"
+        "carousel-item"
       ]
     }
   ]

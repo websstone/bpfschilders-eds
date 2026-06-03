@@ -1,5 +1,5 @@
 mountpoints:
   /:
-    url: "https://author-p130360-e1272151.adobeaemcloud.com/bin/franklin.delivery/adobe-rnd/aem-boilerplate-xwalk/main"
-    type: "markup"
+    url: http://localhost:45022/bin/franklin.delivery/websstone/bpfschilders-rootpages-eds/main
+    type: markup
     suffix: ".html"

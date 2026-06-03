@@ -1,4 +1,40 @@
 /* stylelint-disable max-line-length */
+
+/* BPFicons — icon font for BPF Schilders (user, phone, envelope, arrow glyphs) */
+@font-face {
+  font-family: BPFicons;
+  src: url('../fonts/bpficons.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+/* FontAwesome 4.x — proven to load; used for home (\f015) and search (\f002) icons */
+@font-face {
+  font-family: FontAwesome;
+  src: url('../fonts/fontawesome-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Lato — brand body font used in header nav and CTA blocks */
+@font-face {
+  font-family: Lato;
+  src: url('../fonts/lato-regular-webfont.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Lato;
+  src: url('../fonts/lato-bold-webfont.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: roboto-condensed;
   font-style: normal;

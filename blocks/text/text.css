@@ -1,0 +1,113 @@
+/*
+ * text block (SupplementaryLinksBlock)
+ * Mobile-first. Enhance with min-width media queries.
+ * Brand tokens from styles/tokens.css.
+ */
+
+/* Block-scoped custom properties for values not in global tokens */
+.text {
+  --text-heading-color: var(--colors-link-color);   /* rgb(68,35,89) — purple heading matches screenshot */
+  --text-body-font-size: 1rem;                       /* 16px — body text per spec (larger than base 13.712px token) */
+  --text-small-font-size: 0.857rem;                  /* 13.712px / 16 — base computed token size */
+  --text-line-height: 1.6;
+  --text-p-margin-top: 0.429rem;                     /* 6.856px / 16 */
+  --text-p-margin-bottom: 0.857rem;                  /* 13.712px / 16 */
+  --text-block-padding: 1.25rem 0;                   /* 20px 0 */
+  --text-content-padding: 0 1rem;                    /* lateral breathing room on mobile */
+}
+
+/* Root block element */
+.text {
+  background-color: var(--colors-card-background);  /* white */
+  padding: var(--text-block-padding);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Inner container — constrains content width on desktop */
+.text .text-inner {
+  max-width: 62.5rem;   /* 1000px */
+  margin: 0 auto;
+  padding: var(--text-content-padding);
+  box-sizing: border-box;
+}
+
+/* Section heading */
+.text .text-inner h2 {
+  font-family: var(--typography-font-family);
+  font-size: var(--text-body-font-size);
+  font-weight: 700;
+  color: var(--text-heading-color);
+  margin: 0 0 var(--text-p-margin-bottom);
+  line-height: var(--text-line-height);
+}
+
+/* Description richtext body */
+.text .text-description {
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-font-size);   /* 13.712px — matches source; RT-text-001 fix */
+  color: var(--colors-text-primary);
+  line-height: var(--text-line-height);
+}
+
+.text .text-description p {
+  margin: var(--text-p-margin-top) 0 var(--text-p-margin-bottom);
+  font-size: var(--typography-font-size);   /* 13.712px — matches source; RT-text-001 fix */
+  line-height: var(--text-line-height);
+}
+
+.text .text-description p:first-child {
+  margin-top: 0;
+}
+
+.text .text-description p:last-child {
+  margin-bottom: 0;
+}
+
+/* Inline links inside description */
+.text .text-description a {
+  color: var(--colors-link-color);
+  text-decoration: underline;
+}
+
+/* CTA links section */
+.text .text-ctas {
+  margin-top: var(--text-p-margin-bottom);
+}
+
+/* List reset — no bullets, matches screenshot (plain link list) */
+.text .text-ctas ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.text .text-ctas ul li {
+  margin-bottom: 0.125rem;   /* 2px visual separation between links */
+}
+
+/* CTA link style — purple, underlined, same as screenshot */
+.text .text-ctas ul li a {
+  color: var(--colors-link-color);
+  text-decoration: underline;
+  font-family: var(--typography-font-family);
+  font-size: var(--text-small-font-size);
+  line-height: var(--text-line-height);
+  display: inline;
+}
+
+/* Focus ring — browser default (rgb(0,95,204) from interaction-states.yaml) */
+.text .text-ctas ul li a:focus-visible {
+  outline: auto 1px var(--colors-focus-outline);
+}
+
+/* Desktop enhancement — wider padding inside the content area */
+@media (min-width: 769px) {
+  .text .text-inner {
+    padding: 0 1rem;
+  }
+
+  .text .text-inner h2 {
+    font-size: 1.125rem;   /* slightly larger heading at desktop — matches visual weight in screenshot */
+  }
+}

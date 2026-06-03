@@ -1,0 +1,48 @@
+component: carousel
+generated_at: 2026-06-02T23:53:00Z
+repair_cycle: 2
+
+# ── Confirmed fixed in this cycle ───────────────────────────────────────
+fixed_since_last_qa:
+  - id: RT-carousel-arrow-color
+    status: fixed
+    evidence: >
+      getComputedStyle confirms --carousel-arrow-color: #d11121 (rgb(209,17,33)).
+      Arrow chevrons render crimson in both desktop and mobile gallery
+      screenshots captured live in this invocation.
+  - id: RT-carousel-dot-inactive-color
+    status: fixed
+    evidence: >
+      getComputedStyle confirms inactive dot background-color: rgb(184,144,99).
+      Tan dots are visible in all screenshots captured live in this invocation.
+
+# ── Active repair tasks ──────────────────────────────────────────────────
+repair_tasks: []
+
+# ── Gate exception request ───────────────────────────────────────────────
+gate_exception_request:
+  component: carousel
+  avg_fidelity_score: 4.5
+  gate: 4.7
+  delta: -0.2
+  justification: >
+    The 0.2 gap to gate is attributable entirely to two low-severity items:
+
+    1. Gallery scaffolding label band ("CAROUSEL" grey header) — this is
+       inherent to the block-gallery.html test harness and not a defect in
+       the block implementation. It will not be present in production renders.
+
+    2. FA4 icon glyph substitution — the QA brief for this block explicitly
+       states: "Source topic icons are painter-trade-specific; nearest-semantic
+       FontAwesome substitutes are acceptable — judge on layout/structure/color/
+       arrows, not exact glyph identity." The BPFicons font does not expose
+       the custom trade-specific codepoints via the standard CSS class mapping,
+       and FA4 is the proven-loading fallback font for this EDS repo.
+
+    There are zero blocker discrepancies, zero high-severity discrepancies,
+    and all seven must-severity ACs pass with interaction score 1.0 (gate 0.9).
+    Both repair targets from the previous cycle are confirmed fixed.
+
+    Recommended coordinator decision: approve gate exception, mark overall: pass.
+  target_agent: p2-coordinator
+  requires_coordinator_decision: true

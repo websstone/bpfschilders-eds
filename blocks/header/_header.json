@@ -1,0 +1,63 @@
+{
+  "definitions": [
+    {
+      "title": "Header",
+      "id": "header",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Header",
+              "model": "header"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "header",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "logo_href",
+          "label": "Logo Link URL"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "logo_alt",
+          "label": "Logo Alt / Title"
+        },
+        {
+          "component": "richtext",
+          "name": "primary_menu",
+          "label": "Primary Navigation (Audience Switcher)",
+          "valueType": "string"
+        },
+        {
+          "component": "richtext",
+          "name": "secondary_menu",
+          "label": "Secondary Navigation (Hierarchical)",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "search_placeholder",
+          "label": "Search Field Placeholder Text"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "login_url",
+          "label": "Login Portal URL"
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

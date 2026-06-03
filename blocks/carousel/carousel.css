@@ -1,0 +1,287 @@
+/*
+ * Carousel block — EmploymentTopicsList
+ * Mobile-first. No max-width queries.
+ * Brand values via global tokens from styles/tokens.css.
+ * BPFicons @font-face is declared in styles/fonts.css.
+ */
+
+/* ── Block root ──────────────────────────────────────────── */
+.carousel {
+  --carousel-arrow-size: 2.5rem;        /* 40px arrow circle */
+  --carousel-track-inset: 2.5rem;       /* 40px side inset on mobile */
+  --carousel-dot-size: 0.625rem;        /* 10px paging dot */
+  --carousel-dot-active: var(--colors-link-color);   /* rgb(68,35,89) */
+  /* Sampled from source-screenshot.desktop.png — inactive dot center pixels */
+  --carousel-dot-inactive: #b89063;    /* warm tan/brownish-gray; sampled rgb(184,144,99) */
+  /* Sampled from source-screenshot.desktop.png — left < chevron core pixels */
+  --carousel-arrow-color: #d11121;     /* crimson/terracotta accent; sampled rgb(209,17,33) */
+  --carousel-transition: transform 500ms ease;
+  --carousel-tile-font: lato, arial, sans-serif;
+  --carousel-tile-font-size: 0.98rem;   /* 15.6728px ÷ 16 */
+  --carousel-tile-line-height: 1.414rem;
+  --carousel-tile-color: var(--colors-text-primary);
+
+  display: block;
+  position: relative;
+  width: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* ── Carrousel wrapper (inner clip region with inset for arrows) ─ */
+.carousel .carrousel-wrapper {
+  overflow: hidden;
+  margin: 0 var(--carousel-track-inset);
+}
+
+/* ── Slider track (ul) ───────────────────────────────────── */
+.carousel .slider-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  /* width is set inline by JS: N × item_width */
+  transition: var(--carousel-transition);
+  will-change: transform;
+}
+
+/* ── Individual tile (li) ────────────────────────────────── */
+.carousel .slider-wrapper li {
+  flex: none;
+
+  /* width is set inline by JS: wrapper.offsetWidth / itemsPerPage */
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* ── Tile anchor ─────────────────────────────────────────── */
+.carousel .slider-wrapper li a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  text-decoration: none;
+  color: var(--carousel-tile-color);
+  font-family: var(--carousel-tile-font);
+  font-size: var(--carousel-tile-font-size);
+  line-height: var(--carousel-tile-line-height);
+  font-weight: 400;
+  padding: 0 0.25rem;
+  box-sizing: border-box;
+}
+
+.carousel .slider-wrapper li a:focus-visible {
+  outline: var(--colors-focus-outline) auto 1px;
+}
+
+/* ── Topic icon circle ───────────────────────────────────── */
+
+/*
+ * The BPFicons font only covers U+E600-E60A and U+E900-E903.
+ * The source compound classes (icon-bpf-pensioen etc.) have no corresponding
+ * codepoint mapping available, so we use FontAwesome 4.x for topic glyphs.
+ * FA4 is proven to load at /fonts/fontawesome-webfont.woff.
+ */
+.carousel .slider-wrapper li a .costumer-journey-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;        /* 80px circle */
+  height: 5rem;
+  border-radius: 50%;
+  background-color: var(--carousel-dot-active); /* purple circle */
+  color: var(--colors-card-background);
+  font-size: 2.5rem;  /* icon glyph size */
+  font-style: normal;
+  margin-bottom: 0.625rem; /* 10px gap between icon and label */
+  flex-shrink: 0;
+}
+
+/* Default ::before — FA4 glyph rendered white inside the purple circle */
+.carousel .slider-wrapper li a .costumer-journey-icon::before {
+  font-family: FontAwesome, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 2rem;
+  line-height: 1;
+  color: #fff;
+  display: block;
+  speak: never;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Per-topic FA4 glyph mappings ────────────────────────── */
+
+/* Met pensioen gaan — graduation-cap (retirement) \f19d */
+.carousel .slider-wrapper li a .icon-bpf-pensioen::before {
+  content: '\f19d';
+}
+
+/* Trouwen en samenwonen — heart (marriage/partnership) \f004 */
+.carousel .slider-wrapper li a .icon-bpf-trouwen::before {
+  content: '\f004';
+}
+
+/* Verhuizen — home (moving house) \f015 */
+.carousel .slider-wrapper li a .icon-bpf-verhuizen::before {
+  content: '\f015';
+}
+
+/* Scheiden of uit elkaar gaan — unlink/broken (divorce) \f127 */
+.carousel .slider-wrapper li a .icon-bpf-scheiden::before {
+  content: '\f127';
+}
+
+/* Ontslag — sign-out (dismissal/exit) \f08b */
+.carousel .slider-wrapper li a .icon-bpf-ontslag::before {
+  content: '\f08b';
+}
+
+/* Nieuwe baan / Veranderen van baan — briefcase (new job) \f0b1 */
+.carousel .slider-wrapper li a .icon-bpf-veranderenvanbaan::before {
+  content: '\f0b1';
+}
+
+/* Uitzendkracht worden — users/group (temp worker) \f0c0 */
+.carousel .slider-wrapper li a .icon-bpf-uitzendkracht::before {
+  content: '\f0c0';
+}
+
+/* Voor uzelf beginnen — cog/wrench (self-employment) \f0ad */
+.carousel .slider-wrapper li a .icon-bpf-voorjezelfbeginnen::before {
+  content: '\f0ad';
+}
+
+/* Arbeidsongeschiktheid — heartbeat/medical (disability) \f21e */
+.carousel .slider-wrapper li a .icon-bpf-arbeidsongeschikt::before {
+  content: '\f21e';
+}
+
+/* Verlof — calendar (leave/vacation) \f073 */
+.carousel .slider-wrapper li a .icon-bpf-verlof::before {
+  content: '\f073';
+}
+
+/* Overlijden — leaf/peace (death/passing) \f06c */
+
+/* Using flag or asterisk as neutral fallback \f024 / \f069 */
+.carousel .slider-wrapper li a .icon-bpf-overlijden::before {
+  content: '\f124';
+}
+
+/* Catch-all: any unmapped BPF icon class gets a star glyph \f005 */
+.carousel .slider-wrapper li a [class*="icon-bpf-"]:not([class*="icon-bpf-pensioen"], [class*="icon-bpf-trouwen"], [class*="icon-bpf-verhuizen"], [class*="icon-bpf-scheiden"], [class*="icon-bpf-ontslag"], [class*="icon-bpf-veranderenvanbaan"], [class*="icon-bpf-uitzendkracht"], [class*="icon-bpf-voorjezelfbeginnen"], [class*="icon-bpf-arbeidsongeschikt"], [class*="icon-bpf-verlof"], [class*="icon-bpf-overlijden"])::before {
+  content: '\f005';
+}
+
+/* ── Tile label text ─────────────────────────────────────── */
+.carousel .slider-wrapper li a .tile-label {
+  display: block;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* ── Arrow navigation buttons ────────────────────────────── */
+.carousel .carrousel-button {
+  position: absolute;
+  top: 2.5rem;        /* vertically center on icon (5rem circle / 2 - button/2) */
+  z-index: 2;
+  width: var(--carousel-arrow-size);
+  height: var(--carousel-arrow-size);
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Arrow glyph rendered via ::before using BPFicons */
+}
+
+.carousel .carrousel-button::before {
+  /* FontAwesome 4.x — proven to load; angle-left \f104 / angle-right \f105 */
+  font-family: FontAwesome, sans-serif;
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--carousel-arrow-color);   /* crimson accent sampled from source */
+  line-height: 1;
+  display: block;
+  speak: never;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.carousel .carrousel-button-previous {
+  left: 0;
+}
+
+.carousel .carrousel-button-previous::before {
+  /* FA4 angle-left */
+  content: '\f104';
+}
+
+.carousel .carrousel-button-next {
+  right: 0;
+}
+
+.carousel .carrousel-button-next::before {
+  /* FA4 angle-right */
+  content: '\f105';
+}
+
+/* ── Paging dots nav ─────────────────────────────────────── */
+.carousel .carrousel-paging {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0 0.25rem;
+}
+
+.carousel .carrousel-paging-button {
+  display: block;
+  width: var(--carousel-dot-size);
+  height: var(--carousel-dot-size);
+  border-radius: 50%;
+  background-color: var(--carousel-dot-inactive);
+
+  /* button element reset — keeps the dot looking identical to the former <a> */
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-indent: -9999px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  /* suppress default button focus outline — replaced by :focus-visible below */
+  outline: none;
+}
+
+.carousel .carrousel-paging-button:focus-visible {
+  outline: var(--colors-focus-outline) auto 1px;
+}
+
+.carousel .carrousel-paging-button.active {
+  background-color: var(--carousel-dot-active);
+}
+
+/* ── Desktop enhancement ─────────────────────────────────── */
+@media (width >= 769px) {
+  .carousel {
+    --carousel-arrow-size: 2rem;       /* 32px on desktop — slightly smaller, elegant */
+    --carousel-track-inset: 3.75rem;   /* 60px side inset on desktop */
+  }
+
+  .carousel .carrousel-button {
+    /* Vertically center on the 5rem icon circle */
+    top: 2.5rem;
+  }
+}

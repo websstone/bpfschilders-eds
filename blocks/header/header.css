@@ -1,272 +1,424 @@
-/* header and nav layout */
-header .nav-wrapper {
-  background-color: var(--background-color);
-  width: 100%;
-  z-index: 2;
-  position: fixed;
-}
+/*
+ * header block — BPF Schilders
+ * Binding spec: source-screenshot.desktop.png (Playwright-corrected)
+ * Background: rgb(244,244,244) LIGHT GRAY (not purple).
+ * Purple rgb(68,35,89) appears ONLY on active top-nav link and logo color.
+ * Two nav rows via absolute positioning inside a 70px header + 64px white border-bottom.
+ * Mobile: logo | searchbox | hamburger inline — no search toggle button.
+ */
 
-header nav {
-  box-sizing: border-box;
-  display: grid;
-  grid-template:
-    'hamburger brand tools' var(--nav-height)
-    'sections sections sections' 1fr / auto 1fr auto;
-  align-items: center;
-  gap: 0 24px;
-  margin: auto;
-  max-width: 1248px;
-  height: var(--nav-height);
-  padding: 0 24px;
-  font-family: var(--body-font-family);
-}
-
-header nav[aria-expanded='true'] {
-  grid-template:
-    'hamburger brand' var(--nav-height)
-    'sections sections' 1fr
-    'tools tools' var(--nav-height) / auto 1fr;
-  overflow-y: auto;
-  min-height: 100dvh;
-}
-
-@media (width >= 900px) {
-  header .nav-wrapper {
-    position: relative;
-  }
-
-  header nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 0 32px;
-    max-width: 1264px;
-    padding: 0 32px;
-  }
-
-  header nav[aria-expanded='true'] {
-    min-height: 0;
-    overflow: visible;
-  }
-}
-
-header nav p {
+/* ── Block wrapper reset ──────────────────────────────────────────────────── */
+.header-wrapper {
+  /* EDS wraps blocks in a <div class="<name>-wrapper"> — strip the default padding */
+  padding: 0;
   margin: 0;
+}
+
+/* ── Root <header.main-header> ─────────────────────────────────────────────── */
+.main-header {
+  background-color: rgb(244, 244, 244); /* Playwright-corrected — NOT a token, block-local */
+  display: block;
+  position: relative;
+  width: 100%;
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem;        /* 13.712px ÷ 16 */
+  color: var(--colors-text-primary);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 3px 3px 0;
+  z-index: 50;
+}
+
+/* ── Container — mobile flex row (logo | searchbox | hamburger) ───────────── */
+/* Desktop overrides below use calc() on the full-width header for positioning.
+   Source at 1440px: logo left ≈ 350px (from pixel analysis of source-screenshot). */
+.main-header .container {
+  position: relative;
+  box-sizing: border-box;
+  /* Mobile: flex row — logo | searchbox | hamburger */
+  display: flex;
+  align-items: center;
+  height: 3.4375rem;          /* 55px mobile header height */
+  padding: 0 0.625rem;
+}
+
+/* ── Logo ───────────────────────────────────────────────────────────────────── */
+.main-header .logo {
+  display: block;
+  flex: 0 0 auto;
+  width: 7.5rem;              /* ~120px on mobile */
+  height: 3rem;
+  background-image: url("https://cdn.infodesk.nl/assets/images/logo.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: left center;
+  text-indent: -999em;
+  overflow: hidden;
+  color: var(--colors-link-color);
+}
+
+.main-header .logo:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+/* ── Searchbox — ALWAYS VISIBLE on mobile (RT-header-002 fix) ───────────── */
+/* Mobile: flex item that grows to fill space between logo and hamburger.
+   RT-header-004: cap max-width so the hamburger is never pushed off-screen.
+   The input inside must flex-shrink (min-width:0) so it shrinks with the box. */
+.main-header .searchbox {
+  display: flex;              /* always visible — no toggle needed on mobile */
+  align-items: center;
+  flex: 1 1 0;                /* grow but start from 0, so it shares space fairly */
+  max-width: 12rem;           /* hard cap: logo (~120px) + this (~192px) + hamburger (~44px) = ~356px < 375px */
+  min-width: 0;
+  margin: 0 0.375rem;
+}
+
+.main-header .searchbox input[type="text"] {
+  border: 1px solid rgb(204, 204, 204);
+  padding: 0.375rem 0.5rem;
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem;
+  color: var(--colors-text-primary);
+  background: var(--colors-card-background);
+  flex: 1 1 0;
+  min-width: 0;               /* allow shrink below content size */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.main-header .searchbox input[type="text"]:focus {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+.main-header .searchbox .search-btn {
+  border: none;
+  background-color: var(--colors-link-color);
+  color: var(--colors-card-background);
+  padding: 0.375rem 0.625rem;
+  cursor: pointer;
+  font-family: FontAwesome, Arial, sans-serif;
+  font-size: 1rem;
   line-height: 1;
+  flex: 0 0 auto;
 }
 
-header nav a:any-link {
-  color: currentcolor;
+.main-header .searchbox .search-btn::before {
+  font-family: FontAwesome, Arial, sans-serif;
+  content: "\f002";           /* FontAwesome fa-search — proven range */
 }
 
-/* hamburger */
-header nav .nav-hamburger {
-  grid-area: hamburger;
-  height: 22px;
+.main-header .searchbox .search-btn:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+/* ── Navigation wrapper ──────────────────────────────────────────────────── */
+/* Mobile: hidden by default, opens as full-screen drawer */
+.main-header .header-navigation {
+  display: none;
+}
+
+/* Open state (mobile drawer) */
+.main-header .header-navigation.is-open {
+  display: block;
+  position: fixed;
+  top: 3.4375rem;             /* below mobile header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(244, 244, 244);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 1rem;
+}
+
+/* ── Top navigation (audience switcher) ─────────────────────────────────── */
+.main-header nav.top-navigation {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.main-header nav.top-navigation ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: flex-end;
+}
+
+.main-header nav.top-navigation li a,
+.main-header nav.top-navigation li span {
+  display: block;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 0.98rem;         /* 15.6728px ÷ 16 */
+  font-weight: 400;
+  color: rgb(100, 100, 100);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+/* Active audience item — purple + bold */
+.main-header nav.top-navigation li.active a,
+.main-header nav.top-navigation li.active span {
+  color: var(--colors-link-color); /* rgb(68, 35, 89) */
+  font-weight: 700;
+}
+
+.main-header nav.top-navigation a:hover {
+  color: var(--colors-link-color);
+}
+
+.main-header nav.top-navigation a:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+/* Login state web component sits inline in top-nav */
+.main-header nav.top-navigation p-login-state {
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+/* ── Main navigation (primary category links) ───────────────────────────── */
+.main-header nav.main-navigation {
   display: flex;
   align-items: center;
 }
 
-header nav .nav-hamburger button {
-  height: 22px;
+.main-header nav.main-navigation ul {
+  list-style: none;
   margin: 0;
-  border: 0;
-  border-radius: 0;
   padding: 0;
-  background-color: var(--background-color);
-  color: inherit;
-  overflow: initial;
-  text-overflow: initial;
-  white-space: initial;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-header nav .nav-hamburger-icon,
-header nav .nav-hamburger-icon::before,
-header nav .nav-hamburger-icon::after {
-  box-sizing: border-box;
+.main-header nav.main-navigation li a,
+.main-header nav.main-navigation li span {
   display: block;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 0.98rem;         /* 15.6728px ÷ 16 */
+  font-weight: 400;
+  color: var(--colors-text-primary);
+  text-decoration: none;
+  padding: 0.75rem 0.9375rem; /* approx 12px 15px on mobile */
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.main-header nav.main-navigation a:hover {
+  color: var(--colors-link-color);
+}
+
+.main-header nav.main-navigation a:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+/* Home icon item (first li) — icon font only, hidden text */
+.main-header nav.main-navigation li.home a {
+  width: 1.1rem;
+  height: 1.1rem;
+  overflow: hidden;
+  padding: 1.1rem 1.1rem 0 0;
+  font-family: FontAwesome, Lato, Arial, sans-serif;
+  font-size: 1.1rem;
   position: relative;
-  width: 20px;
 }
 
-header nav .nav-hamburger-icon::before,
-header nav .nav-hamburger-icon::after {
-  content: '';
+.main-header nav.main-navigation li.home a::before {
+  font-family: FontAwesome, Arial, sans-serif;
+  content: "\f015";           /* FontAwesome fa-home — house glyph */
+  display: block;
   position: absolute;
-  background: currentcolor;
-}
-
-header nav[aria-expanded='false'] .nav-hamburger-icon,
-header nav[aria-expanded='false'] .nav-hamburger-icon::before,
-header nav[aria-expanded='false'] .nav-hamburger-icon::after {
-  height: 2px;
-  border-radius: 2px;
-  background: currentcolor;
-}
-
-header nav[aria-expanded='false'] .nav-hamburger-icon::before {
-  top: -6px;
-}
-
-header nav[aria-expanded='false'] .nav-hamburger-icon::after {
-  top: 6px;
-}
-
-header nav[aria-expanded='true'] .nav-hamburger-icon {
-  height: 22px;
-}
-
-header nav[aria-expanded='true'] .nav-hamburger-icon::before,
-header nav[aria-expanded='true'] .nav-hamburger-icon::after {
-  top: 3px;
-  left: 1px;
-  transform: rotate(45deg);
-  transform-origin: 2px 1px;
-  width: 24px;
-  height: 2px;
-  border-radius: 2px;
-}
-
-header nav[aria-expanded='true'] .nav-hamburger-icon::after {
-  top: unset;
-  bottom: 3px;
-  transform: rotate(-45deg);
-}
-
-@media (width >= 900px) {
-  header nav .nav-hamburger {
-    display: none;
-    visibility: hidden;
-  }
-}
-
-/* brand */
-header .nav-brand {
-  grid-area: brand;
-  flex-basis: 128px;
-  font-size: var(--heading-font-size-s);
-  font-weight: 700;
+  top: 0;
+  left: 0;
+  width: 1.1rem;
+  height: 1.1rem;
   line-height: 1;
 }
 
-header nav .nav-brand img {
-  width: 128px;
-  height: auto;
+/* RT-header-003: sub-list dropdown indicator */
+.main-header nav.main-navigation li.has-children > a::after,
+.main-header nav.main-navigation li.has-children > span::after,
+.main-header nav.top-navigation li.has-children > a::after,
+.main-header nav.top-navigation li.has-children > span::after {
+  content: " \25BE";          /* small down-pointing triangle */
+  font-size: 0.75em;
+  vertical-align: middle;
 }
 
-/* sections */
-header nav .nav-sections {
-  grid-area: sections;
-  flex: 1 1 auto;
+/* Sub-list styles */
+.main-header nav.main-navigation li.has-children ul,
+.main-header nav.top-navigation li.has-children ul {
   display: none;
-  visibility: hidden;
-}
-
-header nav[aria-expanded='true'] .nav-sections {
-  display: block;
-  visibility: visible;
-  align-self: start;
-}
-
-header nav .nav-sections ul {
   list-style: none;
-  padding-left: 0;
-  font-size: var(--body-font-size-s);
+  margin: 0;
+  padding: 0.25rem 0;
+  background: var(--colors-card-background);
+  border: 1px solid rgb(204, 204, 204);
 }
 
-header nav .nav-sections ul > li {
-  font-weight: 500;
+.main-header nav.main-navigation li.has-children:hover > ul,
+.main-header nav.main-navigation li.has-children:focus-within > ul,
+.main-header nav.top-navigation li.has-children:hover > ul,
+.main-header nav.top-navigation li.has-children:focus-within > ul {
+  display: block;
 }
 
-header nav .nav-sections ul > li > ul {
-  margin-top: 0;
+/* ── Mobile hamburger toggle button ──────────────────────────────────────── */
+/* Only the nav toggle exists — no search toggle button (RT-header-002) */
+.main-header .pagenav-toggle-button {
+  display: block;             /* visible on mobile */
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--colors-text-primary);
+  font-size: 1.375rem;
+  line-height: 1;
 }
 
-header nav .nav-sections ul > li > ul > li {
-  font-weight: 400;
+/* Hamburger icon via CSS (three bars) */
+.main-header .pagenav-toggle-button::before {
+  content: "";
+  display: block;
+  width: 1.375rem;
+  height: 2px;
+  background: currentcolor;
+  box-shadow: 0 6px 0 currentcolor, 0 12px 0 currentcolor;
 }
 
-@media (width >= 900px) {
-  header nav .nav-sections {
+.main-header .pagenav-toggle-button[aria-expanded="true"]::before {
+  /* X icon when open */
+  box-shadow: none;
+  transform: rotate(45deg);
+  position: relative;
+  top: 7px;
+}
+
+/* ── DESKTOP layout (≥ 769px) ────────────────────────────────────────────── */
+@media (min-width: 769px) {
+  /* Desktop header: taller, two bands.
+     Source computed styles: height:70px, border-bottom:64px solid white. */
+  .main-header {
+    height: 4.375rem;           /* 70px ÷ 16 */
+    border-bottom: 4rem solid var(--colors-card-background); /* 64px white band */
+  }
+
+  /* Desktop container: used only as a relative-positioned block.
+     Absolute positioning of logo/nav is done via calc() on the full-width header.
+     Container itself is full-width so absolutely-positioned children use the header
+     as their positioning context (header is position:relative). */
+  .main-header .container {
     display: block;
-    visibility: visible;
+    height: 4.375rem;           /* match header height */
+    padding: 0;
+    /* No max-width / margin:auto here — width is 100% of full-bleed header */
+  }
+
+  /* Logo: absolute-positioned within the full-width header.
+     Source: .logo { position:absolute; left:10px; width:196px } within a container
+     whose left edge is (1440-760)/2 = 340px from viewport.
+     So logo viewport-x = 340 + 10 = 350px.
+     We replicate with calc(): left = (100% - 47.5rem) / 2
+     47.5rem = 760px — the source container width. */
+  .main-header .logo {
+    position: absolute;
+    left: calc((100% - 47.5rem) / 2); /* (1440-760)/2 = 340px at 1440px viewport */
+    top: 0;
+    width: 12.25rem;            /* 196px ÷ 16 */
+    height: 4.375rem;           /* 70px ÷ 16 */
+    background-size: cover;
+    background-position: 0 0;
+  }
+
+  /* Searchbox: desktop — positioned in main-nav zone, right edge of header */
+  .main-header .searchbox {
+    position: absolute;
+    top: 4.375rem;
+    right: 0;
+    height: 3.96rem;
+    align-items: center;
+    flex: none;
+    margin: 0;
+    max-width: none;            /* override mobile cap */
+    min-width: 0;
+  }
+
+  .main-header .searchbox input[type="text"] {
+    max-width: 11rem;
+    width: auto;                /* override mobile width:100% */
+  }
+
+  /* Navigation wrapper: absolute, starts right of logo, extends to viewport right.
+     left = container_left + logo_width = (100% - 47.5rem)/2 + 12.25rem */
+  .main-header .header-navigation {
+    display: block;
+    position: absolute;
+    left: calc((100% - 47.5rem) / 2 + 12.25rem); /* container_left + 196px logo */
+    right: 0;
+    top: 0;
+    bottom: auto;
+  }
+
+  /* Top navigation: right-aligned in top zone, at top:13px */
+  .main-header nav.top-navigation {
+    position: absolute;
+    top: 0.8125rem;             /* 13px ÷ 16 */
+    left: 0;
+    right: 0;
+    height: 1.515rem;           /* ~24px */
+    margin-bottom: 0;
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  .main-header nav.top-navigation ul {
+    flex-wrap: nowrap;
+    gap: 0 1.5rem;
+  }
+
+  /* Main navigation: positioned in the white border-bottom zone (top:70px) */
+  .main-header nav.main-navigation {
+    position: absolute;
+    top: 4.375rem;              /* 70px ÷ 16 — into the white border-bottom band */
+    left: 0;
+    right: 0;
+    height: 3.96rem;            /* ~63.36px */
+    align-items: stretch;
+  }
+
+  .main-header nav.main-navigation ul {
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+
+  .main-header nav.main-navigation li a,
+  .main-header nav.main-navigation li span {
+    /* Desktop: 21.94px top, 15px horizontal, 18.81px bottom → rem */
+    padding: 1.37rem 0.9375rem 1.18rem;
     white-space: nowrap;
   }
 
-  header nav[aria-expanded='true'] .nav-sections {
-    align-self: unset;
-  }
-
-  header nav .nav-sections .nav-drop {
+  /* Desktop: dropdown sub-list absolutely positioned */
+  .main-header nav.main-navigation li.has-children {
     position: relative;
-    padding-right: 16px;
-    cursor: pointer;
   }
 
-  header nav .nav-sections .nav-drop::after {
-    content: '';
-    display: inline-block;
+  .main-header nav.main-navigation li.has-children ul {
     position: absolute;
-    top: 0.5em;
-    right: 2px;
-    transform: rotate(135deg);
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
-    border-radius: 0 1px 0 0;
-    border-width: 2px 2px 0 0;
+    top: 100%;
+    left: 0;
+    min-width: 10rem;
+    z-index: 200;
   }
 
-  header nav .nav-sections .nav-drop[aria-expanded='true']::after {
-    top: unset;
-    bottom: 0.5em;
-    transform: rotate(315deg);
-  }
-
-  header nav .nav-sections ul {
-    display: flex;
-    gap: 24px;
-    margin: 0;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li {
-    flex: 0 1 auto;
-    position: relative;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul {
+  /* Hide hamburger on desktop */
+  .main-header .pagenav-toggle-button {
     display: none;
-    position: relative;
   }
-
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
-    display: block;
-    position: absolute;
-    left: -24px;
-    width: 200px;
-    top: 150%;
-    padding: 16px;
-    background-color: var(--light-color);
-    white-space: initial;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 16px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--light-color);
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul > li {
-    padding: 8px 0;
-  }
-}
-
-/* tools */
-header nav .nav-tools {
-  grid-area: tools;
 }

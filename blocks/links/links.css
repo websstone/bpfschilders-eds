@@ -1,0 +1,109 @@
+/*
+ * links block — ContactLinksList
+ * Source: ul.contact with FontAwesome icon glyphs on purple circles (::before on anchor)
+ * Computed styles reference: captures/computed-styles.desktop.json
+ * Token drift note: link color rgb(68,35,89) = --colors-link-color
+ *
+ * FONT NOTE: .icon-phone / .icon-envelope / .icon-facebook use FontAwesome codepoints
+ * (f095, f0e0, f09a) — not BPFicons. BPFicons covers .icon-bpf-* only.
+ * Source CSS confirmed: .contact a::before { font-family: FontAwesome }
+ */
+
+/* FontAwesome — required for phone/envelope/facebook icon glyphs */
+@font-face {
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/fontawesome-webfont.woff') format('woff');
+}
+
+/* ---- Contact list ---- */
+.links .contact {
+  list-style-type: none;
+  margin: 0 0 0.857rem; /* 13.712px / 16 */
+  padding: 0;
+  display: block;
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem; /* 13.712px / 16 */
+  font-weight: var(--typography-font-weight);
+  line-height: 1.65; /* 22.6248 / 13.712 */
+  color: var(--colors-text-primary);
+}
+
+/* ---- List items ---- */
+.links .contact li {
+  border-bottom: 1px solid rgb(220, 220, 220);
+  padding: 0.75em 0;
+  list-style: none;
+}
+
+.links .contact li:first-child {
+  border-top: 1px solid rgb(220, 220, 220);
+}
+
+/* ---- Anchor and span ---- */
+.links .contact a,
+.links .contact span {
+  color: var(--colors-link-color); /* rgb(68,35,89) brand purple */
+  text-decoration: none;
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem;
+}
+
+.links .contact a:focus-visible,
+.links .contact span:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+/*
+ * Purple circle icon via ::before pseudo-element.
+ * Applies to anchors and spans that carry an icon class.
+ * Source: .contact a:before { background:#442359; border-radius:1em; color:#fff;
+ *   display:inline-block; font-family:FontAwesome; font-size:18px;
+ *   height:31px; line-height:32px; margin-right:.714em; text-align:center;
+ *   vertical-align:middle; width:31px; }
+ */
+.links .contact a[class^='icon-']::before,
+.links .contact a[class*=' icon-']::before,
+.links .contact span[class^='icon-']::before,
+.links .contact span[class*=' icon-']::before {
+  background-color: var(--colors-link-color); /* purple circle fill */
+  border-radius: 1em;
+  color: var(--colors-card-background); /* white glyph — token for rgb(255,255,255) */
+  display: inline-block;
+  font-family: FontAwesome, sans-serif;
+  font-size: 1.125rem; /* 18px / 16 */
+  font-style: normal;
+  font-weight: 400;
+  height: 1.9375rem; /* 31px / 16 */
+  line-height: 2rem;  /* 32px / 16 */
+  margin-right: 0.714em;
+  text-align: center;
+  vertical-align: middle;
+  width: 1.9375rem;   /* 31px / 16 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Icon-specific glyph codepoints (FontAwesome) */
+.links .contact a.icon-phone::before,
+.links .contact span.icon-phone::before {
+  content: '\f095';
+}
+
+.links .contact a.icon-envelope::before,
+.links .contact span.icon-envelope::before {
+  content: '\f0e0';
+}
+
+.links .contact a.icon-facebook::before,
+.links .contact span.icon-facebook::before {
+  content: '\f09a';
+}
+
+/* Hover: source uses secondary color #c18e60 on the circle — browser default otherwise */
+.links .contact a:hover::before,
+.links .contact a:focus::before {
+  background-color: rgb(193, 142, 96); /* var(--color-secondary) from source: #c18e60 */
+}

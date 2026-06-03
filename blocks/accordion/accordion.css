@@ -1,0 +1,186 @@
+/*
+ * Accordion block — ComplaintProcessGuide
+ *
+ * Design tokens referenced from styles/tokens.css:
+ *   --colors-link-color         = rgb(68, 35, 89)   [brand purple]
+ *   --colors-text-primary       = rgb(33, 33, 33)
+ *   --colors-card-background    = rgb(255, 255, 255)
+ *   --colors-focus-outline      = rgb(0, 95, 204)
+ *   --typography-font-family    = Helvetica, Arial, sans-serif
+ *   --typography-font-size      = 13.712px
+ *
+ * Block-local custom properties (values not covered by global tokens):
+ *   --accordion-trigger-bg       = rgb(245, 245, 245)
+ *   --accordion-trigger-color    = rgb(51, 51, 51)
+ *   --accordion-border-color     = rgb(204, 204, 204)
+ *   --accordion-trigger-bg-open  = rgb(68, 35, 89)   [= --colors-link-color]
+ *   --accordion-trigger-transition = background-color 0.2s ease, color 0.2s ease
+ *   (from css_transitions[] in behavioral-spec.yaml)
+ */
+
+/* ── Block-local tokens ─────────────────────────────────────────────────── */
+.accordion {
+  --accordion-trigger-bg: rgb(245, 245, 245);
+  --accordion-trigger-color: rgb(51, 51, 51);
+  --accordion-border-color: rgb(204, 204, 204);
+  --accordion-trigger-bg-open: var(--colors-link-color);
+  --accordion-panel-padding: 1rem 1.25rem;
+  --accordion-trigger-font-size: 0.857rem; /* 13.712px / 16 */
+  --accordion-indicator-size: 2rem;
+}
+
+/* ── Root container ─────────────────────────────────────────────────────── */
+.accordion {
+  background-color: var(--colors-card-background);
+  border: 1px solid var(--accordion-border-color);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Items wrapper ──────────────────────────────────────────────────────── */
+.accordion .accordion-items {
+  display: block;
+  width: 100%;
+}
+
+/* ── Individual item ────────────────────────────────────────────────────── */
+.accordion .accordion-item {
+  border-bottom: 1px solid var(--accordion-border-color);
+}
+
+.accordion .accordion-item:last-child {
+  border-bottom: none;
+}
+
+/* ── Trigger (button) ───────────────────────────────────────────────────── */
+.accordion .accordion-trigger {
+  /* Reset button defaults */
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  cursor: pointer;
+
+  /* Layout: full row width, icon on right */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 2.75rem; /* comfortable tap target */
+  padding: 0.75rem 0 0.75rem 0.9375rem;
+
+  /* Closed-state appearance (AC-accordion-VF-001, AC-accordion-004) */
+  background-color: var(--accordion-trigger-bg);
+  color: var(--accordion-trigger-color);
+
+  /* Typography */
+  font-family: var(--typography-font-family);
+  font-size: var(--accordion-trigger-font-size);
+  font-weight: 400;
+  text-align: left;
+  line-height: 1.5;
+
+  /* Transition — from css_transitions[] in behavioral-spec.yaml */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ── Trigger: expand/collapse indicator (::after pseudo-element) ─────────
+   Visual: purple square with white "+" when closed;
+           white square with white "×" when open.
+   Color of the square changes with the button background transition.
+   ─────────────────────────────────────────────────────────────────────── */
+.accordion .accordion-trigger::after {
+  content: '+';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--accordion-indicator-size);
+  height: var(--accordion-indicator-size);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1;
+
+  /* Closed: purple box, white glyph */
+  background-color: var(--accordion-trigger-bg-open);
+  color: var(--colors-card-background);
+
+  transition: background-color 0.2s ease, color 0.2s ease, content 0s;
+}
+
+/* ── Open state (aria-expanded="true") ──────────────────────────────────── */
+.accordion .accordion-trigger[aria-expanded='true'] {
+  background-color: var(--accordion-trigger-bg-open);
+  color: var(--colors-card-background);
+}
+
+/* When open: indicator becomes "×" with white box */
+.accordion .accordion-trigger[aria-expanded='true']::after {
+  content: '\00D7'; /* × multiply sign */
+  background-color: var(--colors-card-background);
+  color: var(--accordion-trigger-bg-open);
+}
+
+/* ── Focus ring — browser default, per interaction-states.yaml ──────────── */
+.accordion .accordion-trigger:focus-visible {
+  outline: var(--colors-focus-outline) auto 1px;
+}
+
+/* ── Panel ──────────────────────────────────────────────────────────────── */
+.accordion .accordion-panel {
+  background-color: var(--colors-card-background);
+}
+
+/* hidden attribute hides panel; override removed when panel is shown */
+.accordion .accordion-panel[hidden] {
+  display: none;
+}
+
+/* ── Panel inner (richtext container) ───────────────────────────────────── */
+.accordion .accordion-panel-inner {
+  padding: var(--accordion-panel-padding);
+  font-family: var(--typography-font-family);
+  font-size: var(--accordion-trigger-font-size);
+  color: var(--colors-text-primary);
+  line-height: 1.65;
+}
+
+.accordion .accordion-panel-inner p {
+  margin: 0 0 0.857rem;
+}
+
+.accordion .accordion-panel-inner p:last-child {
+  margin-bottom: 0;
+}
+
+.accordion .accordion-panel-inner ol,
+.accordion .accordion-panel-inner ul {
+  margin: 0 0 0.857rem;
+  padding-left: 1.5rem;
+}
+
+.accordion .accordion-panel-inner li {
+  margin-bottom: 0.4rem;
+}
+
+/* ── Inline links in panels (EC-accordion-002) ──────────────────────────── */
+.accordion .accordion-panel-inner a[href] {
+  color: var(--colors-link-color);
+  text-decoration: underline;
+}
+
+/* Focus ring on panel links — browser-default blue per interaction-states.yaml */
+.accordion .accordion-panel-inner a[href]:focus-visible {
+  outline: var(--colors-focus-outline) auto 1px;
+}
+
+/* ── Responsive — mobile-first default above; desktop enhancement ─────────
+   responsive_contracts[]: breakpoint 768px — no structural change, just width.
+   Block already uses width:100% so no additional rules needed.
+   Desktop: no change from mobile default layout.
+   ─────────────────────────────────────────────────────────────────────── */
+@media (min-width: 769px) {
+  .accordion {
+    /* On desktop the block sits inside its content column; no width override needed */
+    width: 100%;
+  }
+}

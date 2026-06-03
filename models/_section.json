@@ -50,7 +50,15 @@
         "hero",
         "cards",
         "columns",
-        "fragment"
+        "fragment",
+        "header",
+        "footer",
+        "accordion",
+        "links",
+        "cta",
+        "carousel",
+        "text-block",
+        "teaser"
       ]
     }
   ]

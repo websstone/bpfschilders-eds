@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Block Gallery</title>
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/styles.css">
+  <style>
+    body { margin: 0; padding: 0; background: white; font-family: sans-serif; }
+    .gallery-section { margin: 0; padding: 0; border-top: 2px solid #e8e8e8; }
+    .gallery-label { font-family: monospace; font-size: 10px; color: #999; padding: 3px 6px; background: #f0f0f0; text-transform: uppercase; letter-spacing: .05em; }
+    .gallery-label a { color: inherit; text-decoration: none; }
+    [data-block-status="error"] { outline: 2px solid red; }
+  </style>
+</head>
+<body>
+  <h1 style="font-family:monospace;font-size:1rem;color:#444;margin:0;padding:8px 12px;background:#f0f0f0;border-bottom:2px solid #e8e8e8">Block Gallery</h1>
+
+  <main>
+  <!-- BLOCKS START -->
+
+  <section class="gallery-section" id="accordion">
+    <div class="gallery-label"><a href="#accordion">accordion</a></div>
+    <link rel="stylesheet" href="/blocks/accordion/accordion.css">
+    <div class="accordion block" data-block-name="accordion">
+      <div>
+        <div>Wanneer dient u een klacht in?</div>
+        <div><p>U dient een klacht in als u ontevreden bent over BPF Schilders. Dit kan bijvoorbeeld gaan over de uitvoerende taken, de toepassing van de statuten en reglementen óf de manier waarop u door ons behandeld bent.</p></div>
+      </div>
+      <div>
+        <div>Hoe dient u een klacht in?</div>
+        <div><p>U dient een klacht in via:</p><ol><li>Via de website: <a href="/contact/klachtformulier/">klachtenformulier voor werknemers</a>, <a href="/contact/klachtformulier-ondernemer/">klachtenformulier ondernemer</a> of <a href="/contact/klachtformulier-werkgever/">klachtenformulier werkgever</a></li><li>Per e-mail: <a href="mailto:info@bpfschilders.nl">info@bpfschilders.nl</a></li><li>Via de post: Klachtenadministratie BPF Schilders, Postbus 702, 3700 AS Zeist</li><li>Telefonisch: 030-2775600</li></ol></div>
+      </div>
+      <div>
+        <div>Hoe handelen wij uw klacht af?</div>
+        <div><p>Na ontvangst van uw klacht sturen wij u een ontvangstbevestiging. Wij behandelen uw klacht zo spoedig mogelijk en streven ernaar dit binnen 6 weken te doen.</p></div>
+      </div>
+      <div>
+        <div>Hoe nemen wij een beslissing?</div>
+        <div><p>Uw klacht wordt behandeld door een medewerker die niet betrokken is geweest bij het onderwerp van uw klacht. Wij nemen een gemotiveerde beslissing op uw klacht.</p></div>
+      </div>
+      <div>
+        <div>Welke rechten heeft u?</div>
+        <div><p>U heeft het recht om uw klacht mondeling of schriftelijk toe te lichten. U kunt ook een vertrouwenspersoon of gemachtigde inschakelen. Wij behandelen uw klacht vertrouwelijk.</p></div>
+      </div>
+      <div>
+        <div>Bent u het niet eens met onze beslissing op uw klacht?</div>
+        <div><p>Als u het niet eens bent met onze beslissing, kunt u uw klacht voorleggen aan het bestuur van BPF Schilders. Meer informatie vindt u op <a href="/klacht">www.bpfschilders.nl/klacht</a>.</p></div>
+      </div>
+      <div>
+        <div>Bent u het niet eens met de beslissing van het bestuur?</div>
+        <div><p>Als u het niet eens bent met de beslissing van het bestuur, kunt u zich wenden tot de Ombudsman Pensioenen of de burgerlijke rechter.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="header">
+    <div class="gallery-label"><a href="#header">header</a></div>
+    <link rel="stylesheet" href="/blocks/header/header.css">
+    <div class="header block" data-block-name="header">
+      <!-- row 0: logo_href -->
+      <div><div>/</div></div>
+      <!-- row 1: logo_alt -->
+      <div><div>BPF Schilders</div></div>
+      <!-- row 2: primary_menu (audience switcher — 7 items) -->
+      <div><div><ul>
+        <li><a href="/werknemer/">Werknemer</a></li>
+        <li><a href="/ondernemer/">Ondernemer</a></li>
+        <li><a href="/werkgever/">Werkgever</a></li>
+        <li><a href="/over-ons/">Over ons</a></li>
+        <li><a href="/klacht/">Klacht</a></li>
+        <li><a href="/translate/">Translate</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul></div></div>
+      <!-- row 3: secondary_menu (main-nav items, werkgever context) -->
+      <div><div><ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/werkgever/het-pensioen/">Het pensioen</a></li>
+        <li><a href="/werkgever/wat-doe-ik-bij/">Wat doe ik bij...</a></li>
+        <li><a href="/werkgever/administratie/">Administratie</a></li>
+        <li><a href="/werkgever/actueel/">Actueel</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul></div></div>
+      <!-- row 4: search_placeholder -->
+      <div><div>Heeft u een vraag?</div></div>
+      <!-- row 5: login_url -->
+      <div><div>/pensioenadministratie/inloggen/#!/login/redirect?</div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="links">
+    <div class="gallery-label"><a href="#links">links</a></div>
+    <link rel="stylesheet" href="/blocks/links/links.css">
+    <div class="links block" data-block-name="links">
+      <div><div>icon-phone</div><div>030-277 56 00</div><div>tel:030-2775600</div><div></div></div>
+      <div><div>icon-envelope</div><div>Mail ons</div><div>/werknemer/contact/stel-uw-vraag/</div><div></div></div>
+      <div><div>icon-facebook</div><div>Volg ons</div><div>https://www.facebook.com/bpfschilders</div><div>_blank</div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="footer">
+    <div class="gallery-label"><a href="#footer">footer</a></div>
+    <link rel="stylesheet" href="/blocks/footer/footer.css">
+    <div class="footer block" data-block-name="footer">
+      <div><div>Copyright © BPF Schilders 2026</div></div>
+      <div><div><ul>
+        <li><a href="/disclaimer/">Disclaimer</a></li>
+        <li><a href="/privacy-statement-bpf-schilders/">Privacy</a></li>
+        <li><a href="/cookiebeleid/">Cookiebeleid</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul></div></div>
+      <div><div>Mijn cookievoorkeur wijzigen</div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="cta">
+    <div class="gallery-label"><a href="#cta">cta</a></div>
+    <link rel="stylesheet" href="/blocks/cta/cta.css">
+    <div class="cta block" data-block-name="cta">
+      <!-- row 0: cta_label -->
+      <div><div>Inloggen</div></div>
+      <!-- row 1: cta_href -->
+      <div><div>/inloggen/</div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="teaser">
+    <div class="gallery-label"><a href="#teaser">teaser</a></div>
+    <link rel="stylesheet" href="/blocks/teaser/teaser.css">
+    <div class="teaser block" data-block-name="teaser">
+      <!-- row 0: image_src — contact page instance (has alt + CTA) -->
+      <div><div><img src="/media/1734/werknemer-icon.png?rmode=max&amp;width=186&amp;height=109" alt="Illustratie met belangrijke pensioenmomenten in het leven van een schilder."></div></div>
+      <!-- row 1: image_alt -->
+      <div><div>Illustratie met belangrijke pensioenmomenten in het leven van een schilder.</div></div>
+      <!-- row 2: cta_href -->
+      <div><div>/media/pqpgevtp/infographic-pensioenmomenten-werknemer_groene-route-def.pdf</div></div>
+      <!-- row 3: cta_label -->
+      <div><div>Bekijk de infographic</div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="text">
+    <div class="gallery-label"><a href="#text">text</a></div>
+    <link rel="stylesheet" href="/blocks/text/text.css">
+    <div class="text block" data-block-name="text">
+      <!-- row 0: title -->
+      <div><div>Looking for something else?</div></div>
+      <!-- row 1: description (richtext) -->
+      <div><div><p>If you have not found what you were looking for, have a look at the (Dutch) pages below. You can translate the pages with a translation tool.</p></div></div>
+      <!-- row 2: ctas (richtext list of links) -->
+      <div><div><ul>
+        <li><a href="/werknemer/wat-doe-ik-bij/met-pensioen-gaan/">To retire (met pensioen gaan)</a></li>
+        <li><a href="/werknemer/het-pensioen/pensioenpakket/">The pension package (het pensioenpakket)</a></li>
+        <li><a href="/inloggen/">Sign in to BPF Schilders (inloggen bij BPF Schilders)</a></li>
+      </ul></div></div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="cards">
+    <div class="gallery-label"><a href="#cards">cards</a></div>
+    <link rel="stylesheet" href="/blocks/cards/cards.css">
+    <div class="cards block" data-block-name="cards">
+      <!-- Card 1: Wie zijn we? — fields in model order: image, title, description, cta_url, cta_label -->
+      <div>
+        <div><img src="https://www.bpfschilders.nl/media/qm4pd0qn/bpf-schilders-logo-fc-vierkant-bijgesneden.jpg" alt="Wie zijn we?"></div>
+        <div>Wie zijn we?</div>
+        <div>BPF Schilders verzorgt het pensioen van alle werknemers en ondernemers in de sector Schilders-, Afwerkings-, Vastgoedonderhoud- en Glaszetbedrijf.</div>
+        <div>/over-ons/dit-zijn-we/wie-zijn-we/</div>
+        <div>Lees meer</div>
+      </div>
+      <!-- Card 2: Wat we presteren -->
+      <div>
+        <div><img src="https://www.bpfschilders.nl/media/4ckn2nst/verantwoordbeleggen-439.jpg" alt="Wat we presteren"></div>
+        <div>Wat we presteren</div>
+        <div>Elk kwartaal presenteert BPF Schilders het behaalde beleggingsrendement en het belegd vermogen. Ook geven wij daarop een toelichting.</div>
+        <div>/over-ons/dit-presteren-we/</div>
+        <div>Lees meer</div>
+      </div>
+      <!-- Card 3: Downloads -->
+      <div>
+        <div><img src="https://www.bpfschilders.nl/media/3i5njnnl/downloads-658x439.jpg" alt="Downloads"></div>
+        <div>Downloads</div>
+        <div>Download hier onder andere onze jaarverslagen, beleidsdocumenten, statuten en reglementen zoals het pensioenreglement en beleggingsdocumenten.</div>
+        <div>/over-ons/downloads/</div>
+        <div>Ga naar downloads</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section" id="carousel">
+    <div class="gallery-label"><a href="#carousel">carousel</a></div>
+    <link rel="stylesheet" href="/blocks/carousel/carousel.css">
+    <div class="carousel block" data-block-name="carousel">
+      <!-- item 1 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-pensioen</div>
+        <div>Met pensioen gaan</div>
+        <div>/werknemer/wat-doe-ik-bij/met-pensioen-gaan/</div>
+      </div>
+      <!-- item 2 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-trouwen</div>
+        <div>Trouwen en samenwonen</div>
+        <div>/werknemer/wat-doe-ik-bij/trouwen-of-samenwonen/</div>
+      </div>
+      <!-- item 3 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-verhuizen</div>
+        <div>Verhuizen</div>
+        <div>/werknemer/wat-doe-ik-bij/verhuizen/</div>
+      </div>
+      <!-- item 4 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-scheiden</div>
+        <div>Scheiden of uit elkaar gaan</div>
+        <div>/werknemer/wat-doe-ik-bij/scheiden-of-uit-elkaar-gaan/</div>
+      </div>
+      <!-- item 5 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-ontslag</div>
+        <div>Ontslag</div>
+        <div>/werknemer/wat-doe-ik-bij/ontslag/</div>
+      </div>
+      <!-- item 6 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-veranderenvanbaan</div>
+        <div>Nieuwe baan</div>
+        <div>/werknemer/wat-doe-ik-bij/nieuwe-baan/</div>
+      </div>
+      <!-- item 7 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-uitzendkracht</div>
+        <div>Uitzendkracht worden</div>
+        <div>/werknemer/wat-doe-ik-bij/uitzendkracht-worden/</div>
+      </div>
+      <!-- item 8 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-voorjezelfbeginnen</div>
+        <div>Voor uzelf beginnen</div>
+        <div>/werknemer/wat-doe-ik-bij/voor-uzelf-beginnen/</div>
+      </div>
+      <!-- item 9 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-arbeidsongeschikt</div>
+        <div>Arbeidsongeschiktheid</div>
+        <div>/werknemer/wat-doe-ik-bij/arbeidsongeschiktheid/</div>
+      </div>
+      <!-- item 10 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-verlof</div>
+        <div>Verlof</div>
+        <div>/werknemer/wat-doe-ik-bij/verlof/</div>
+      </div>
+      <!-- item 11 -->
+      <div data-aue-component="carousel-item">
+        <div>costumer-journey-icon icon-bpf icon-bpf-overlijden</div>
+        <div>Overlijden</div>
+        <div>/werknemer/wat-doe-ik-bij/overlijden/</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCKS END -->
+  </main>
+
+  <script type="module">
+    async function initBlocks() {
+      const blocks = document.querySelectorAll('[data-block-name]:not([data-block-status])');
+      for (const block of blocks) {
+        const name = block.dataset.blockName;
+        try {
+          const { default: decorate } = await import(`/blocks/${name}/${name}.js`);
+          await decorate(block);
+          block.dataset.blockStatus = 'initialized';
+        } catch (err) {
+          block.dataset.blockStatus = 'error';
+          console.error(`[block-gallery] ${name} failed:`, err);
+        }
+      }
+    }
+    initBlocks();
+  </script>
+</body>
+</html>

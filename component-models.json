@@ -142,21 +142,78 @@
     ]
   },
   {
+    "id": "accordion-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "item_title",
+        "label": "Accordion Trigger Text"
+      },
+      {
+        "component": "richtext",
+        "name": "item_body",
+        "label": "Accordion Panel Content",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "card",
     "fields": [
       {
         "component": "reference",
         "valueType": "string",
         "name": "image",
-        "label": "Image",
+        "label": "Card Image",
         "multi": false
       },
       {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Card Heading"
+      },
+      {
         "component": "richtext",
-        "name": "text",
-        "value": "",
-        "label": "Text",
+        "name": "description",
+        "label": "Card Body Text",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_url",
+        "label": "Card CTA Href"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_label",
+        "label": "Card CTA Label"
+      }
+    ]
+  },
+  {
+    "id": "carousel-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "icon_class",
+        "label": "BPFicons Tile Icon Class"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "label",
+        "label": "Tile Visible Label"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "href",
+        "label": "Tile Link Href"
       }
     ]
   },
@@ -180,12 +237,93 @@
     ]
   },
   {
+    "id": "cta",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_label",
+        "label": "Button Label"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_href",
+        "label": "Button Target URL"
+      }
+    ]
+  },
+  {
+    "id": "footer",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "copyright_text",
+        "label": "Copyright Notice"
+      },
+      {
+        "component": "richtext",
+        "name": "links",
+        "label": "Legal / Privacy Navigation Links",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cookie_preferences_label",
+        "label": "Cookie Preferences Button Label"
+      }
+    ]
+  },
+  {
     "id": "fragment",
     "fields": [
       {
         "component": "aem-content",
         "name": "reference",
         "label": "Reference"
+      }
+    ]
+  },
+  {
+    "id": "header",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "logo_href",
+        "label": "Logo Link URL"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "logo_alt",
+        "label": "Logo Alt / Title"
+      },
+      {
+        "component": "richtext",
+        "name": "primary_menu",
+        "label": "Primary Navigation (Audience Switcher)",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "secondary_menu",
+        "label": "Secondary Navigation (Hierarchical)",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "search_placeholder",
+        "label": "Search Field Placeholder Text"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "login_url",
+        "label": "Login Portal URL"
       }
     ]
   },
@@ -211,6 +349,88 @@
         "name": "text",
         "value": "",
         "label": "Text",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "links-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "icon_class",
+        "label": "BPFicons CSS Class"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "label",
+        "label": "Visible Link Text"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "href",
+        "label": "Link Href"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "target",
+        "label": "Link Target Attribute"
+      }
+    ]
+  },
+  {
+    "id": "teaser",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image_src",
+        "label": "Teaser Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "image_alt",
+        "label": "Image Alt Text"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_href",
+        "label": "CTA Link Href"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_label",
+        "label": "CTA Link Label"
+      }
+    ]
+  },
+  {
+    "id": "text-block",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Section Heading"
+      },
+      {
+        "component": "richtext",
+        "name": "description",
+        "label": "Body / Introductory Richtext",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "ctas",
+        "label": "CTA Links List",
         "valueType": "string"
       }
     ]

@@ -1,0 +1,211 @@
+component: carousel
+source_component: EmploymentTopicsList
+qa_run: 2026-06-02T23:53:00Z
+repair_cycle: 2
+
+check_0_static:
+  findings_ingested: 0
+  blockers: 0
+  note: >
+    No static findings found for block name "carousel" in qa-static-findings.json
+    (static findings target source component names only; this is consistent with
+    known pipeline pattern).
+
+check_1_code_review:
+  result: pass
+  issues:
+    - severity: low
+      detail: >
+        carousel.css declares --carousel-dot-active: var(--colors-link-color).
+        Per project-eds-token-names memory, --colors-link-color resolves to
+        rgb(68,35,89) at runtime (confirmed via getComputedStyle) — value is
+        correct but the token name is a known inconsistency in the EDS repo.
+        Not a code defect; visual result is correct.
+    - severity: low
+      detail: >
+        .carousel uses --colors-focus-outline and --colors-card-background in
+        several rules. Both resolve correctly at runtime (rgb(0,95,204) and
+        #fff respectively). Token name convention differs from --link-color
+        pattern but values are live.
+
+check_2_functional:
+  result: pass
+  js_errors:
+    - severity: low
+      message: >
+        Failed to load resource: 404 /media/1734/werknemer-icon.png — this is a
+        gallery-level image from another block (cards), not carousel.
+    - severity: low
+      message: >
+        TypeError: Cannot read properties of null (reading 'dataset') at
+        loadSection in aem.js:656 — gallery scaffolding issue, not carousel.
+  block_initialized: true
+  note: >
+    Both JS errors are pre-existing gallery-level issues unrelated to carousel.
+    Carousel block initializes cleanly: data-block-status="initialized", DOM
+    rebuilt with .carrousel-wrapper, ul.slider-wrapper (11 li), prev/next
+    buttons, .carrousel-paging nav (dots count varies by viewport).
+
+check_3_screenshot_diff:
+  desktop:
+    source: inventory/components/EmploymentTopicsList/captures/source-screenshot.desktop.png
+    generated: structure-bundle/qa/components/carousel/gallery-screenshot.desktop.png
+    captured_live: true
+    discrepancies:
+      - element: ".carrousel-button-previous::before, .carrousel-button-next::before"
+        property: color
+        source_value: "Crimson red chevron arrows — sampled ~rgb(209,17,33) #d11121"
+        generated_value: "Crimson red FA4 angle-left/right chevrons — CSS var --carousel-arrow-color: #d11121; confirmed via getComputedStyle"
+        severity: low
+        note: "RT-carousel-arrow-color repair confirmed. Colors match."
+      - element: ".carrousel-paging-button:not(.active)"
+        property: color
+        source_value: "Tan/warm brownish-gold inactive dots — sampled ~rgb(184,144,99)"
+        generated_value: "Tan dots background-color: rgb(184,144,99) — confirmed via getComputedStyle"
+        severity: low
+        note: "RT-carousel-dot-inactive-color repair confirmed. Colors match."
+      - element: ".gallery-section label band (CAROUSEL)"
+        property: other
+        source_value: "Plain white page background, no label band"
+        generated_value: "Grey gallery section label 'CAROUSEL' above block"
+        severity: low
+        note: "Gallery scaffolding context difference — not a block defect."
+      - element: ".costumer-journey-icon — icon glyphs"
+        property: asset
+        source_value: "Custom BPF SVG painter-trade icons (trowel, paint bucket, roller, etc.)"
+        generated_value: "FontAwesome 4.x semantic substitutes (graduation cap, heart, house, unlink, sign-out, briefcase)"
+        severity: low
+        note: >
+          Brief explicitly states: 'nearest-semantic FontAwesome substitutes are
+          acceptable — judge on layout/structure/color/arrows, not exact glyph
+          identity'. Scoring accordingly; glyph substitution is not a defect.
+    fidelity_score: 4.5
+    analysis_basis: >
+      Gallery renders: six topic tile columns visible at desktop (1280px). Each
+      tile has a purple circle (rgb(68,35,89)) containing a white FA4 icon glyph,
+      and a Dutch label below. Left edge shows a crimson FA4 angle-left chevron
+      (#d11121); right edge shows a crimson FA4 angle-right chevron. Two paging
+      dots below the track: first (active) is dark purple rgb(68,35,89), second
+      is tan rgb(184,144,99). Gallery section label 'CAROUSEL' appears in a grey
+      band above the block. Layout, spacing, column count, and brand colors all
+      match the source. Arrow and inactive-dot color repairs are visually
+      confirmed in this invocation.
+
+  mobile:
+    source: inventory/components/EmploymentTopicsList/captures/source-screenshot.mobile.png
+    generated: structure-bundle/qa/components/carousel/gallery-screenshot.mobile.png
+    captured_live: true
+    discrepancies:
+      - element: ".gallery-section label band (CAROUSEL)"
+        property: other
+        source_value: "Source shows carousel in context of full page (BPF header + hero visible above)"
+        generated_value: "Gallery shows CAROUSEL label band above isolated block"
+        severity: low
+        note: "Gallery scaffolding context difference."
+      - element: ".costumer-journey-icon — icon glyphs"
+        property: asset
+        source_value: "Custom BPF SVG painter-trade icons"
+        generated_value: "FontAwesome 4.x semantic substitutes"
+        severity: low
+        note: "Acceptable per brief — nearest-semantic substitutes."
+    fidelity_score: 4.5
+    analysis_basis: >
+      Gallery renders at 375px: two topic tiles visible per page (Met pensioen
+      gaan with graduation cap icon, Trouwen en samenwonen with heart icon), both
+      in purple circles with white FA4 glyphs. Crimson angle-left arrow on left
+      edge, crimson angle-right arrow on right edge. Six paging dots at bottom:
+      active dot is dark purple, five inactive dots are tan. Labels centered below
+      icons. Layout matches source 2-up mobile view. Arrow and dot color repairs
+      confirmed.
+
+  avg_fidelity_score: 4.5
+  gate: 4.7
+  gate_status: fail
+  gate_note: >
+    Score 4.5 is 0.2 below the 4.7 gate. The only remaining discrepancies are
+    low-severity: gallery scaffolding label (not a block defect) and FA4 icon
+    substitution (explicitly permitted by brief). The arrow-color and
+    inactive-dot-color repairs are confirmed correct. A gate exception is
+    warranted if the coordinator accepts the brief's icon-substitution policy
+    and the scaffolding-band context difference as non-blocking.
+
+check_4_behavioral_spec:
+  ba_spec_used: false
+  fallback_source: interaction-states.yaml
+  must_acs_total: 7
+  must_acs_passed: 7
+  must_acs_failed: 0
+  should_acs_total: 0
+  should_acs_passed: 0
+  interaction_states_tested:
+    - next-page
+    - prev-page
+    - prev-wrap-around
+    - dot-click
+    - initial-load
+  states:
+    - name: initial-load
+      screenshot: structure-bundle/qa/components/carousel/gallery-screenshot.mobile.png
+      match: pass
+      detail: >
+        On load: page=0, dot0.active=true, dot0.aria-current=true, li[0].active=true,
+        transform=translate3d(0px,0px,0px). AC-carousel-001 (11 li), AC-carousel-002
+        (li[0].active) both pass.
+    - name: next-page
+      screenshot: structure-bundle/qa/components/carousel/gallery-screenshot.next.png
+      match: pass
+      detail: >
+        After nextBtn.click(): page=1, dot1.active=true, dot1.aria-current=true,
+        li[0].active=false, li[2].active=true, transform=translate3d(-280px,0,0),
+        transitionDuration=500ms. AC-carousel-003/004 and AC-carousel-006 pass.
+    - name: prev-page
+      screenshot: structure-bundle/qa/components/carousel/gallery-screenshot.mobile.png
+      match: pass
+      detail: >
+        After prevBtn.click() from page=1: page=0, dot0.active=true,
+        transform=translate3d(0px,0,0). Prev navigation correct.
+    - name: prev-wrap-around
+      screenshot: structure-bundle/qa/components/carousel/gallery-screenshot.mobile.png
+      match: pass
+      detail: >
+        After prevBtn.click() from page=0: page=5, lastDot.active=true,
+        lastDot.aria-current=true, transform=translate3d(-1400px,0,0). Circular
+        wrap-around correct.
+    - name: dot-click
+      screenshot: structure-bundle/qa/components/carousel/gallery-screenshot.dot-page2.png
+      match: pass
+      detail: >
+        After dots[2].click(): page=2, dot2.active=true, dot2.aria-current=true,
+        transform=translate3d(-560px,0,0). AC-carousel-005 pass.
+  accessibility_checks:
+    - check: "prevBtn aria-label='Vorige'"
+      result: pass
+    - check: "nextBtn aria-label='Volgende'"
+      result: pass
+    - check: "pagingNav aria-label='Carrousel paginering'"
+      result: pass
+    - check: "each dot has aria-label 'Ga naar pagina N'"
+      result: pass
+    - check: "active dot has aria-current='true', all others 'false'"
+      result: pass
+    - check: "icon elements have aria-hidden='true'"
+      result: pass
+    - check: "focus-visible outline rule present (.carousel a:focus-visible, .carrousel-paging-button:focus-visible)"
+      result: pass
+      detail: "Outline: rgb(0,95,204) auto 1px — matches interaction-states.yaml expected value"
+    - check: "all 11 hrefs non-empty (AC-carousel-007)"
+      result: pass
+  failed_acs: []
+  interaction_score: 1.0
+  interaction_gate: 0.9
+  interaction_gate_status: pass
+
+overall: fail
+overall_note: >
+  All functional and interaction checks pass. Visual fidelity score 4.5 is below
+  the 4.7 gate by 0.2. The remaining gap is entirely low-severity: gallery
+  scaffolding label band (not a block defect) and FA4 icon substitution
+  (explicitly permitted by the QA brief). No blocker or high-severity
+  discrepancies remain. Coordinator should evaluate gate exception given that
+  both prior repair targets (arrow color, inactive dot color) are confirmed
+  fixed and the icon-substitution policy is explicitly approved in the brief.
