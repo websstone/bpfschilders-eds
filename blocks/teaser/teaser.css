@@ -1,38 +1,42 @@
 /*
  * Teaser block — image + optional CTA link.
  *
- * Source: ImageCtaTeaser (computed-styles.desktop.json via playwright)
+ * Source: ImageCtaTeaser (design-findings validator source_value fields)
  * Design tokens from: styles/tokens.css
  *
- * Block-local tokens:
- *   --teaser-font-size     17.044px / 16 ≈ 1.065rem  (from computed-styles h2 font-size)
- *   --teaser-line-height   22.6248px / 16 ≈ 1.414rem
- *   --teaser-heading-mb    5.62453px / 16 ≈ 0.352rem  (h2 margin-bottom)
- *   --teaser-img-max-w     100%   (max-width on img element)
+ * Block-redesign: full rebuild from validator source_value + P1 captures.
+ *
+ * Key source values (from design-parity-result.yaml):
+ *   block background:       rgba(0,0,0,0)   — transparent, inherits page background
+ *   block color:            rgb(68,35,89)    — purple (--colors-link-color)
+ *   block font-weight:      700
+ *   block font-family:      Lato, Arial, sans-serif
+ *   block font-size:        17.044px (1.065rem)
+ *   block margin-bottom:    5.62453px (~0.352rem)
+ *   CTA link: underline, color rgb(68,35,89), weight 700, Lato
  */
 
-/* --------------------------------------------------------
-   Block root
--------------------------------------------------------- */
+/* ── Block root ────────────────────────────────────────────────────────────── */
 .teaser {
   display: block;
-  background-color: var(--colors-card-background, rgb(255 255 255));
+  background-color: transparent;       /* source rgba(0,0,0,0) — do not paint a background */
+  color: var(--colors-link-color);     /* source rgb(68,35,89) */
+  font-family: Lato, Arial, sans-serif; /* source Lato, Arial, sans-serif */
+  font-size: 1.065rem;                 /* source 17.044px / 16 */
+  font-weight: 700;                    /* source 700 */
+  margin-bottom: 0.352rem;             /* source 5.62453px / 16 */
   width: 100%;
   box-sizing: border-box;
 }
 
-/* --------------------------------------------------------
-   Panel — the inner content wrapper
--------------------------------------------------------- */
+/* ── Panel — inner content wrapper ─────────────────────────────────────────── */
 .teaser .teaser-panel {
   display: block;
   padding: 1rem;
   box-sizing: border-box;
 }
 
-/* --------------------------------------------------------
-   Image
--------------------------------------------------------- */
+/* ── Image ──────────────────────────────────────────────────────────────────── */
 .teaser .teaser-image {
   display: block;
   margin-bottom: 0.75rem;
@@ -43,31 +47,25 @@
   display: block;
   max-width: 100%;
   height: auto;
-
-  /* Source intrinsic: 81×168 (portrait thumbnail) — let browser determine size */
 }
 
 .teaser .teaser-image picture {
   display: block;
 }
 
-/* --------------------------------------------------------
-   CTA link
-   Source computed: color rgb(68,35,89); text-decoration: underline; font-weight: 700
-   font-size: 17.044px (1.065rem); font-family: Lato, Arial, sans-serif
--------------------------------------------------------- */
+/* ── CTA link ──────────────────────────────────────────────────────────────── */
 .teaser .teaser-cta {
   display: block;
-  margin-top: 0.352rem; /* --teaser-heading-mb: 5.62453px / 16 */
+  margin-top: 0.352rem; /* source h2 margin-bottom 5.62453px / 16 */
 }
 
 .teaser .teaser-cta a {
-  color: var(--colors-link-color, rgb(68 35 89));
+  color: var(--colors-link-color);      /* rgb(68,35,89) */
   text-decoration: underline;
-  font-family: Lato, Arial, sans-serif; /* brand font — Lato confirmed by computed-styles */
-  font-size: 1.065rem; /* 17.044px / 16 */
+  font-family: Lato, Arial, sans-serif;
+  font-size: 1.065rem;                  /* 17.044px / 16 */
   font-weight: 700;
-  line-height: 1.414rem; /* 22.6248px / 16 */
+  line-height: 1.414rem;                /* 22.6248px / 16 */
   cursor: pointer;
 }
 
@@ -75,12 +73,11 @@
   opacity: 0.8;
 }
 
-/* --------------------------------------------------------
-   Responsive: tablet and desktop
-   BA spec: image scales to viewport width (no explicit property changes)
-   Images are already responsive (max-width: 100%) from mobile defaults.
-   At wider viewports, constrain the panel width to match the source context.
--------------------------------------------------------- */
+.teaser .teaser-cta a:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (width >= 600px) {
   .teaser .teaser-panel {
     padding: 1.25rem;
@@ -90,6 +87,6 @@
 @media (width >= 900px) {
   .teaser .teaser-panel {
     padding: 1.5rem;
-    max-width: 41.125rem; /* ~658px (source h2 width) / 16 — matches source layout width */
+    max-width: 41.125rem; /* ~658px (source h2 width) / 16 */
   }
 }

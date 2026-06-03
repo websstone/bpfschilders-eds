@@ -3,42 +3,31 @@
  * Source component: SiteFooter
  * Computed-styles source: playwright (trusted)
  *
- * Color tokens from styles/tokens.css:
- *   --colors-text-primary       rgb(33, 33, 33)
- *   --colors-card-background    rgb(255, 255, 255)
- *   --colors-link-color         rgb(68, 35, 89)
- *   --typography-font-family    Helvetica, Arial, sans-serif
- *   --typography-font-size      13.712px
- *
- * Block-local sizing tokens (not in global token set):
- *   --footer-font-size           0.857rem  (= 13.712px / 16)
- *   --footer-line-height         1.414rem  (= 22.6248px / 16)
- *   --footer-container-padding   0.9375rem (= 15px / 16)
- *   --footer-separator-height    0.4275rem (= 6.84375px / 16)
- *   --footer-li-padding-x        0.857rem  (= 13.712px / 16)
+ * Source measurements (desktop 1440, mobile 375):
+ *   footer bg:            rgb(255,255,255)
+ *   footer margin-bottom: 27.424px
+ *   footer height (desk): 105.578px  (with cookie-pref item)
+ *   footer height (mob):  137.984px
+ *   nav.container:        max-width 1000px, margin 0 auto, padding 15px, text-align center
+ *   copyright p:          margin-top 6.856px, margin-bottom 13.712px
+ *   ul:                   display block (inline items flow as inline-block)
+ *   li:                   display inline-block, padding 0 13.712px,
+ *                         border-right 1px solid rgb(71,71,71), last-child no border
+ *   a / button color:     rgb(71,71,71)  — NOT brand purple
+ *   ::before gradient:    linear-gradient(rgba(0,0,0,0.25), rgb(255,255,255)) height 6.84375px
+ *                         applied on <footer> element (footer-wrapper in EDS)
  */
 
-/* --- Root --- */
-.footer {
-  --footer-font-size: 0.857rem;
-  --footer-line-height: 1.414rem;
-  --footer-container-padding: 0.9375rem;
-  --footer-separator-height: 0.4275rem;
-  --footer-li-padding-x: 0.857rem;
-  --footer-li-border-color: rgb(71 71 71); /* block-local: separator pipe color */
-
+/* --- EDS outer wrapper = <footer class="footer-wrapper"> ---
+   The gradient separator must live here because footer-wrapper IS the <footer> element.
+   Block-level .footer sits inside it with no position context. */
+.footer-wrapper {
   position: relative;
   background-color: var(--colors-card-background);
-  color: var(--colors-text-primary);
-  font-family: var(--typography-font-family);
-  font-size: var(--footer-font-size);
-  line-height: var(--footer-line-height);
-  font-weight: 400;
-  margin-bottom: 0;
+  margin-bottom: var(--space-footer-mb);
 }
 
-/* Gradient separator at top (::before from computed-styles.desktop.json) */
-.footer::before {
+.footer-wrapper::before {
   content: '';
   display: block;
   position: absolute;
@@ -46,78 +35,102 @@
   left: 0;
   right: 0;
   height: var(--footer-separator-height);
-  background-image: linear-gradient(rgb(0 0 0 / 25%), rgb(255 255 255));
+  background-image: linear-gradient(var(--color-footer-gradient-start), var(--color-footer-gradient-end));
   pointer-events: none;
+}
+
+/* --- Block root --- */
+.footer {
+  background-color: var(--colors-card-background);
+  color: var(--colors-text-primary);
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-font-size);
+  line-height: 1.65; /* 22.6248 / 13.712 */
+  font-weight: 400;
 }
 
 /* --- Nav container --- */
 .footer .container {
-  max-width: 62.5rem; /* 1000px / 16 */
+  max-width: 62.5rem; /* 1000px */
   margin: 0 auto;
-  padding: var(--footer-container-padding);
+  padding: 0.9375rem; /* 15px */
   box-sizing: border-box;
   text-align: center;
 }
 
-/* --- Copyright paragraph --- */
+/* --- Copyright paragraph ---
+   Source: margin 6.856px 0 13.712px */
 .footer .container p {
-  margin: 0 0 0.5rem;
+  margin: var(--space-footer-copyright-mt) 0 var(--space-footer-copyright-mb);
   color: var(--colors-text-primary);
+  font-size: var(--typography-font-size);
+  line-height: inherit;
 }
 
-/* --- Links list --- */
+/* --- Links list ---
+   Source: display block — items flow as inline-block (not flex) */
 .footer .container ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
+  display: block;
+  text-align: center;
 }
 
-/* --- List items with pipe separator on the right --- */
+/* --- List items ---
+   Source: display inline-block, padding 0 13.712px,
+   border-right 1px solid rgb(71,71,71), last-child no border */
 .footer .container ul li {
-  display: inline-flex;
-  align-items: center;
-  padding: 0 var(--footer-li-padding-x);
-  border-right: 1px solid var(--footer-li-border-color);
-  margin-bottom: 0.612rem; /* 9.79px / 16 */
+  display: inline-block;
+  padding: 0 var(--typography-font-size); /* 0 13.712px */
+  border-right: 1px solid var(--color-footer-separator);
+  vertical-align: middle;
+  line-height: inherit;
 }
 
 .footer .container ul li:last-child {
   border-right: none;
 }
 
-/* --- Anchor links --- */
+/* --- Anchor links ---
+   Source: color rgb(71,71,71), no text-decoration */
 .footer .container ul li a {
-  color: var(--colors-link-color);
+  color: var(--color-footer-link);
   text-decoration: none;
-  font-size: var(--footer-font-size);
-  line-height: var(--footer-line-height);
+  font-size: var(--typography-font-size);
+  line-height: inherit;
   font-weight: 400;
-  display: inline;
+}
+
+.footer .container ul li a:hover {
+  text-decoration: underline;
 }
 
 .footer .container ul li a:focus-visible {
-  outline: 1px auto rgb(0 95 204);
+  outline: 1px auto var(--colors-focus-outline);
   outline-offset: 2px;
 }
 
-/* --- Cookie preference label (plain text — OneTrust injects its own button) --- */
-.footer .container ul li.cookie-pref span {
-  color: var(--colors-link-color);
-  font-size: var(--footer-font-size);
-  cursor: default;
+/* --- Cookie preference button (OneTrust ot-sdk-show-settings) ---
+   Source: same color as links, no button chrome */
+.footer .container ul li button.ot-sdk-show-settings,
+.footer .container ul li.cookie-pref button {
+  all: unset;
+  color: var(--color-footer-link);
+  font-family: var(--typography-font-family);
+  font-size: var(--typography-font-size);
+  line-height: inherit;
+  font-weight: 400;
+  cursor: pointer;
 }
 
-/* --- Desktop enhancement --- */
-@media (width >= 769px) {
-  .footer .container ul {
-    flex-wrap: nowrap;
-  }
+.footer .container ul li button.ot-sdk-show-settings:hover,
+.footer .container ul li.cookie-pref button:hover {
+  text-decoration: underline;
+}
 
-  .footer .container ul li {
-    margin-bottom: 0;
-  }
+.footer .container ul li button.ot-sdk-show-settings:focus-visible,
+.footer .container ul li.cookie-pref button:focus-visible {
+  outline: 1px auto var(--colors-focus-outline);
+  outline-offset: 2px;
 }

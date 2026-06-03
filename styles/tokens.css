@@ -19,4 +19,30 @@
   --spacing-card-height: 470.625px;
   --spacing-card-padding: 30px;
   --spacing-card-margin-top: 30px;
+
+  /* Shared-chrome tokens — added by P4 remediation */
+  --color-header-bg: rgb(244 244 244);       /* source: SiteHeaderNavigation computed-styles.desktop.json */
+  --space-footer-mb: 1.714rem;               /* 27.424px / 16 — source: SiteFooter computed-styles.desktop.json */
+  --color-header-shadow: rgb(0 0 0 / 10%);   /* header box-shadow color */
+  --color-border-muted: rgb(204 204 204);    /* input / dropdown borders */
+  --color-border-dark: rgb(33 33 33);        /* accordion outer border — source ComplaintProcessGuide computed-styles */
+  --color-cta-accent: rgb(154 173 0);        /* CTA underline accent (yellow-green) — source LoginCallToAction screenshot */
+  --color-links-hover: rgb(193 142 96);      /* links icon hover fill — source ContactLinksList (#c18e60) */
+  --color-nav-muted: rgb(100 100 100);       /* top-nav inactive link text */
+  --color-footer-separator: rgb(71 71 71);   /* footer pipe separator — replaces block-local var */
+  --color-footer-link: rgb(71 71 71);        /* footer link/text color — source SiteFooter computed-styles.desktop.json */
+  --color-footer-gradient-start: rgb(0 0 0 / 25%); /* footer top gradient shadow start */
+  --color-footer-gradient-end: rgb(255 255 255);    /* footer top gradient shadow end (white) */
+  --space-footer-copyright-mt: 0.4285rem;   /* 6.856px / 16 — copyright paragraph top margin */
+  --space-footer-copyright-mb: 0.857rem;    /* 13.712px / 16 — copyright paragraph bottom margin */
+  --footer-separator-height: 0.4275rem;     /* 6.84375px / 16 — gradient separator bar */
+
+  /* Card button border-radius — source: .panel a.button computed borderRadius 7.836px */
+  --radius-button: 0.49rem;       /* 7.836px / 16 */
+
+  /* Two-column layout tokens */
+  --space-two-col-gap: 0px;              /* source: Bootstrap col-md-9/col-md-3 are adjacent with zero gap; gutters live inside column padding */
+  --space-col-gutter: 16px;             /* source: Bootstrap col-md-* have 15px padding each side = 30px gutter; measured 16px at 1000px container */
+  --two-col-max-width: 1000px;          /* source: Bootstrap .container max-width at >=992px breakpoint, measured 1000px at 1440px viewport */
+  --content-max-width: 1000px;          /* source: all page sections constrain inner content to 1000px centered; matches --two-col-max-width and header */
 }

@@ -103,7 +103,7 @@ export default function decorate(block) {
     ].forEach((item) => linkItems.push({ ...item, sourceEl: null }));
   }
 
-  const cookieLabel = cellText(cookieRow);
+  const cookieLabel = cellText(cookieRow) || 'Mijn cookievoorkeur wijzigen';
 
   // --- Build new DOM ---
   const nav = document.createElement('nav');
@@ -116,9 +116,30 @@ export default function decorate(block) {
   if (copyrightCell) moveInstrumentation(copyrightCell, copyP);
   nav.append(copyP);
 
-  // Links list
+  // Links list — source order: Disclaimer, Privacy, Cookiebeleid, [cookie-pref], Contact
+  // Insert cookie-pref item before "Contact" (last item) to match source ordering.
   const ul = document.createElement('ul');
-  linkItems.forEach(({ label, href, sourceEl }) => {
+
+  // Find the index of "Contact" to insert cookie-pref before it
+  const contactIdx = linkItems.findIndex(({ label }) => label.toLowerCase() === 'contact');
+  const insertBeforeIdx = contactIdx >= 0 ? contactIdx : linkItems.length;
+
+  linkItems.forEach(({ label, href, sourceEl }, idx) => {
+    // Insert cookie-pref li before Contact
+    if (idx === insertBeforeIdx && cookieLabel) {
+      const cookieLi = document.createElement('li');
+      cookieLi.className = 'cookie-pref';
+      // Render as a button with OneTrust class so OneTrust SDK can activate it
+      const cookieBtn = document.createElement('button');
+      cookieBtn.type = 'button';
+      cookieBtn.id = 'ot-sdk-btn';
+      cookieBtn.className = 'ot-sdk-show-settings';
+      cookieBtn.textContent = cookieLabel;
+      if (cookieCell) moveInstrumentation(cookieCell, cookieBtn);
+      cookieLi.append(cookieBtn);
+      ul.append(cookieLi);
+    }
+
     const li = document.createElement('li');
     if (href && href !== '#') {
       const a = document.createElement('a');
@@ -132,14 +153,17 @@ export default function decorate(block) {
     ul.append(li);
   });
 
-  // Cookie preferences label — rendered as plain text span (OneTrust injects its own button)
-  if (cookieLabel) {
+  // If Contact was not found (or list was empty), append cookie-pref at end
+  if (insertBeforeIdx === linkItems.length && cookieLabel) {
     const cookieLi = document.createElement('li');
     cookieLi.className = 'cookie-pref';
-    const cookieSpan = document.createElement('span');
-    cookieSpan.textContent = cookieLabel;
-    if (cookieCell) moveInstrumentation(cookieCell, cookieSpan);
-    cookieLi.append(cookieSpan);
+    const cookieBtn = document.createElement('button');
+    cookieBtn.type = 'button';
+    cookieBtn.id = 'ot-sdk-btn';
+    cookieBtn.className = 'ot-sdk-show-settings';
+    cookieBtn.textContent = cookieLabel;
+    if (cookieCell) moveInstrumentation(cookieCell, cookieBtn);
+    cookieLi.append(cookieBtn);
     ul.append(cookieLi);
   }
 

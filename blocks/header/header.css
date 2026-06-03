@@ -9,34 +9,38 @@
  * Binding spec: source-screenshot.desktop.png (Playwright-corrected)
  * Background: rgb(244,244,244) LIGHT GRAY (not purple).
  * Purple rgb(68,35,89) appears ONLY on active top-nav link and logo color.
- * Two nav rows via absolute positioning inside a 70px header + 64px white border-bottom.
+ * Desktop two-row layout:
+ *   - Grey band (70px): centered 1000px container — logo LEFT, top-nav RIGHT
+ *   - White band (63px): centered 1000px container — home+main-nav LEFT, search RIGHT
+ * Full-bleed colored bands but content constrained to centered 1000px container.
  * Mobile: logo | searchbox | hamburger inline — no search toggle button.
  */
 
 /* ── Block wrapper reset ──────────────────────────────────────────────────── */
+
+/* EDS generates <header class="header-wrapper"> around the header block.
+   Source header background rgb(244,244,244) must be applied here so the full
+   viewport-width chrome bar is the correct grey. */
 .header-wrapper {
-  /* EDS wraps blocks in a <div class="<name>-wrapper"> — strip the default padding */
   padding: 0;
   margin: 0;
+  background-color: var(--color-header-bg); /* rgb(244,244,244) — source SiteHeaderNavigation */
 }
 
 /* ── Root <header.main-header> ─────────────────────────────────────────────── */
 .main-header {
-  background-color: rgb(244 244 244); /* Playwright-corrected — NOT a token, block-local */
+  background-color: var(--color-header-bg); /* rgb(244,244,244) — token added to tokens.css */
   display: block;
   position: relative;
   width: 100%;
   font-family: var(--typography-font-family);
   font-size: 0.857rem;        /* 13.712px ÷ 16 */
   color: var(--colors-text-primary);
-  box-shadow: rgb(0 0 0 / 10%) 0 3px 3px 0;
+  box-shadow: var(--color-header-shadow) 0 3px 3px 0;
   z-index: 50;
 }
 
 /* ── Container — mobile flex row (logo | searchbox | hamburger) ───────────── */
-
-/* Desktop overrides below use calc() on the full-width header for positioning.
-   Source at 1440px: logo left ≈ 350px (from pixel analysis of source-screenshot). */
 .main-header .container {
   position: relative;
   box-sizing: border-box;
@@ -44,7 +48,7 @@
   /* Mobile: flex row — logo | searchbox | hamburger */
   display: flex;
   align-items: center;
-  height: 3.4375rem;          /* 55px mobile header height */
+  height: 3.75rem;            /* 60px — source mobile header height */
   padding: 0 0.625rem;
 }
 
@@ -60,7 +64,12 @@
   background-position: left center;
   text-indent: -999em;
   overflow: hidden;
-  color: var(--colors-link-color);
+  color: var(--colors-text-primary);
+}
+
+.main-header .logo:hover {
+  background-color: var(--color-header-bg);
+  color: var(--colors-text-primary);
 }
 
 .main-header .logo:focus-visible {
@@ -70,7 +79,7 @@
 /* ── Searchbox — ALWAYS VISIBLE on mobile (RT-header-002 fix) ───────────── */
 
 /* Mobile: flex item that grows to fill space between logo and hamburger.
-   RT-header-004: cap max-width so the hamburger is never pushed off-screen.
+   Cap max-width so the hamburger is never pushed off-screen.
    The input inside must flex-shrink (min-width:0) so it shrinks with the box. */
 .main-header .searchbox {
   display: flex;              /* always visible — no toggle needed on mobile */
@@ -82,7 +91,7 @@
 }
 
 .main-header .searchbox input[type="text"] {
-  border: 1px solid rgb(204 204 204);
+  border: 1px solid var(--color-border-muted);
   padding: 0.375rem 0.5rem;
   font-family: var(--typography-font-family);
   font-size: 0.857rem;
@@ -130,8 +139,8 @@
 .main-header .header-navigation.is-open {
   display: block;
   position: fixed;
-  inset: 3.4375rem 0 0;             /* below mobile header */
-  background-color: rgb(244 244 244);
+  inset: 3.75rem 0 0;               /* below mobile header (60px) */
+  background-color: var(--color-header-bg);
   overflow-y: auto;
   z-index: 100;
   padding: 1rem;
@@ -161,7 +170,7 @@
   font-family: Lato, Arial, sans-serif;
   font-size: 0.98rem;         /* 15.6728px ÷ 16 */
   font-weight: 400;
-  color: rgb(100 100 100);
+  color: var(--color-nav-muted);
   text-decoration: none;
   transition: color 0.2s ease;
   cursor: pointer;
@@ -174,8 +183,11 @@
   font-weight: 700;
 }
 
-.main-header nav.top-navigation a:hover {
-  color: var(--colors-link-color);
+.main-header nav.top-navigation a:hover,
+.main-header nav.top-navigation li.active a:hover {
+  color: var(--colors-text-primary);
+  background-color: var(--color-header-bg);
+  text-decoration: underline;
 }
 
 .main-header nav.top-navigation a:focus-visible {
@@ -216,34 +228,32 @@
   cursor: pointer;
 }
 
+/* Second-level (category) nav hover — source: color change to brand purple + underline */
 .main-header nav.main-navigation a:hover {
-  color: var(--colors-link-color);
+  color: var(--colors-link-color);  /* brand purple rgb(68,35,89) — source active/hover color */
+  background-color: var(--colors-card-background); /* white — source white second row */
+  text-decoration: underline;
 }
 
 .main-header nav.main-navigation a:focus-visible {
   outline: 1px auto var(--colors-focus-outline);
 }
 
-/* Home icon item (first li) — icon font only, hidden text */
+/* Home icon item (first li) — icon font only, hidden text.
+   Use a flex anchor so the house glyph is vertically centred on the same line
+   as the text items (no absolute positioning / asymmetric padding). */
 .main-header nav.main-navigation li.home a {
-  width: 1.1rem;
-  height: 1.1rem;
-  overflow: hidden;
-  padding: 1.1rem 1.1rem 0 0;
+  display: flex;
+  align-items: center;
   font-family: FontAwesome, Lato, Arial, sans-serif;
   font-size: 1.1rem;
-  position: relative;
+  line-height: 1;
 }
 
 .main-header nav.main-navigation li.home a::before {
   font-family: FontAwesome, Arial, sans-serif;
   content: "\f015";           /* FontAwesome fa-home — house glyph */
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1.1rem;
-  height: 1.1rem;
+  display: inline-block;
   line-height: 1;
 }
 
@@ -265,7 +275,7 @@
   margin: 0;
   padding: 0.25rem 0;
   background: var(--colors-card-background);
-  border: 1px solid rgb(204 204 204);
+  border: 1px solid var(--color-border-muted);
 }
 
 .main-header nav.main-navigation li.has-children:hover > ul,
@@ -311,33 +321,34 @@
 /* ── DESKTOP layout (≥ 769px) ────────────────────────────────────────────── */
 @media (width >= 769px) {
   /* Desktop header: taller, two bands.
-     Source computed styles: height:70px, border-bottom:64px solid white. */
+     Grey top band (70px) + white bottom band (63px).
+     Grey band: full-bleed background via .header-wrapper / .main-header.
+     White band: border-bottom on .main-header spans full viewport width. */
   .main-header {
-    height: 4.375rem;           /* 70px ÷ 16 */
-    border-bottom: 4rem solid var(--colors-card-background); /* 64px white band */
+    height: 4.375rem;           /* 70px — grey band height */
+    border-bottom: 3.9375rem solid var(--colors-card-background); /* 63px white band */
   }
 
-  /* Desktop container: used only as a relative-positioned block.
-     Absolute positioning of logo/nav is done via calc() on the full-width header.
-     Container itself is full-width so absolutely-positioned children use the header
-     as their positioning context (header is position:relative). */
+  /* Desktop container: CENTERED 1000px — all content sits within it.
+     The grey/white full-bleed colors come from .main-header background + border-bottom.
+     The container is position:relative so absolute children resolve against it.
+     Height matches the grey band (70px); the white band is the border-bottom on main-header. */
   .main-header .container {
-    display: block;
-    height: 4.375rem;           /* match header height */
+    max-width: var(--two-col-max-width); /* 1000px — same as body container */
+    margin: 0 auto;
     padding: 0;
-
-    /* No max-width / margin:auto here — width is 100% of full-bleed header */
+    display: block;
+    height: 4.375rem;           /* 70px — grey band */
+    position: relative;
   }
 
-  /* Logo: absolute-positioned within the full-width header.
-     Source: .logo { position:absolute; left:10px; width:196px } within a container
-     whose left edge is (1440-760)/2 = 340px from viewport.
-     So logo viewport-x = 340 + 10 = 350px.
-     We replicate with calc(): left = (100% - 47.5rem) / 2
-     47.5rem = 760px — the source container width. */
+  /* Logo: absolute-positioned to top-left of centered container.
+     Source: logo left edge ≈ x=223; container left edge = (1440-1000)/2 = 220px.
+     So logo is at left:0 (flush with container left edge = ~220px from viewport).
+     width:196px, height:70px to match source exactly. */
   .main-header .logo {
     position: absolute;
-    left: calc((100% - 47.5rem) / 2); /* (1440-760)/2 = 340px at 1440px viewport */
+    left: 0;
     top: 0;
     width: 12.25rem;            /* 196px ÷ 16 */
     height: 4.375rem;           /* 70px ÷ 16 */
@@ -345,33 +356,43 @@
     background-position: 0 0;
   }
 
-  /* Searchbox: desktop — positioned in main-nav zone, right edge of header */
+  /* Searchbox: desktop — in white band at RIGHT of centered container.
+     top: 70px (into white band), right: 0 (flush with container right edge).
+     Source: search left ≈ x=998, right ≈ x=1213 → width≈215px within 1000px container
+     (container right = 220+1000=1220; search starts at 998 → 1220-998=222px from right edge). */
   .main-header .searchbox {
     position: absolute;
-    top: 4.375rem;
+    top: 4.375rem;              /* 70px — start of white band */
     right: 0;
-    height: 3.96rem;
+    height: 3.9375rem;          /* 63px white band height */
     align-items: center;
     flex: none;
     margin: 0;
-    max-width: none;            /* override mobile cap */
+    max-width: none;
     min-width: 0;
   }
 
   .main-header .searchbox input[type="text"] {
-    max-width: 11rem;
-    width: auto;                /* override mobile width:100% */
+    max-width: 12.5rem;         /* ~200px input + ~23px button ≈ 223px total; source search starts ≈x=998 */
+    width: auto;
   }
 
-  /* Navigation wrapper: absolute, starts right of logo, extends to viewport right.
-     left = container_left + logo_width = (100% - 47.5rem)/2 + 12.25rem */
+  /* Navigation wrapper: absolute, fills right portion of container from logo-right to edge.
+     Left edge starts at logo right (196px). Top spans full container height (70px grey
+     band + extends into white band via negative offset trick replaced by explicit positioning).
+     We set inset: 0 0 auto 12.25rem so it occupies top-right of the grey band container,
+     then the nav children use absolute positioning into the white band via top:4.375rem. */
   .main-header .header-navigation {
     display: block;
     position: absolute;
-    inset: 0 0 auto calc((100% - 47.5rem) / 2 + 12.25rem); /* container_left + 196px logo */
+    inset: 0 0 auto 12.25rem;   /* top:0 right:0 bottom:auto left:196px (logo width) */
+    height: 4.375rem;           /* 70px — same as grey band; white-band navs use absolute */
+    overflow: visible;          /* allow main-nav to overflow into white band */
   }
 
-  /* Top navigation: right-aligned in top zone, at top:13px */
+  /* Top navigation: right-aligned in grey band, vertically centered in top ~37px.
+     Source: top-nav items vertically centered in ~37px top zone → top ≈ (37-24)/2 ≈ 7px
+     but measured at y≈13px from header top. */
   .main-header nav.top-navigation {
     position: absolute;
     top: 0.8125rem;             /* 13px ÷ 16 */
@@ -388,19 +409,25 @@
     gap: 0 1.5rem;
   }
 
-  /* Main navigation: positioned in the white border-bottom zone (top:70px) */
+  /* Main navigation: in white band, LEFT-aligned.
+     Source: home icon + nav links start at container left (x≈213 = container left ~220px).
+     Because .header-navigation starts at logo-right (196px from container left), the
+     main-nav must extend LEFT to cover the logo area. Use left: -12.25rem to start at
+     container left edge. Right boundary leaves room for searchbox. */
   .main-header nav.main-navigation {
     position: absolute;
-    top: 4.375rem;              /* 70px ÷ 16 — into the white border-bottom band */
-    left: 0;
+    top: 4.375rem;              /* 70px — into white band (relative to .container) */
+    left: -12.25rem;            /* reach back to container left edge (0 - 196px logo) */
     right: 0;
-    height: 3.96rem;            /* ~63.36px */
+    height: 3.9375rem;          /* 63px white band height */
     align-items: stretch;
+    justify-content: flex-start;
   }
 
   .main-header nav.main-navigation ul {
     flex-wrap: nowrap;
     align-items: stretch;
+    justify-content: flex-start;
   }
 
   .main-header nav.main-navigation li a,

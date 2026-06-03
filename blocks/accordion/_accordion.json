@@ -45,7 +45,7 @@
           "component": "richtext",
           "name": "item_body",
           "label": "Accordion Panel Content",
-          "valueType": "string"
+          "valueType": "richtext"
         }
       ]
     }

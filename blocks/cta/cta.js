@@ -18,50 +18,82 @@ function cleanLabel(raw) {
 }
 
 /**
- * Returns the text content of a cell element.
- * @param {Element|null} cell
+ * Extract href from a <p> element: prefer the href of a child <a>, then fall
+ * back to trimmed text content.  Returns '' for a falsy element.
+ * @param {Element|null} p
  * @returns {string}
  */
-function cellText(cell) {
-  if (!cell) return '';
-  return (cell.textContent || '').trim();
-}
-
-/**
- * Returns the href from the first anchor in a cell, or the cell's text content.
- * @param {Element|null} cell
- * @returns {string}
- */
-function cellHref(cell) {
-  if (!cell) return '';
-  const a = cell.querySelector('a');
-  if (a) return a.getAttribute('href') || a.textContent.trim() || '';
-  return cell.textContent.trim();
+function extractHref(p) {
+  if (!p) return '';
+  const anchor = p.querySelector('a');
+  if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
+  return p.textContent.trim();
 }
 
 /**
  * Loads and decorates the CTA block.
- * DOM model (vertical, one field per row):
- *   row 0 — cta_label
- *   row 1 — cta_href
+ *
+ * aem.live renders both JCR properties (cta_label, cta_href) as consecutive
+ * <p> elements inside a single row <div>, NOT as two separate rows.  The DOM
+ * therefore looks like:
+ *
+ *   <div class="cta">           ← block
+ *     <div>                     ← outer row wrapper
+ *       <div>                   ← single cell
+ *         <p>INLOGGEN_______</p>  ← cta_label
+ *         <p><a href="/inloggen/">/inloggen/</a></p>  ← cta_href
+ *       </div>
+ *     </div>
+ *   </div>
+ *
+ * Strategy:
+ *   1. Locate the cell (first child of first row).
+ *   2. Collect all <p> children of the cell.
+ *   3. The href paragraph is the last <p> whose text starts with "/" or "http",
+ *      or the last <p> that contains an <a> with an href attribute.
+ *   4. The label paragraph is the first <p> that is NOT the href paragraph.
  *
  * @param {Element} block The block element
  */
 export default function decorate(block) {
-  const rows = [...block.children];
+  // The dekkingsgraad indicator is authored as a cta block on some audience
+  // pages. It is rebuilt into a chart indicator by normalizeDekkingsgraad
+  // (scripts.js); leave its authored content untouched so it is not rendered
+  // as a login button.
+  if (/dekkingsgraad/i.test(block.textContent)) return;
 
-  // Extract source rows / cells (before DOM rebuild)
-  const labelRow = rows[0] || null;
-  const hrefRow = rows[1] || null;
+  // Capture block-level source reference for UE instrumentation.
+  const sourceBlock = block;
 
-  const labelCell = labelRow ? labelRow.children[0] || labelRow : null;
-  const hrefCell = hrefRow ? hrefRow.children[0] || hrefRow : null;
+  // --- Parse label + href from the aem.live-rendered DOM ---
+  const outerRow = block.children[0] || null;
+  const cell = outerRow ? outerRow.children[0] || outerRow : null;
+  const paragraphs = cell ? [...cell.querySelectorAll('p')] : [];
 
-  const rawLabel = cellText(labelCell);
+  // Find href paragraph: last <p> that holds a link or looks like a path/URL.
+  let hrefPara = null;
+  let labelPara = null;
+
+  // Iterate in reverse to find the href paragraph first.
+  for (let i = paragraphs.length - 1; i >= 0; i -= 1) {
+    const p = paragraphs[i];
+    const hasAnchor = !!p.querySelector('a[href]');
+    const text = p.textContent.trim();
+    const looksLikeUrl = /^(\/|https?:\/\/)/.test(text);
+    if (hasAnchor || looksLikeUrl) {
+      hrefPara = p;
+      break;
+    }
+  }
+
+  // Label is the first paragraph that is not the href paragraph.
+  labelPara = paragraphs.find((p) => p !== hrefPara) || null;
+
+  const rawLabel = labelPara ? labelPara.textContent.trim() : '';
   const label = cleanLabel(rawLabel) || 'Inloggen';
-  const href = cellHref(hrefCell);
+  const href = extractHref(hrefPara);
 
-  // Build the CTA link element
+  // --- Build the CTA element ---
   const ctaEl = document.createElement('div');
   ctaEl.className = 'cta-inner';
 
@@ -75,20 +107,19 @@ export default function decorate(block) {
     iconSpan.className = 'icon icon-user';
     iconSpan.setAttribute('aria-hidden', 'true');
 
-    // Label span
+    // Label span — only the clean label text, never the href string.
     const labelSpan = document.createElement('span');
     labelSpan.className = 'cta-label';
     labelSpan.textContent = label;
 
     anchor.append(iconSpan, labelSpan);
 
-    // Move UE instrumentation from source rows to rebuilt elements
-    if (labelRow) moveInstrumentation(labelRow, anchor);
-    if (hrefRow) moveInstrumentation(hrefRow, anchor);
+    // Move UE instrumentation from the source row to the rebuilt anchor.
+    if (outerRow) moveInstrumentation(outerRow, anchor);
 
     ctaEl.append(anchor);
   } else {
-    // No valid href — render as plain text (no placeholder anchor)
+    // No valid href — render as plain labelled span (no clickable anchor).
     const iconSpan = document.createElement('span');
     iconSpan.className = 'icon icon-user';
     iconSpan.setAttribute('aria-hidden', 'true');
@@ -99,11 +130,11 @@ export default function decorate(block) {
 
     ctaEl.append(iconSpan, labelSpan);
 
-    if (labelRow) moveInstrumentation(labelRow, ctaEl);
+    if (outerRow) moveInstrumentation(outerRow, ctaEl);
   }
 
-  // Move block-level instrumentation
-  moveInstrumentation(block, block);
+  // Move block-level instrumentation to the new inner container.
+  moveInstrumentation(sourceBlock, ctaEl);
 
   block.replaceChildren(ctaEl);
 }

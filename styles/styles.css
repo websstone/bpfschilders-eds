@@ -15,18 +15,18 @@
   --background-color: white;
   --light-color: #f8f8f8;
   --dark-color: #505050;
-  --text-color: #131313;
+  --text-color: rgb(33 33 33);   /* P4 fix: was #131313 (rgb(19,19,19)); source rgb(33,33,33) */
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
 
   /* fonts */
-  --body-font-family: roboto, roboto-fallback, sans-serif;
-  --heading-font-family: roboto-condensed, roboto-condensed-fallback, sans-serif;
+  --body-font-family: helvetica, arial, sans-serif;   /* P4 fix: was roboto; source Helvetica, Arial, sans-serif */
+  --heading-font-family: helvetica, arial, sans-serif; /* P4 fix: match body — no separate heading font in source */
 
-  /* body sizes */
-  --body-font-size-m: 22px;
-  --body-font-size-s: 19px;
-  --body-font-size-xs: 17px;
+  /* body sizes — P4 fix: was 22px/19px/17px; source 13.712px (0.857rem) */
+  --body-font-size-m: 0.857rem;
+  --body-font-size-s: 0.857rem;
+  --body-font-size-xs: 0.857rem;
 
   /* heading sizes */
   --heading-font-size-xxl: 55px;
@@ -36,8 +36,8 @@
   --heading-font-size-s: 24px;
   --heading-font-size-xs: 22px;
 
-  /* nav height */
-  --nav-height: 64px;
+  /* nav height — source mobile header is 60px */
+  --nav-height: 60px;
 }
 
 /* fallback fonts */
@@ -53,12 +53,19 @@
   src: local('Arial');
 }
 
+@media (width >= 769px) {
+  :root {
+    /* nav height — source desktop header: 70px grey band + 64px white border-bottom = 134px */
+    --nav-height: 134px;
+  }
+}
+
 @media (width >= 900px) {
   :root {
-    /* body sizes */
-    --body-font-size-m: 18px;
-    --body-font-size-s: 16px;
-    --body-font-size-xs: 14px;
+    /* body sizes — P4 fix: keep 0.857rem at desktop, consistent with source 13.712px */
+    --body-font-size-m: 0.857rem;
+    --body-font-size-s: 0.857rem;
+    --body-font-size-xs: 0.857rem;
 
     /* heading sizes */
     --heading-font-size-xxl: 45px;
@@ -77,7 +84,7 @@ body {
   color: var(--text-color);
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
-  line-height: 1.6;
+  line-height: 1.65; /* P4 fix: was 1.6; 0.857rem × 1.65 ≈ 22.62px matches source 22.6248px */
 }
 
 body.appear {
@@ -301,8 +308,8 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
-  margin: auto;
+  max-width: var(--content-max-width); /* P4 fix: was 1200px; source constrains inner content to 1000px centered (left≈213px at 1440vp) */
+  margin: 0 auto;
   padding: 0 24px;
 }
 
@@ -312,7 +319,85 @@ main > .section:first-of-type {
 
 @media (width >= 900px) {
   main > .section > div {
-    padding: 0 32px;
+    padding: 0; /* P4 fix: at desktop the 1000px container is centered via auto margins; no side padding needed */
+  }
+}
+
+/* Info strip — dekkingsgraad indicator + INLOGGEN side-by-side as a full-bleed
+   light band (matches the source top-panel). The band spans the viewport; its
+   inner content is centred to the 1000px container and split into two equal
+   cells (source Bootstrap col-md-6 + col-md-6). Built in scripts.js on the
+   audience pages. */
+main > .section > .info-strip {
+  max-width: none; /* override the 1000px cap on section > div */
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-header-bg); /* light grey band rgb(244 244 244) */
+}
+
+.info-strip .info-strip-inner {
+  display: flex;
+  flex-direction: column; /* stacked on mobile, like the source */
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: var(--content-max-width); /* 1000px — centred to the container */
+  margin: 0 auto;
+  padding: 0.75rem 24px;
+}
+
+@media (width >= 769px) {
+  .info-strip .info-strip-inner {
+    flex-flow: row nowrap; /* two 50% cells + gap would wrap otherwise */
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.info-strip .info-strip-inner > .dekkingsgraad-cell,
+.info-strip .info-strip-inner > .inloggen-cell {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 50%; /* two equal halves like the source col-md-6 split */
+  min-width: 0;
+}
+
+@media (width >= 900px) {
+  .info-strip .info-strip-inner {
+    padding: 0.75rem 0;
+  }
+}
+
+/* Customer-journey band — "Wat doe ik bij..." heading + carousel on a
+   full-width white card with a soft shadow (source: .full-width.costumer-journey).
+   Built in scripts.js on the audience pages. */
+main > .section > .customer-journey {
+  max-width: none; /* override the 1000px cap on section > div */
+  margin: 0;
+  padding: 30px 0 0;
+  background-color: var(--colors-card-background); /* white */
+
+  /* Soft shadow on top and bottom edges so the white card reads as raised */
+  box-shadow: 0 -3px 6px rgb(0 0 0 / 6%), 0 4px 8px rgb(0 0 0 / 9%);
+  position: relative;
+  z-index: 1;
+}
+
+.customer-journey .customer-journey-inner {
+  max-width: var(--content-max-width); /* 1000px — centred to the container */
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Heading centred, matching the source costumer-journey section header */
+.customer-journey .text-wrapper,
+.customer-journey .text .text-inner {
+  text-align: center;
+}
+
+@media (width >= 900px) {
+  .customer-journey .customer-journey-inner {
+    padding: 0;
   }
 }
 
@@ -322,4 +407,148 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* =====================================================================
+   Two-column layout — main content (75%) + right sidebar (25%)
+   Matching source: Bootstrap col-md-9 (75%) + col-md-3 (25%) inside a
+   1000px container with zero column-gap and 16px column-internal gutters.
+   Applied only on pages listed in TWO_COLUMN_CONFIG (scripts.js).
+   ===================================================================== */
+.two-col-layout {
+  display: block;
+}
+
+.two-col-main,
+.two-col-sidebar {
+  display: block;
+}
+
+@media (width >= 769px) {
+  /* Outer wrapper — matches source .container max-width of 1000px, centered,
+     no padding (Bootstrap container itself has no padding; gutters are per-col) */
+  .two-col-layout {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 0 var(--space-two-col-gap); /* 0px — zero gap, matches Bootstrap zero col-gap */
+    align-items: start;
+    max-width: var(--two-col-max-width); /* 1000px — matches source Bootstrap container */
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Prevent grid blowout in narrow viewports */
+  .two-col-layout .two-col-main,
+  .two-col-layout .two-col-sidebar {
+    min-width: 0;
+  }
+
+  /* Column internal gutters — Bootstrap col padding (16px each side).
+     Both main and sidebar get the same gutter so inner text widths
+     match source: col-md-9 inner = 718px, col-md-3 inner = 218px. */
+  .two-col-layout .two-col-main {
+    padding: 0 var(--space-col-gutter);
+  }
+
+  .two-col-layout .two-col-sidebar {
+    padding: 0 var(--space-col-gutter);
+    background-color: transparent;
+  }
+
+  /* Strip any per-section inner container centering — the grid columns already
+     establish the correct width; inner divs must fill 100% of the column. */
+  .two-col-layout .section > div {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Sidebar sections start flush with the top of the main column */
+  .two-col-layout .two-col-sidebar > .section {
+    margin-top: 0;
+  }
+}
+
+/* Content sections on the two-column pages (klacht, contact) render as white
+   cards on the grey page, matching the source .content cards
+   (bg #fff, shadow rgb(0 0 0 / 25%) 0 0 10px, 30px padding, 30px gap). The
+   sidebar stays on grey (no card). */
+/* stylelint-disable no-descending-specificity */
+.two-col-main > .section,
+.bottom-duo > .section {
+  background-color: var(--colors-card-background);
+  box-shadow: var(--colors-card-box-shadow);
+  padding: 30px;
+}
+
+.two-col-main > .section {
+  margin: 0 0 30px;
+}
+/* stylelint-enable no-descending-specificity */
+
+/* On /contact the migration duplicated the contact quick-links (030… / Mail ons /
+   Volg ons) into each main-column card; the source shows those only in the
+   sidebar. Hide the redundant phone lists in the main column (the videogesprek
+   link list has no tel: link, so it stays). */
+.contact-main .links-wrapper:has(.contact a[href^="tel:"]) {
+  display: none;
+}
+
+/* Sidebar contact-group title — source .contactTitle (re-added in scripts.js) */
+.two-col-sidebar .sidebar-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--typography-font-family);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--colors-text-primary);
+}
+
+.two-col-sidebar .section + .section .sidebar-title {
+  margin-top: 1.25rem;
+}
+
+.two-col-sidebar .contacts-add {
+  margin: 1.25rem 0 0;
+  font-family: var(--typography-font-family);
+  font-size: 0.857rem;
+  color: var(--colors-text-primary);
+}
+
+/* klacht FAQ — relocated accordion heading */
+.klacht-faq > h3 {
+  margin: 0 0 1rem;
+  font-size: 1.065rem;
+  font-weight: 700;
+  color: var(--colors-link-color);
+}
+
+/* Bottom-duo — two equal columns at the foot of a page (source: FAQ +
+   "Ook interessant" / "Looking for something else"). Built in scripts.js. */
+.bottom-duo {
+  display: block;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.bottom-duo > .section {
+  margin: 40px 0 0;
+}
+
+@media (width >= 769px) {
+  .bottom-duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: var(--content-max-width);
+    margin: 40px auto 0;
+    align-items: start;
+  }
+
+  .bottom-duo > .section {
+    margin: 0;
+  }
+
+  .bottom-duo > .section > div {
+    max-width: none;
+    padding: 0;
+  }
 }

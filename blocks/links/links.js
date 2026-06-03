@@ -1,44 +1,99 @@
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
 /**
- * Reads text content from a cell (first child div of a row).
- * @param {Element|null} cell
- * @returns {string}
+ * Extract the JCR path from a data-aue-resource URN.
+ * "urn:aemconnection:/content/foo/bar" -> "/content/foo/bar"
+ * @param {Element} el
+ * @returns {string|null}
  */
-function cellText(cell) {
-  return cell ? (cell.textContent || '').trim() : '';
+function jcrPath(el) {
+  const resource = el && el.dataset && el.dataset.aueResource;
+  if (!resource) return null;
+  const prefix = 'urn:aemconnection:';
+  return resource.startsWith(prefix) ? resource.slice(prefix.length) : null;
+}
+
+/**
+ * Fetch JCR node properties as JSON via the dev-server same-origin proxy.
+ * @param {string} path JCR path (e.g. "/content/bpfschilders-eds/…/node")
+ * @returns {Promise<Object|null>}
+ */
+async function fetchJcr(path) {
+  if (!path) return null;
+  try {
+    const resp = await fetch(`${path}.json`);
+    if (!resp.ok) return null;
+    return resp.json();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Infers the contact icon class from a link's href/label when the authored
+ * icon_class property is empty (the migration did not carry it across).
+ * Mirrors the source markup: tel: → phone, mail/contact → envelope,
+ * social domains / "Volg ons" → facebook.
+ * @param {string} href
+ * @param {string} label
+ * @returns {string} icon class or ''
+ */
+function inferIconClass(href, label) {
+  const h = (href || '').toLowerCase();
+  const l = (label || '').toLowerCase();
+  if (h.startsWith('tel:')) return 'icon-phone';
+  if (h.startsWith('mailto:') || /stel-uw-vraag|\/contact/.test(h) || /\bmail\b|e-?mail/.test(l)) return 'icon-envelope';
+  if (/facebook|twitter|linkedin|instagram|youtube/.test(h) || /\bvolg\b/.test(l)) return 'icon-facebook';
+  return '';
 }
 
 /**
  * Loads and decorates the links block.
- * Block model: child items (links-item) each carrying:
- *   row[0] = icon_class, row[1] = label, row[2] = href, row[3] = target
+ *
+ * Each links-item child stores its fields (icon_class, label, href, target) as
+ * direct JCR properties on the item node. aem.live's block/item renderer does
+ * not populate these as table cells — the inner <div> is empty. This decorator
+ * fetches each item's .json via the same-origin proxy to read the fields.
+ *
+ * Block model (per links-item JCR node):
+ *   label      — visible link text (always present)
+ *   icon_class — BPF icon class string (optional)
+ *   href       — link target URL (optional)
+ *   target     — anchor target attribute (optional)
+ *
  * @param {Element} block
  */
-export default function decorate(block) {
-  // Separate child item rows (data-aue-component) from any future parent prop rows
+export default async function decorate(block) {
   const allRows = [...block.children];
-  const itemRows = allRows.filter((r) => r.dataset.aueComponent);
-  // Fallback: if no data-aue-component rows present (e.g. gallery fixture),
-  // treat all rows as items — each row has 4 cells: icon_class | label | href | target
-  const rows = itemRows.length > 0 ? itemRows : allRows;
+
+  // Collect all item fetch promises in parallel for performance.
+  const itemData = await Promise.all(
+    allRows.map(async (row) => {
+      const path = jcrPath(row);
+      const data = await fetchJcr(path);
+      return { row, data };
+    }),
+  );
 
   // Build ul.contact
   const ul = document.createElement('ul');
   ul.className = 'contact';
 
-  rows.forEach((row) => {
-    const cells = [...row.children];
+  // Icon circles are only inferred for the contact quick-links sidebar; main-column
+  // links (e.g. klachtnummers, contactformulier) are plain in the source.
+  const inSidebar = !!block.closest('.two-col-sidebar');
 
-    // Per-item model field order: icon_class | label | href | target
-    const iconClass = cellText(cells[0]);
-    const label = cellText(cells[1]);
-    const rawHref = cellText(cells[2]);
-    // Resolve href: strip placeholder values
+  itemData.forEach(({ row, data }) => {
+    if (!data) return;
+
+    const label = (data.label || '').trim();
+    const rawHref = (data.href || '').trim();
+    const iconClass = (data.icon_class || '').trim() || (inSidebar ? inferIconClass(rawHref, label) : '');
     const href = rawHref && rawHref !== '#' ? rawHref : null;
-    const target = cellText(cells[3]);
+    const target = (data.target || '').trim();
 
     const li = document.createElement('li');
+    moveInstrumentation(row, li);
 
     if (href) {
       const a = document.createElement('a');
@@ -49,18 +104,12 @@ export default function decorate(block) {
         if (target === '_blank') a.rel = 'noopener noreferrer';
       }
       a.textContent = label;
-
-      // Preserve UE per-property bindings from the source row
-      moveInstrumentation(row, li);
-
       li.appendChild(a);
     } else {
-      // No valid href — render plain text (no anchor)
+      // No valid href — render plain text (no anchor).
       const span = document.createElement('span');
       if (iconClass) span.classList.add(iconClass);
       span.textContent = label;
-
-      moveInstrumentation(row, li);
       li.appendChild(span);
     }
 

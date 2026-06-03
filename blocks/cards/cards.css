@@ -1,18 +1,32 @@
 /*
  * cards block — TeaserCardGrid migration
- * Mobile-first: 1 column default, 3-column grid at >=769px
+ * Source measurements (over-ons / ondernemer, 1440px desktop):
+ *   container:         1000px wide, centered
+ *   panel:             background #fff, no border-radius, box-shadow rgba(0,0,0,0.25) 0 0 10px
+ *   panel padding:     30px all sides; image bleeds to top/sides via -30px neg margins
+ *   image:             full-width edge-to-edge at card top, aspect-ratio 3/2 (width:height ≈ 1.5)
+ *   heading (h2):      rgb(68,35,89) 17.044px (1.065rem), weight 700, lineHeight 22.6px
+ *   body text:         rgb(33,33,33) 13.712px (0.857rem), weight 400, lineHeight 22.6px
+ *   CTA button:        bg rgb(68,35,89) white, padding 9.4px 15.67px, borderRadius 7.836px,
+ *                      fontSize 15.67px, fontWeight 400
+ *   grid gap:          30px col-md-4 Bootstrap gutter (≈15px each side)
+ *   mobile:            single column, full-width
+ *
  * Design tokens from styles/tokens.css:
  *   --colors-card-background   rgb(255,255,255)
  *   --colors-card-box-shadow   rgba(0,0,0,0.25) 0px 0px 10px 0px
  *   --colors-link-color        rgb(68,35,89)
  *   --colors-text-primary      rgb(33,33,33)
  *   --spacing-card-padding     30px
- *   --spacing-card-margin-top  30px
+ *   --radius-button            0.49rem  (7.836px)
  */
 
-/* Section root — transparent background, vertical margin */
+/* Section root — max-width 1000px centred, matching source Bootstrap container */
 .cards {
-  margin: 1.875rem 0; /* 30px / 16 */
+  --cards-bleed: calc(-1 * var(--spacing-card-padding, 1.875rem));
+
+  max-width: 1000px;
+  margin: 1.875rem auto; /* 30px top/bottom, centred */
   padding: 0;
   background: transparent;
   box-sizing: border-box;
@@ -23,10 +37,10 @@
 .cards .cards-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.875rem; /* 30px / 16 */
+  gap: 1.875rem; /* 30px */
 }
 
-/* 3-column grid at desktop (>= 769px matches responsive_contracts breakpoint 768px) */
+/* 3-column grid at desktop (>= 769px) */
 @media (width >= 769px) {
   .cards .cards-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -45,12 +59,24 @@
   position: relative;
 }
 
-/* Image wrapper — full-width figure at top of card */
+/*
+ * Image wrapper — bleeds to top and sides of panel via negative margins,
+ * matching source `.box-image { margin: -30px -30px 15px }`.
+ * The card has 30px padding; neg margins cancel it so image fills edge-to-edge.
+ */
 .cards .cards-panel-image {
-  margin: 0 0 1rem;
+  margin: var(--cards-bleed) var(--cards-bleed) 0.9375rem; /* bleed top/sides; 15px bottom gap */
   padding: 0;
   line-height: 0;
   overflow: hidden;
+}
+
+/* Card image fills full card width, aspect-ratio 3:2 matching source 301×201px */
+.cards .cards-panel-image img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  display: block;
+  object-fit: cover;
 }
 
 /* Image anchor (wraps figure for click-through to card destination) */
@@ -61,64 +87,129 @@
   text-decoration: none;
 }
 
-/* Card image fills full card width */
-.cards .cards-panel-image img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
-/* Card heading — brand purple, bold */
+/* Card heading — brand purple, bold, source 17.044px weight 700 */
 .cards .cards-panel-heading {
-  font-size: 1.125rem; /* 18px / 16 */
+  font-size: 1.065rem;  /* 17.044px / 16 */
   font-weight: 700;
   color: var(--colors-link-color, rgb(68 35 89));
-  margin: 0 0 0.5rem;
-  line-height: 1.3;
+  margin: 0 0 0.351rem; /* ~5.62px matching source h2 marginBottom */
+  line-height: 1.414rem; /* 22.6248px / 16 */
 }
 
-/* Card body text */
+/* Card body text — source 13.712px weight 400 */
 .cards .cards-panel-description {
-  font-size: 0.857rem; /* 13.712px / 16 ≈ 0.857rem */
+  font-size: 0.857rem;  /* 13.712px / 16 */
   line-height: 1.65;
   color: var(--colors-text-primary, rgb(33 33 33));
-
-  /* top: 6.856px / 16, bottom: 13.712px / 16 */
-  margin: 0.429rem 0 0.857rem;
+  font-weight: 400;
+  margin: 0 0 0.857rem;
   flex: 1 1 auto;
 }
 
-/* CTA button — brand purple background, white text, square corners */
-.cards .cards-panel .button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
+/*
+ * CTA button — source: bg rgb(68,35,89), white text, padding 9.4px 15.67px,
+ * borderRadius 7.836px, fontSize 15.67px, fontWeight 400.
+ * The `> ` prefix is part of the authored label text, not a pseudo-element.
+ * Override boilerplate a.button:any-link styles that set border-radius: 2.4em.
+ */
+.cards .cards-panel .button,
+.cards .cards-panel a.button:any-link {
+  display: inline-block;
   background-color: var(--colors-link-color, rgb(68 35 89));
-  color: var(--colors-card-background);
-  font-size: 0.857rem;
-  font-weight: 700;
+  color: var(--colors-card-background, rgb(255 255 255));
+  font-size: 0.98rem;    /* 15.6728px / 16 */
+  font-weight: 400;
   text-decoration: none;
   text-transform: none;
-  padding: 0.625rem 1.25rem; /* 10px 20px */
-  border-radius: 0;
-  cursor: pointer;
+  padding: 0.588rem 0.98rem; /* 9.4px 15.67px */
+  border-radius: var(--radius-button, 0.49rem); /* 7.836px */
   border: none;
+  cursor: pointer;
   align-self: flex-start;
   margin-top: auto;
+  line-height: 1.65;
+  max-width: none;
+  white-space: normal;
 }
 
-/* CTA chevron ("> ") via pseudo-element — matches source "Lees meer >" style */
-.cards .cards-panel .button::before {
-  content: '>';
+/* Hover state — keep same bg, slight opacity per interaction-states */
+.cards .cards-panel .button:hover,
+.cards .cards-panel a.button:hover {
+  opacity: 0.88;
+  color: var(--colors-card-background, rgb(255 255 255));
+  text-decoration: none;
+}
+
+/* Focus ring */
+.cards .cards-panel a:focus-visible {
+  outline: var(--colors-focus-outline, rgb(0 95 204)) auto 1px;
+}
+
+.cards .cards-panel .button:focus-visible,
+.cards .cards-panel a.button:focus-visible {
+  outline: var(--colors-focus-outline, rgb(0 95 204)) auto 1px;
+}
+
+/*
+ * ─── Translate language-cards overrides ────────────────────────────────────
+ * Scoped via data-aue-resource containing "translate-language-cards".
+ * Source: simple 2-column table layout with small flag thumbnails (113×68px)
+ * and FontAwesome angle-right (U+F105) chevron before each button label.
+ */
+
+/* Issue 1 — 2-column grid (source: 3 rows × 2 columns) */
+.cards[data-aue-resource*="translate-language-cards"] .cards-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 769px) {
+  .cards[data-aue-resource*="translate-language-cards"] .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/*
+ * Issue 2 — Flag image: source renders flags at natural 113×68px size (not
+ * full-width bleed). Use object-fit: contain so tall flag assets (poolse-vlag
+ * 788×443, française 742×471) are never cropped; cap height to match source
+ * proportions; align left to match source inline-block img behaviour.
+ */
+.cards[data-aue-resource*="translate-language-cards"] .cards-panel-image {
+  margin: 0 0 0.9375rem; /* remove bleed margins; keep 15px bottom gap */
+  overflow: visible;
+}
+
+.cards[data-aue-resource*="translate-language-cards"] .cards-panel-image img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 4.25rem; /* 68px — matches source rendered flag height */
+  aspect-ratio: auto;  /* let natural asset ratio govern */
+  object-fit: contain;
   display: inline-block;
 }
 
-/* Focus ring — browser default blue per interaction-states.yaml */
-.cards .cards-panel a:focus-visible {
-  outline: rgb(0 95 204) auto 1px;
+/*
+ * Chevron: the source renders a FontAwesome angle-right (\f105) before every
+ * card-button label (e.g. "› Lees meer"). Applies to ALL card buttons across
+ * the audience / over-ons / translate pages.
+ */
+@font-face {
+  font-family: FontAwesome;
+  src: url('/fonts/fontawesome-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
 }
 
-.cards .cards-panel .button:focus-visible {
-  outline: rgb(0 95 204) auto 1px;
+.cards .cards-panel .button::before,
+.cards .cards-panel a.button:any-link::before {
+  font-family: FontAwesome, sans-serif;
+  content: "\f105";
+  margin-right: 0.375rem; /* ~6px gap between chevron and label */
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
 }

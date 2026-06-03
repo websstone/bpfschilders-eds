@@ -95,29 +95,178 @@ export default function decorate(block) {
     ];
   }
 
-  // Secondary menu: try links first, fall back to text lines
-  let secondaryItems = parseNavCell(rowCell(rowSecondaryMenu));
-  if (!secondaryItems.length) {
-    secondaryItems = [
+  // ─── Per-audience secondary (category) nav data ───────────────────────────
+  // Scraped from source https://www.bpfschilders.nl/<audience> main-navigation,
+  // including the third-level dropdown items shown on hover. Each category whose
+  // `children` is non-empty renders a flyout sub-list (CSS .has-children:hover).
+  const sub = (base, items) => items.map(([label, slug]) => ({ label, href: `${base}${slug}/` }));
+  const AUDIENCE_NAV = {
+    werknemer: [
+      { label: 'Home', href: '/werknemer/' },
       {
-        href: '/', text: 'Home', el: null, hasChildren: false,
+        label: 'Het pensioen',
+        href: '/werknemer/het-pensioen/',
+        children: sub('/werknemer/het-pensioen/', [
+          ['Wat is pensioen?', 'wat-is-pensioen'], ['Pensioenpakket', 'pensioenpakket'],
+          ['Pensioen 1-2-3', 'pensioen-1-2-3'], ['Uw pensioenoverzicht', 'uw-pensioenoverzicht'],
+          ['Beleggen voor een goed pensioen', 'beleggen-voor-een-goed-pensioen'],
+          ['Waardeoverdracht', 'waardeoverdracht'],
+        ]),
       },
       {
-        href: '/het-pensioen/', text: 'Het pensioen', el: null, hasChildren: false,
+        label: 'Wat doe ik bij...',
+        href: '/werknemer/wat-doe-ik-bij/',
+        children: sub('/werknemer/wat-doe-ik-bij/', [
+          ['Trouwen of samenwonen', 'trouwen-of-samenwonen'], ['Kinderen', 'kinderen'],
+          ['Nieuwe baan', 'nieuwe-baan'], ['Ontslag', 'ontslag'],
+          ['Scheiden of uit elkaar gaan', 'scheiden-of-uit-elkaar-gaan'],
+          ['Arbeidsongeschiktheid', 'arbeidsongeschiktheid'], ['Met pensioen gaan', 'met-pensioen-gaan'],
+          ['Verhuizen', 'verhuizen'], ['Overlijden', 'overlijden'],
+          ['Uitzendkracht worden', 'uitzendkracht-worden'], ['Voor uzelf beginnen', 'voor-uzelf-beginnen'],
+          ['Verlof', 'verlof'],
+        ]),
       },
       {
-        href: '/wat-doe-ik-bij/', text: 'Wat doe ik bij...', el: null, hasChildren: false,
+        label: 'U bent met pensioen',
+        href: '/werknemer/u-bent-met-pensioen/',
+        children: sub('/werknemer/u-bent-met-pensioen/', [
+          ['Belangenbehartiging', 'belangenbehartiging'], ['Belastingaangifte', 'belastingaangifte'],
+          ['Betaling van uw pensioen', 'betaling-van-uw-pensioen'], ['Inhoudingen', 'inhoudingen'],
+          ['Jaarlijkse wijziging van uw pensioen', 'jaarlijkse-wijziging-van-uw-pensioen'],
+          ['U woont in het buitenland', 'u-woont-in-het-buitenland'],
+        ]),
       },
       {
-        href: '/u-bent-met-pensioen/', text: 'U bent met pensioen', el: null, hasChildren: false,
+        label: 'Actueel',
+        href: '/werknemer/actueel/',
+        children: sub('/werknemer/actueel/', [
+          ['Blog', 'blog'], ['Dekkingsgraad', 'dekkingsgraad'],
+          ['Nieuw pensioenstelsel', 'nieuw-pensioenstelsel'], ['Nieuws', 'nieuws'],
+          ['Nieuwsbrieven', 'nieuwsbrieven'], ['Pensioenblad', 'pensioenblad'],
+          ['Klantenpanel', 'klantenpanel'], ['Downloads', 'downloads'],
+        ]),
+      },
+      { label: 'Contact', href: '/werknemer/contact/' },
+    ],
+    werkgever: [
+      { label: 'Home', href: '/werkgever/' },
+      {
+        label: 'Het pensioen',
+        href: '/werkgever/het-pensioen/',
+        children: sub('/werkgever/het-pensioen/', [
+          ['Pensioenpakket', 'pensioenpakket'],
+          ['Voordelen collectief pensioen', 'voordelen-collectief-pensioen'],
+          ['Beleggen voor een goed pensioen', 'beleggen-voor-een-goed-pensioen'],
+          ['Waardeoverdracht', 'waardeoverdracht'],
+        ]),
       },
       {
-        href: '/actueel/', text: 'Actueel', el: null, hasChildren: false,
+        label: 'Wat doe ik bij...',
+        href: '/werkgever/wat-doe-ik-bij/',
+        children: sub('/werkgever/wat-doe-ik-bij/', [
+          ['Nieuwe werknemer', 'nieuwe-werknemer'], ['Verlof', 'verlof'], ['Ontslag', 'ontslag'],
+          ['Arbeidsongeschiktheid', 'arbeidsongeschiktheid'],
+          ['(Langdurig) zieke werknemer', 'langdurig-zieke-werknemer'],
+          ['Verandering privesituatie werknemer', 'verandering-privesituatie-werknemer'],
+          ['Overlijden', 'overlijden'], ['Klant worden', 'klant-worden'],
+          ['Informeren werknemers', 'informeren-werknemers'], ['Met pensioen gaan', 'met-pensioen-gaan'],
+          ['Uitzendkracht', 'uitzendkracht'],
+          ['Aan- of afmelden als werkgever', 'aan-of-afmelden-als-werkgever'], ['Verhuizen', 'verhuizen'],
+        ]),
       },
       {
-        href: '/contact/', text: 'Contact', el: null, hasChildren: false,
+        label: 'Administratie',
+        href: '/werkgever/administratie/',
+        children: sub('/werkgever/administratie/', [
+          ['Uw pensioenadministratie', 'uw-pensioenadministratie'],
+          ['Veelgestelde vragen over loongegevens', 'veelgestelde-vragen-over-loongegevens'],
+          ['Premie betalen', 'premie-betalen'],
+          ['Pensioenpremie en -variabelen', 'pensioenpremie-en-variabelen'],
+          ['(Langdurig) zieke werknemer', 'langdurig-zieke-werknemer'], ['Looncontrole', 'looncontrole'],
+        ]),
       },
-    ];
+      {
+        label: 'Actueel',
+        href: '/werkgever/actueel/',
+        children: sub('/werkgever/actueel/', [
+          ['Dekkingsgraad', 'dekkingsgraad'], ['Nieuw pensioenstelsel', 'nieuw-pensioenstelsel'],
+          ['Nieuws', 'nieuws'], ['Nieuwsbrieven', 'nieuwsbrieven'], ['Pensioenblad', 'pensioenblad'],
+          ['Downloads', 'downloads'], ['Webinars', 'webinars'],
+        ]),
+      },
+      { label: 'Contact', href: '/werkgever/contact/' },
+    ],
+    ondernemer: [
+      { label: 'Home', href: '/ondernemer/' },
+      {
+        label: 'Het pensioen',
+        href: '/ondernemer/het-pensioen/',
+        children: sub('/ondernemer/het-pensioen/', [
+          ['Wat is pensioen?', 'wat-is-pensioen'], ['Pensioenpakket', 'pensioenpakket'],
+          ['Pensioen 1-2-3', 'pensioen-1-2-3'],
+          ['Voordelen collectief pensioen', 'voordelen-collectief-pensioen'],
+          ['Pensioenkeuzeloon', 'pensioenkeuzeloon'],
+          ['Beleggen voor een goed pensioen', 'beleggen-voor-een-goed-pensioen'],
+          ['Uw pensioenoverzicht', 'uw-pensioenoverzicht'], ['Waardeoverdracht', 'waardeoverdracht'],
+        ]),
+      },
+      {
+        label: 'Wat doe ik bij...',
+        href: '/ondernemer/wat-doe-ik-bij/',
+        children: sub('/ondernemer/wat-doe-ik-bij/', [
+          ['Trouwen of samenwonen', 'trouwen-of-samenwonen'], ['Verhuizen', 'verhuizen'],
+          ['Kinderen', 'kinderen'], ['Scheiden of uit elkaar gaan', 'scheiden-of-uit-elkaar-gaan'],
+          ['Arbeidsongeschiktheid', 'arbeidsongeschiktheid'], ['Met pensioen gaan', 'met-pensioen-gaan'],
+          ['Overlijden', 'overlijden'], ['Voor uzelf beginnen', 'voor-uzelf-beginnen'],
+          ['Uitschrijven bij BPF Schilders', 'uitschrijven-bij-bpf-schilders'],
+        ]),
+      },
+      {
+        label: 'Administratie',
+        href: '/ondernemer/administratie/',
+        children: sub('/ondernemer/administratie/', [
+          ['Uw pensioenadministratie', 'uw-pensioenadministratie'], ['Infodesk', 'infodesk'],
+          ['Premie betalen', 'premie-betalen'],
+          ['Pensioenpremie en -variabelen', 'pensioenpremie-en-variabelen'],
+        ]),
+      },
+      {
+        label: 'Actueel',
+        href: '/ondernemer/actueel/',
+        children: sub('/ondernemer/actueel/', [
+          ['Blog', 'blog'], ['Dekkingsgraad', 'dekkingsgraad'],
+          ['Nieuw pensioenstelsel', 'nieuw-pensioenstelsel'], ['Nieuws', 'nieuws'],
+          ['Nieuwsbrieven', 'nieuwsbrieven'], ['Pensioenblad', 'pensioenblad'],
+          ['Klantenpanel', 'klantenpanel'], ['Downloads', 'downloads'],
+        ]),
+      },
+      { label: 'Contact', href: '/ondernemer/contact/' },
+    ],
+  };
+
+  // Detect current audience from the first path segment.
+  // An audience page is exactly /werknemer, /werkgever, or /ondernemer
+  // (with or without a trailing slash), OR any sub-path under those segments.
+  // Non-audience pages (/contact, /klacht, /over-ons, /translate, etc.) get no secondary nav.
+  const pathSegment = window.location.pathname.replace(/^\//, '').split('/')[0];
+  const audienceNavItems = AUDIENCE_NAV[pathSegment] || null;
+
+  // Secondary menu: use authored content if present, otherwise fall back to
+  // the per-audience lookup. Non-audience pages (audienceNavItems === null) get [].
+  const authoredSecondary = parseNavCell(rowCell(rowSecondaryMenu));
+  let secondaryItems;
+  if (authoredSecondary.length) {
+    secondaryItems = authoredSecondary;
+  } else if (audienceNavItems) {
+    secondaryItems = audienceNavItems.map((item) => ({
+      href: item.href,
+      text: item.label,
+      el: null,
+      hasChildren: !!(item.children && item.children.length),
+      children: item.children || [],
+    }));
+  } else {
+    secondaryItems = [];
   }
 
   const searchPlaceholder = cellText(rowCell(rowSearchPlaceholder)) || 'Heeft u een vraag?';
@@ -239,6 +388,21 @@ export default function decorate(block) {
       span.textContent = idx === 0 ? '' : item.text;
       li.appendChild(span);
     }
+
+    // Flyout sub-list (shown on hover via .has-children CSS)
+    if (item.children && item.children.length) {
+      const subUl = document.createElement('ul');
+      item.children.forEach((child) => {
+        const subLi = document.createElement('li');
+        const subA = document.createElement('a');
+        subA.href = child.href;
+        subA.textContent = child.label;
+        subLi.appendChild(subA);
+        subUl.appendChild(subLi);
+      });
+      li.appendChild(subUl);
+    }
+
     mainUl.appendChild(li);
   });
 

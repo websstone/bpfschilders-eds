@@ -12,10 +12,10 @@
   --text-line-height: 1.6;
   --text-p-margin-top: 0.429rem;                     /* 6.856px / 16 */
   --text-p-margin-bottom: 0.857rem;                  /* 13.712px / 16 */
-  --text-block-padding: 1.25rem 0;                   /* 20px 0 */
+  --text-block-padding: 0 0 1.875rem;                /* source 0px 0px 30px */
   --text-content-padding: 0 1rem;                    /* lateral breathing room on mobile */
 
-  background-color: var(--colors-card-background);  /* white */
+  background-color: var(--color-header-bg);          /* source rgb(244,244,244) — light grey */
   padding: var(--text-block-padding);
   width: 100%;
   box-sizing: border-box;

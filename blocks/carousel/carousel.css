@@ -49,16 +49,26 @@
   will-change: transform;
 }
 
-/* ── Individual tile (li) ────────────────────────────────── */
+/* ── Individual tile (li) — layout applies to both anchored and plain tiles ── */
 .carousel .slider-wrapper li {
   flex: none;
 
   /* width is set inline by JS: wrapper.offsetWidth / itemsPerPage */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
   box-sizing: border-box;
-  padding: 0;
+  padding: 0 0.25rem;
+  font-family: var(--carousel-tile-font);
+  font-size: var(--carousel-tile-font-size);
+  line-height: var(--carousel-tile-line-height);
+  font-weight: 400;
+  color: var(--carousel-tile-color);
 }
 
-/* ── Tile anchor ─────────────────────────────────────────── */
+/* ── Tile anchor (linked tile) ───────────────────────────── */
 .carousel .slider-wrapper li a {
   display: flex;
   flex-direction: column;
@@ -73,6 +83,7 @@
   font-weight: 400;
   padding: 0 0.25rem;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .carousel .slider-wrapper li a:focus-visible {
@@ -87,100 +98,119 @@
  * codepoint mapping available, so we use FontAwesome 4.x for topic glyphs.
  * FA4 is proven to load at /fonts/fontawesome-webfont.woff.
  */
+.carousel .slider-wrapper li > .costumer-journey-icon,
 .carousel .slider-wrapper li a .costumer-journey-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 5rem;        /* 80px circle */
-  height: 5rem;
+  width: 4.4375rem;   /* 71px circle — matches source costumer-journey-icon */
+  height: 4.4375rem;
   border-radius: 50%;
   background-color: var(--carousel-dot-active); /* purple circle */
   color: var(--colors-card-background);
-  font-size: 2.5rem;  /* icon glyph size */
+  font-size: 2.9375rem;  /* icon glyph size */
   font-style: normal;
   margin-bottom: 0.625rem; /* 10px gap between icon and label */
   flex-shrink: 0;
 }
 
-/* Default ::before — FA4 glyph rendered white inside the purple circle */
+/* Default ::before — BPFicons glyph rendered white inside the purple circle.
+ * The BPFicons font covers U+E600–E60A and U+E900–E903.
+ * font-display:block in fonts.css ensures the woff is loaded before first paint.
+ */
+.carousel .slider-wrapper li > .costumer-journey-icon::before,
 .carousel .slider-wrapper li a .costumer-journey-icon::before {
-  font-family: FontAwesome, sans-serif;
+  font-family: BPFicons, sans-serif;
   font-style: normal;
   font-weight: normal;
-  font-size: 2rem;
+  font-size: 2.9375rem;  /* 47px — matches source glyph size */
   line-height: 1;
-  color: #fff;
+  color: var(--colors-card-background);
   display: block;
   speak: never;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Per-topic FA4 glyph mappings ────────────────────────── */
+/* ── Per-topic BPFicons codepoints (sourced from live bpfschilders.nl computed styles) ── */
 
-/* Met pensioen gaan — graduation-cap (retirement) \f19d */
-.carousel .slider-wrapper li a .icon-bpf-pensioen::before {
-  content: '\f19d';
+/* Met pensioen gaan — U+E604 */
+.carousel .slider-wrapper li .icon-bpf-pensioen::before {
+  content: '\e604';
 }
 
-/* Trouwen en samenwonen — heart (marriage/partnership) \f004 */
-.carousel .slider-wrapper li a .icon-bpf-trouwen::before {
-  content: '\f004';
+/* Trouwen en samenwonen — U+E607 */
+.carousel .slider-wrapper li .icon-bpf-trouwen::before {
+  content: '\e607';
 }
 
-/* Verhuizen — home (moving house) \f015 */
-.carousel .slider-wrapper li a .icon-bpf-verhuizen::before {
-  content: '\f015';
+/* Verhuizen — U+E609 */
+.carousel .slider-wrapper li .icon-bpf-verhuizen::before {
+  content: '\e609';
 }
 
-/* Scheiden of uit elkaar gaan — unlink/broken (divorce) \f127 */
-.carousel .slider-wrapper li a .icon-bpf-scheiden::before {
-  content: '\f127';
+/* Scheiden of uit elkaar gaan — U+E606 */
+.carousel .slider-wrapper li .icon-bpf-scheiden::before {
+  content: '\e606';
 }
 
-/* Ontslag — sign-out (dismissal/exit) \f08b */
-.carousel .slider-wrapper li a .icon-bpf-ontslag::before {
-  content: '\f08b';
+/* Ontslag — U+E602 */
+.carousel .slider-wrapper li .icon-bpf-ontslag::before {
+  content: '\e602';
 }
 
-/* Nieuwe baan / Veranderen van baan — briefcase (new job) \f0b1 */
-.carousel .slider-wrapper li a .icon-bpf-veranderenvanbaan::before {
-  content: '\f0b1';
+/* Nieuwe baan / Veranderen van baan — U+E608 */
+.carousel .slider-wrapper li .icon-bpf-veranderenvanbaan::before {
+  content: '\e608';
 }
 
-/* Uitzendkracht worden — users/group (temp worker) \f0c0 */
-.carousel .slider-wrapper li a .icon-bpf-uitzendkracht::before {
-  content: '\f0c0';
+/* Uitzendkracht worden — U+E902 */
+.carousel .slider-wrapper li .icon-bpf-uitzendkracht::before {
+  content: '\e902';
 }
 
-/* Voor uzelf beginnen — cog/wrench (self-employment) \f0ad */
-.carousel .slider-wrapper li a .icon-bpf-voorjezelfbeginnen::before {
-  content: '\f0ad';
+/* Voor uzelf beginnen — U+E60A */
+.carousel .slider-wrapper li .icon-bpf-voorjezelfbeginnen::before {
+  content: '\e60a';
 }
 
-/* Arbeidsongeschiktheid — heartbeat/medical (disability) \f21e */
-.carousel .slider-wrapper li a .icon-bpf-arbeidsongeschikt::before {
-  content: '\f21e';
+/* Arbeidsongeschiktheid — U+E600 */
+.carousel .slider-wrapper li .icon-bpf-arbeidsongeschikt::before {
+  content: '\e600';
 }
 
-/* Verlof — calendar (leave/vacation) \f073 */
-.carousel .slider-wrapper li a .icon-bpf-verlof::before {
-  content: '\f073';
+/* Verlof — U+E903 */
+.carousel .slider-wrapper li .icon-bpf-verlof::before {
+  content: '\e903';
 }
 
-/* Overlijden — leaf/peace (death/passing) \f06c */
-
-/* Using flag or asterisk as neutral fallback \f024 / \f069 */
-.carousel .slider-wrapper li a .icon-bpf-overlijden::before {
-  content: '\f124';
+/* Overlijden — U+E603 */
+.carousel .slider-wrapper li .icon-bpf-overlijden::before {
+  content: '\e603';
 }
 
-/* Catch-all: any unmapped BPF icon class gets a star glyph \f005 */
-.carousel .slider-wrapper li a [class*="icon-bpf-"]:not([class*="icon-bpf-pensioen"], [class*="icon-bpf-trouwen"], [class*="icon-bpf-verhuizen"], [class*="icon-bpf-scheiden"], [class*="icon-bpf-ontslag"], [class*="icon-bpf-veranderenvanbaan"], [class*="icon-bpf-uitzendkracht"], [class*="icon-bpf-voorjezelfbeginnen"], [class*="icon-bpf-arbeidsongeschikt"], [class*="icon-bpf-verlof"], [class*="icon-bpf-overlijden"])::before {
-  content: '\f005';
+/* Kinderen — U+E601 */
+.carousel .slider-wrapper li .icon-bpf-kinderen::before {
+  content: '\e601';
+}
+
+/* Samenwonen / Privesituatie — U+E605 */
+.carousel .slider-wrapper li .icon-bpf-samenwonen::before {
+  content: '\e605';
+}
+
+/* Klant worden — U+E901 */
+.carousel .slider-wrapper li .icon-bpf-klantworden::before {
+  content: '\e901';
+}
+
+/* Informeren werknemers — U+E900 */
+.carousel .slider-wrapper li .icon-bpf-informatie::before {
+  content: '\e900';
 }
 
 /* ── Tile label text ─────────────────────────────────────── */
+.carousel .slider-wrapper li > .tile-label,
 .carousel .slider-wrapper li a .tile-label {
   display: block;
   overflow-wrap: break-word;

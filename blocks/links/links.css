@@ -18,6 +18,11 @@
   src: url('/fonts/fontawesome-webfont.woff') format('woff');
 }
 
+/* ---- Block root — P4D-032/033: source margin-bottom 13.712px (0.857rem) ---- */
+.links {
+  margin-bottom: 0.857rem; /* 13.712px — source ContactLinksList computed-styles */
+}
+
 /* ---- Contact list ---- */
 .links .contact {
   list-style-type: none;
@@ -105,5 +110,112 @@
 /* Hover: source uses secondary color #c18e60 on the circle — browser default otherwise */
 .links .contact a:hover::before,
 .links .contact a:focus::before {
-  background-color: rgb(193 142 96); /* var(--color-secondary) from source: #c18e60 */
+  background-color: var(--color-links-hover); /* #c18e60 — source ContactLinksList */
+}
+
+/* =====================================================================
+   Sub-navigation bar — /over-ons page only.
+   Activated by .subnav-bar class added to the section by applySubNavBar()
+   in scripts.js.
+
+   Source: https://www.bpfschilders.nl/over-ons — horizontal secondary nav
+   row inside the main-navigation, positioned directly below the main header
+   logo strip.  Links: "Dit zijn we | Dit presteren we | Downloads".
+   Source computed styles: color rgb(33,33,33), font-size ~15.67px,
+   font-weight 400, padding ~22px 15px ~19px per anchor.
+   Background: transparent over the header grey (rgb(244,244,244)).
+   ===================================================================== */
+
+/* Section wrapper — full-width grey strip flush below the header */
+.subnav-bar {
+  background-color: var(--color-header-bg); /* rgb(244,244,244) — matches header top strip */
+  margin: 0 !important;  /* override main > .section { margin: 40px 0 } */
+  padding: 0;
+}
+
+/* Inner wrapper — constrained to content max-width, centered, no extra padding */
+.subnav-bar .links-wrapper {
+  max-width: var(--content-max-width); /* 1000px — matches header container width */
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* The links block itself — reset its own margin */
+.subnav-bar .links {
+  margin-bottom: 0;
+}
+
+/* Replace vertical contact-list layout with horizontal flex row */
+.subnav-bar .links .contact {
+  display: flex;
+  flex-flow: row wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove vertical list item borders that belong to the contact-list style */
+.subnav-bar .links .contact li,
+.subnav-bar .links .contact li:first-child {
+  border: none;
+  padding: 0;
+}
+
+/* Individual sub-nav anchor — matches source padding and font */
+.subnav-bar .links .contact a,
+.subnav-bar .links .contact span {
+  display: block;
+  padding: 1.375rem 0.9375rem 1.175rem; /* ~22px top / 15px sides / ~19px bottom — source */
+  color: var(--text-color);             /* rgb(33,33,33) — source nav link color */
+  font-size: 0.98rem;                   /* ~15.67px / 16 — source 15.6728px */
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.subnav-bar .links .contact a:hover {
+  color: var(--colors-link-color); /* brand purple on hover */
+  text-decoration: none;
+}
+
+/* Suppress icon circles in the sub-nav bar — no FontAwesome glyphs here */
+.subnav-bar .links .contact a[class^='icon-']::before,
+.subnav-bar .links .contact a[class*=' icon-']::before,
+.subnav-bar .links .contact span[class^='icon-']::before,
+.subnav-bar .links .contact span[class*=' icon-']::before {
+  display: none;
+}
+
+/* Home (house) icon link — source renders it before the sub-nav items, in a
+   tan/brown tone (rgb(193 142 96)). Re-enable the glyph that the rule above
+   suppresses, scoped to the injected .subnav-home anchor. */
+.subnav-bar .links .contact a.subnav-home {
+  padding-left: 0;
+  padding-right: 0.9375rem;
+  line-height: 1.65; /* match the text items so the glyph aligns on the same row */
+}
+
+.subnav-bar .links .contact a.subnav-home .icon-home::before {
+  /* Reset the purple circle from the base .contact icon styling. */
+  display: inline-block;
+  background-color: transparent;
+  width: auto;
+  height: auto;
+  margin: 0;
+  border-radius: 0;
+  line-height: inherit;
+  vertical-align: middle;
+  font-family: FontAwesome, sans-serif;
+  content: '\f015'; /* fa-home */
+  font-size: 1.25rem;
+  position: relative;
+  top: -0.1em;
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  color: var(--color-links-hover, rgb(193 142 96));
+}
+
+.subnav-bar .links .contact a.subnav-home:hover .icon-home::before {
+  color: var(--colors-link-color);
 }

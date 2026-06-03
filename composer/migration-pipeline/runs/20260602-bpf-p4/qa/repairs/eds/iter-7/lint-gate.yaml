@@ -1,0 +1,17 @@
+eds_repo_path: composer/migration-pipeline/runs/20260602-bpf-p2/bpfschilders-rootpages-eds
+touched_files:
+  - blocks/accordion/accordion.js
+  - blocks/text/text.js
+  - blocks/cards/cards.js
+js_lint:
+  exit_code: 0
+  output: |
+    
+    [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+css_lint:
+  exit_code: 0
+  output: |
+
+rollback_performed: false
+rolled_back_files:
+result: pass

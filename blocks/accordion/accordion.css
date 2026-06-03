@@ -22,13 +22,13 @@
 .accordion {
   --accordion-trigger-bg: rgb(245 245 245);
   --accordion-trigger-color: rgb(51 51 51);
-  --accordion-border-color: rgb(204 204 204);
+  --accordion-border-color: var(--color-border-dark);  /* rgb(33,33,33) per P4D-085 source_value */
   --accordion-trigger-bg-open: var(--colors-link-color);
   --accordion-panel-padding: 1rem 1.25rem;
   --accordion-trigger-font-size: 0.857rem; /* 13.712px / 16 */
   --accordion-indicator-size: 2rem;
 
-  background-color: var(--colors-card-background);
+  background-color: transparent;  /* P4D-084: source rgba(0,0,0,0) — block has no background of its own */
   border: 1px solid var(--accordion-border-color);
   width: 100%;
   box-sizing: border-box;

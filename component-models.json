@@ -154,7 +154,7 @@
         "component": "richtext",
         "name": "item_body",
         "label": "Accordion Panel Content",
-        "valueType": "string"
+        "valueType": "richtext"
       }
     ]
   },
@@ -413,7 +413,7 @@
     ]
   },
   {
-    "id": "text-block",
+    "id": "text",
     "fields": [
       {
         "component": "text",
@@ -425,13 +425,13 @@
         "component": "richtext",
         "name": "description",
         "label": "Body / Introductory Richtext",
-        "valueType": "string"
+        "valueType": "richtext"
       },
       {
         "component": "richtext",
         "name": "ctas",
         "label": "CTA Links List",
-        "valueType": "string"
+        "valueType": "richtext"
       }
     ]
   }
