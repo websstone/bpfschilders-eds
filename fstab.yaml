@@ -1,5 +1,4 @@
 mountpoints:
   /:
-    url: http://localhost:4502/bin/franklin.delivery/websstone/bpfschilders-rootpages-eds/main
+    url: https://main--bpfschilders-rootpages-eds--websstone.aem.live/
     type: markup
-    suffix: ".html"
