@@ -33,11 +33,28 @@ function byProp(paragraphs, prop) {
   ) || null;
 }
 
+function pickImage(el) {
+  if (!el) return null;
+  return el.querySelector('picture') || el.querySelector('img') || null;
+}
+
+function pickText(prop, cell) {
+  if (prop) return text(prop);
+  if (cell) return text(cell);
+  return '';
+}
+
+function pickHref(prop, cell) {
+  if (prop) return href(prop);
+  if (cell) return href(cell);
+  return '';
+}
+
 /**
  * Parses one card row (a child item row with data-aue-component="card").
  * Field order matches _cards.json model: image, title, description, cta_url, cta_label.
  * @param {Element} row
- * @returns {{ imageEl: Element|null, title: string, description: string, ctaUrl: string, ctaLabel: string, imageSource: Element|null }}
+ * @returns {object} parsed card: imageEl, title, description, ctaUrl, ctaLabel, imageSource
  */
 function parseCardRow(row) {
   const cells = [...row.children];
@@ -57,17 +74,12 @@ function parseCardRow(row) {
   const cell3 = cells[3] || null;
   const cell4 = cells[4] || null;
 
-  // Image: look for <picture> or <img> in image cell
-  const imageEl = imageProp
-    ? (imageProp.querySelector('picture') || imageProp.querySelector('img') || null)
-    : (cell0 ? (cell0.querySelector('picture') || cell0.querySelector('img') || null) : null);
-
+  const imageEl = pickImage(imageProp || cell0);
   const imageSource = imageProp || cell0;
-
-  const titleText = titleProp ? text(titleProp) : (cell1 ? text(cell1) : '');
-  const descText = descProp ? text(descProp) : (cell2 ? text(cell2) : '');
-  const ctaUrl = ctaUrlProp ? href(ctaUrlProp) : (cell3 ? href(cell3) : '');
-  const ctaLabelText = ctaLabelProp ? text(ctaLabelProp) : (cell4 ? text(cell4) : '');
+  const titleText = pickText(titleProp, cell1);
+  const descText = pickText(descProp, cell2);
+  const ctaUrl = pickHref(ctaUrlProp, cell3);
+  const ctaLabelText = pickText(ctaLabelProp, cell4);
 
   return {
     imageEl,

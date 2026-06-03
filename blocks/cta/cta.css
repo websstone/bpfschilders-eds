@@ -41,6 +41,7 @@
   flex-direction: row;
   align-items: center;
   padding-bottom: 0.375rem; /* space above the accent line */
+
   /* Yellow-green underline accent — observed in source screenshot */
   border-bottom: 2px solid #9aad00;
 }
@@ -66,6 +67,7 @@
 /* Focus — browser default (no custom override per behavioral spec) */
 
 /* ─── User icon (FontAwesome fa-user glyph U+F007) ─────────────────────────── */
+
 /*
  * The source uses <span class="icon icon-user">.
  * We render via ::before pseudo-element using FontAwesome U+F007 (fa-user)
@@ -76,6 +78,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   /* Spacing between icon and label text */
   margin-right: 0.75rem; /* ~12px */
   width: 2.5rem;  /* ~40px — matches the icon footprint visible in screenshot */
@@ -92,7 +95,7 @@
   text-transform: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  speak: none;
+
   /* U+F007 — FontAwesome fa-user: solid filled person silhouette matching source */
   content: '\f007';
   font-size: 2.25rem; /* ~36px — icon size matching screenshot */
@@ -112,7 +115,7 @@
 }
 
 /* ─── Tablet+ (769px+): no layout change — button stays inline ──────────────── */
-@media (min-width: 769px) {
+@media (width >= 769px) {
   .cta .icon-user::before {
     font-size: 2.5rem;
   }

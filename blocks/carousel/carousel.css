@@ -11,8 +11,10 @@
   --carousel-track-inset: 2.5rem;       /* 40px side inset on mobile */
   --carousel-dot-size: 0.625rem;        /* 10px paging dot */
   --carousel-dot-active: var(--colors-link-color);   /* rgb(68,35,89) */
+
   /* Sampled from source-screenshot.desktop.png — inactive dot center pixels */
   --carousel-dot-inactive: #b89063;    /* warm tan/brownish-gray; sampled rgb(184,144,99) */
+
   /* Sampled from source-screenshot.desktop.png — left < chevron core pixels */
   --carousel-arrow-color: #d11121;     /* crimson/terracotta accent; sampled rgb(209,17,33) */
   --carousel-transition: transform 500ms ease;

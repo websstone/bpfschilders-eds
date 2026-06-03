@@ -33,13 +33,13 @@
 
 /* ---- List items ---- */
 .links .contact li {
-  border-bottom: 1px solid rgb(220, 220, 220);
+  border-bottom: 1px solid rgb(220 220 220);
   padding: 0.75em 0;
   list-style: none;
 }
 
 .links .contact li:first-child {
-  border-top: 1px solid rgb(220, 220, 220);
+  border-top: 1px solid rgb(220 220 220);
 }
 
 /* ---- Anchor and span ---- */
@@ -105,5 +105,5 @@
 /* Hover: source uses secondary color #c18e60 on the circle — browser default otherwise */
 .links .contact a:hover::before,
 .links .contact a:focus::before {
-  background-color: rgb(193, 142, 96); /* var(--color-secondary) from source: #c18e60 */
+  background-color: rgb(193 142 96); /* var(--color-secondary) from source: #c18e60 */
 }

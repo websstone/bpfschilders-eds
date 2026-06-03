@@ -9,15 +9,6 @@ function cellText(cell) {
   return cell ? (cell.textContent || '').trim() : '';
 }
 
-function cellLinks(cell) {
-  if (!cell) return [];
-  return [...cell.querySelectorAll('a')].map((a) => ({
-    href: a.getAttribute('href') || '',
-    text: a.textContent.trim(),
-    el: a,
-  }));
-}
-
 function splitLines(cell) {
   return cellText(cell)
     .split('\n')
@@ -44,42 +35,6 @@ function getActiveIndex(items) {
   return 0; // default first item active (Werknemer)
 }
 
-// ─── build nav list with has-children support ───────────────────────────────
-function buildNavList(items) {
-  const ul = document.createElement('ul');
-
-  items.forEach((item) => {
-    const li = document.createElement('li');
-
-    // Check for nested sub-list in the original element
-    const nestedUl = item.el ? item.el.closest('li')?.querySelector('ul') : null;
-    if (nestedUl) {
-      li.classList.add('has-children');
-    }
-
-    if (item.href && item.href !== '#') {
-      const a = document.createElement('a');
-      a.href = item.href;
-      a.textContent = item.text;
-      if (item.el) moveInstrumentation(item.el, a);
-      li.appendChild(a);
-    } else {
-      const span = document.createElement('span');
-      span.textContent = item.text;
-      li.appendChild(span);
-    }
-
-    // Clone nested sub-list if present
-    if (nestedUl) {
-      li.appendChild(nestedUl.cloneNode(true));
-    }
-
-    ul.appendChild(li);
-  });
-
-  return ul;
-}
-
 // ─── parse nav cell with nested ul support ──────────────────────────────────
 function parseNavCell(cell) {
   if (!cell) return [];
@@ -92,7 +47,9 @@ function parseNavCell(cell) {
       hasChildren: !!a.closest('li')?.querySelector('ul'),
     }));
   }
-  return splitLines(cell).map((t) => ({ href: '', text: t, el: null, hasChildren: false }));
+  return splitLines(cell).map((t) => ({
+    href: '', text: t, el: null, hasChildren: false,
+  }));
 }
 
 // ─── decorate ───────────────────────────────────────────────────────────────
@@ -114,13 +71,27 @@ export default function decorate(block) {
   let primaryItems = parseNavCell(rowCell(rowPrimaryMenu));
   if (!primaryItems.length) {
     primaryItems = [
-      { href: '/werknemer/', text: 'Werknemer', el: null, hasChildren: false },
-      { href: '/ondernemer/', text: 'Ondernemer', el: null, hasChildren: false },
-      { href: '/werkgever/', text: 'Werkgever', el: null, hasChildren: false },
-      { href: '/over-ons/', text: 'Over ons', el: null, hasChildren: false },
-      { href: '/klacht/', text: 'Klacht', el: null, hasChildren: false },
-      { href: '/translate/', text: 'Translate', el: null, hasChildren: false },
-      { href: '/contact/', text: 'Contact', el: null, hasChildren: false },
+      {
+        href: '/werknemer/', text: 'Werknemer', el: null, hasChildren: false,
+      },
+      {
+        href: '/ondernemer/', text: 'Ondernemer', el: null, hasChildren: false,
+      },
+      {
+        href: '/werkgever/', text: 'Werkgever', el: null, hasChildren: false,
+      },
+      {
+        href: '/over-ons/', text: 'Over ons', el: null, hasChildren: false,
+      },
+      {
+        href: '/klacht/', text: 'Klacht', el: null, hasChildren: false,
+      },
+      {
+        href: '/translate/', text: 'Translate', el: null, hasChildren: false,
+      },
+      {
+        href: '/contact/', text: 'Contact', el: null, hasChildren: false,
+      },
     ];
   }
 
@@ -128,12 +99,24 @@ export default function decorate(block) {
   let secondaryItems = parseNavCell(rowCell(rowSecondaryMenu));
   if (!secondaryItems.length) {
     secondaryItems = [
-      { href: '/', text: 'Home', el: null, hasChildren: false },
-      { href: '/het-pensioen/', text: 'Het pensioen', el: null, hasChildren: false },
-      { href: '/wat-doe-ik-bij/', text: 'Wat doe ik bij...', el: null, hasChildren: false },
-      { href: '/u-bent-met-pensioen/', text: 'U bent met pensioen', el: null, hasChildren: false },
-      { href: '/actueel/', text: 'Actueel', el: null, hasChildren: false },
-      { href: '/contact/', text: 'Contact', el: null, hasChildren: false },
+      {
+        href: '/', text: 'Home', el: null, hasChildren: false,
+      },
+      {
+        href: '/het-pensioen/', text: 'Het pensioen', el: null, hasChildren: false,
+      },
+      {
+        href: '/wat-doe-ik-bij/', text: 'Wat doe ik bij...', el: null, hasChildren: false,
+      },
+      {
+        href: '/u-bent-met-pensioen/', text: 'U bent met pensioen', el: null, hasChildren: false,
+      },
+      {
+        href: '/actueel/', text: 'Actueel', el: null, hasChildren: false,
+      },
+      {
+        href: '/contact/', text: 'Contact', el: null, hasChildren: false,
+      },
     ];
   }
 

@@ -19,4 +19,14 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
   },
+  overrides: [
+    {
+      // Header is a site-singleton block with 6 meaningful fields; the
+      // max-cells guideline targets frequently-authored content blocks.
+      files: ['component-models.json', 'blocks/header/_header.json'],
+      rules: {
+        'xwalk/max-cells': 'off',
+      },
+    },
+  ],
 };

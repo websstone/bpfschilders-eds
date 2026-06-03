@@ -27,8 +27,8 @@ export default function decorate(block) {
   const labelCell = labelRow ? labelRow.children[0] || labelRow : null;
 
   // Resolve image: authored picture/img element OR plain-text src
-  let imgEl = imageCell ? imageCell.querySelector('img') : null;
-  let picEl = imageCell ? imageCell.querySelector('picture') : null;
+  const imgEl = imageCell ? imageCell.querySelector('img') : null;
+  const picEl = imageCell ? imageCell.querySelector('picture') : null;
 
   const altText = altCell ? (altCell.textContent || '').trim() : '';
   const ctaHref = hrefCell ? (hrefCell.querySelector('a')?.getAttribute('href') || hrefCell.textContent.trim()) : '';

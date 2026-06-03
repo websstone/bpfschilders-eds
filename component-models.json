@@ -271,7 +271,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "cookie_preferences_label",
+        "name": "cookie_label",
         "label": "Cookie Preferences Button Label"
       }
     ]

@@ -25,7 +25,7 @@
   --footer-container-padding: 0.9375rem;
   --footer-separator-height: 0.4275rem;
   --footer-li-padding-x: 0.857rem;
-  --footer-li-border-color: rgb(71, 71, 71); /* block-local: separator pipe color */
+  --footer-li-border-color: rgb(71 71 71); /* block-local: separator pipe color */
 
   position: relative;
   background-color: var(--colors-card-background);
@@ -46,7 +46,7 @@
   left: 0;
   right: 0;
   height: var(--footer-separator-height);
-  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgb(255, 255, 255));
+  background-image: linear-gradient(rgb(0 0 0 / 25%), rgb(255 255 255));
   pointer-events: none;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .footer .container ul li a:focus-visible {
-  outline: 1px auto rgb(0, 95, 204);
+  outline: 1px auto rgb(0 95 204);
   outline-offset: 2px;
 }
 
@@ -112,7 +112,7 @@
 }
 
 /* --- Desktop enhancement --- */
-@media (min-width: 769px) {
+@media (width >= 769px) {
   .footer .container ul {
     flex-wrap: nowrap;
   }

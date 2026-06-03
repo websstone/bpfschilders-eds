@@ -16,7 +16,7 @@
 -------------------------------------------------------- */
 .teaser {
   display: block;
-  background-color: var(--colors-card-background, rgb(255, 255, 255));
+  background-color: var(--colors-card-background, rgb(255 255 255));
   width: 100%;
   box-sizing: border-box;
 }
@@ -43,6 +43,7 @@
   display: block;
   max-width: 100%;
   height: auto;
+
   /* Source intrinsic: 81×168 (portrait thumbnail) — let browser determine size */
 }
 
@@ -61,7 +62,7 @@
 }
 
 .teaser .teaser-cta a {
-  color: var(--colors-link-color, rgb(68, 35, 89));
+  color: var(--colors-link-color, rgb(68 35 89));
   text-decoration: underline;
   font-family: Lato, Arial, sans-serif; /* brand font — Lato confirmed by computed-styles */
   font-size: 1.065rem; /* 17.044px / 16 */
@@ -80,13 +81,13 @@
    Images are already responsive (max-width: 100%) from mobile defaults.
    At wider viewports, constrain the panel width to match the source context.
 -------------------------------------------------------- */
-@media (min-width: 600px) {
+@media (width >= 600px) {
   .teaser .teaser-panel {
     padding: 1.25rem;
   }
 }
 
-@media (min-width: 900px) {
+@media (width >= 900px) {
   .teaser .teaser-panel {
     padding: 1.5rem;
     max-width: 41.125rem; /* ~658px (source h2 width) / 16 — matches source layout width */

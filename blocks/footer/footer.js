@@ -53,7 +53,7 @@ function rowCell(row) {
  * Expected AEM authored table (3 rows, vertical format):
  *   Row 0 → copyright_text   e.g. "Copyright © BPF Schilders 2026"
  *   Row 1 → links            <ul> or newline-separated link labels/hrefs
- *   Row 2 → cookie_preferences_label  e.g. "Mijn cookievoorkeur wijzigen"
+ *   Row 2 → cookie_label  e.g. "Mijn cookievoorkeur wijzigen"
  *
  * @param {Element} block The footer block element
  */

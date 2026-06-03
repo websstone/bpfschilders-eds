@@ -4,7 +4,7 @@
  * Brand tokens from styles/tokens.css.
  */
 
-/* Block-scoped custom properties for values not in global tokens */
+/* Block-scoped tokens + root block element */
 .text {
   --text-heading-color: var(--colors-link-color);   /* rgb(68,35,89) — purple heading matches screenshot */
   --text-body-font-size: 1rem;                       /* 16px — body text per spec (larger than base 13.712px token) */
@@ -14,10 +14,7 @@
   --text-p-margin-bottom: 0.857rem;                  /* 13.712px / 16 */
   --text-block-padding: 1.25rem 0;                   /* 20px 0 */
   --text-content-padding: 0 1rem;                    /* lateral breathing room on mobile */
-}
 
-/* Root block element */
-.text {
   background-color: var(--colors-card-background);  /* white */
   padding: var(--text-block-padding);
   width: 100%;
@@ -102,7 +99,7 @@
 }
 
 /* Desktop enhancement — wider padding inside the content area */
-@media (min-width: 769px) {
+@media (width >= 769px) {
   .text .text-inner {
     padding: 0 1rem;
   }
