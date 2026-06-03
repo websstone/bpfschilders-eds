@@ -1,5 +1,5 @@
 mountpoints:
   /:
-    url: http://localhost:45022/bin/franklin.delivery/websstone/bpfschilders-rootpages-eds/main
+    url: http://localhost:4502/bin/franklin.delivery/websstone/bpfschilders-rootpages-eds/main
     type: markup
     suffix: ".html"
