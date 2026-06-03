@@ -16,6 +16,14 @@ function splitLines(cell) {
     .filter(Boolean);
 }
 
+// Strip a trailing slash from internal hrefs — aem.live serves pages without it,
+// so `/werknemer/` 404s while `/werknemer` resolves. Root `/` is preserved, and
+// links carrying a query/hash (e.g. the login deep-link) are left untouched.
+function normalizeHref(href) {
+  if (!href || href === '/' || /[?#]/.test(href)) return href;
+  return href.replace(/\/+$/, '') || '/';
+}
+
 // ─── mobile toggle (nav only) ──────────────────────────────────────────────
 function setupMobileToggle(toggleBtn, targetEl) {
   toggleBtn.addEventListener('click', () => {
@@ -282,7 +290,7 @@ export default function decorate(block) {
   // Logo
   const logoA = document.createElement('a');
   logoA.className = 'logo';
-  logoA.href = logoHref;
+  logoA.href = normalizeHref(logoHref);
   logoA.title = logoAlt;
   moveInstrumentation(rowLogoHref || block, logoA);
 
@@ -335,7 +343,7 @@ export default function decorate(block) {
 
     if (item.href && item.href !== '#') {
       const a = document.createElement('a');
-      a.href = item.href;
+      a.href = normalizeHref(item.href);
       a.textContent = item.text;
       if (item.el) moveInstrumentation(item.el, a);
       li.appendChild(a);
@@ -378,7 +386,7 @@ export default function decorate(block) {
 
     if (item.href && item.href !== '#') {
       const a = document.createElement('a');
-      a.href = item.href;
+      a.href = normalizeHref(item.href);
       a.textContent = idx === 0 ? '' : item.text;
       if (idx === 0) a.setAttribute('aria-label', 'Home');
       if (item.el) moveInstrumentation(item.el, a);
@@ -395,7 +403,7 @@ export default function decorate(block) {
       item.children.forEach((child) => {
         const subLi = document.createElement('li');
         const subA = document.createElement('a');
-        subA.href = child.href;
+        subA.href = normalizeHref(child.href);
         subA.textContent = child.label;
         subLi.appendChild(subA);
         subUl.appendChild(subLi);
