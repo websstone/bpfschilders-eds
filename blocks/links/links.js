@@ -48,29 +48,44 @@ function inferIconClass(href, label) {
 }
 
 /**
+ * Read a links item's fields from the delivered block cells.
+ * franklin.delivery serializes each item as four cells in model order:
+ * icon_class, label, href, target. This is the data source on the published
+ * site; the JCR .json fetch only works in the author/UE context.
+ * @param {Element} row
+ * @returns {{icon_class: string, label: string, href: string, target: string}}
+ */
+function readFromCells(row) {
+  const cells = [...row.children];
+  const cellText = (el) => (el ? (el.textContent || '').trim() : '');
+  const hrefCell = cells[2];
+  const anchor = hrefCell ? hrefCell.querySelector('a') : null;
+  const href = anchor ? (anchor.getAttribute('href') || '').trim() : cellText(hrefCell);
+  return {
+    icon_class: cellText(cells[0]),
+    label: cellText(cells[1]),
+    href,
+    target: cellText(cells[3]),
+  };
+}
+
+/**
  * Loads and decorates the links block.
  *
- * Each links-item child stores its fields (icon_class, label, href, target) as
- * direct JCR properties on the item node. aem.live's block/item renderer does
- * not populate these as table cells — the inner <div> is empty. This decorator
- * fetches each item's .json via the same-origin proxy to read the fields.
- *
- * Block model (per links-item JCR node):
- *   label      — visible link text (always present)
- *   icon_class — BPF icon class string (optional)
- *   href       — link target URL (optional)
- *   target     — anchor target attribute (optional)
+ * Each links item delivers four cells (icon_class, label, href, target). This
+ * decorator reads them from the DOM (works on the published site), falling back
+ * to the item's JCR .json for the author/UE context, where the cells are empty.
  *
  * @param {Element} block
  */
 export default async function decorate(block) {
   const allRows = [...block.children];
 
-  // Collect all item fetch promises in parallel for performance.
   const itemData = await Promise.all(
     allRows.map(async (row) => {
-      const path = jcrPath(row);
-      const data = await fetchJcr(path);
+      const fromCells = readFromCells(row);
+      if (fromCells.label || fromCells.href) return { row, data: fromCells };
+      const data = await fetchJcr(jcrPath(row));
       return { row, data };
     }),
   );

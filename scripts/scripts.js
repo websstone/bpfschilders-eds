@@ -98,7 +98,10 @@ function getExplicitSidebarSections(pathname) {
 function isSidebarSection(section, explicitList) {
   if (explicitList) {
     const resource = section.dataset.aueResource || '';
-    return explicitList.some((name) => resource.endsWith(`/${name}`));
+    if (resource) return explicitList.some((name) => resource.endsWith(`/${name}`));
+    // Delivery fallback (no data-aue-resource): the contact quick-links sidebar
+    // sections are the only ones carrying a phone (tel:) link.
+    return !!section.querySelector('a[href^="tel:"]');
   }
   const has = (cls) => section.classList.contains(cls);
   if (!has(TWO_COLUMN_CONFIG.sidebar_requires_class)) return false;
@@ -329,12 +332,18 @@ const SIDEBAR_TITLES = {
   section_sidebar_ondernemer: 'Bent u ondernemer of werkgever?',
 };
 function addSidebarTitle(section) {
+  if (section.querySelector('.sidebar-title')) return;
   const resource = section.dataset.aueResource
     || (section.querySelector('[data-aue-resource]') || {}).dataset?.aueResource
     || '';
   const node = resource.split('/').pop();
-  const title = SIDEBAR_TITLES[node];
-  if (!title || section.querySelector('.sidebar-title')) return;
+  let title = SIDEBAR_TITLES[node];
+  if (!title) {
+    // Delivery fallback (no data-aue-resource): identify by the contact target.
+    if (section.querySelector('a[href*="/ondernemer/"]')) title = 'Bent u ondernemer of werkgever?';
+    else if (section.querySelector('a[href*="/werknemer/"]')) title = 'Bent u werknemer?';
+  }
+  if (!title) return;
   const heading = document.createElement('p');
   heading.className = 'sidebar-title';
   heading.textContent = title;
@@ -517,7 +526,12 @@ export function applyContactLayout(main) {
 export function restructureKlachtFaq(main) {
   if (window.location.pathname.replace(/\/$/, '') !== '/klacht') return;
   const col = main.querySelector('.two-col-main') || main;
-  const accWrapper = col.querySelector('.accordion-wrapper');
+  // Select the FAQ accordion specifically — the page may also contain the
+  // "Stap 1/2/3" procedure accordion, which must stay in place. The FAQ items
+  // are questions; the Stap accordion's raw cells contain "Stap N".
+  const accWrappers = [...col.querySelectorAll('.accordion-wrapper')];
+  const accWrapper = accWrappers.find((w) => !/Stap\s*\d/i.test(w.textContent))
+    || accWrappers[0];
   if (!accWrapper || accWrapper.closest('.klacht-faq')) return;
 
   const sections = [...col.querySelectorAll(':scope > .section')];
