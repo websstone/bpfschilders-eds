@@ -195,7 +195,8 @@ export function applySubNavHome(main) {
  * 2-column strip matching the source.
  * @param {Element} main
  */
-const INFO_STRIP_PAGES = ['/werknemer', '/werkgever', '/ondernemer'];
+// '/' is the homepage, which mirrors the /werknemer audience-page layout.
+const INFO_STRIP_PAGES = ['/', '/werknemer', '/werkgever', '/ondernemer'];
 
 /**
  * Wraps the dekkingsgraad indicator and the INLOGGEN call-to-action into a
@@ -358,7 +359,7 @@ function addSidebarTitle(section) {
  * carousel in a `.customer-journey` band so CSS can render the white card.
  * @param {Element} main
  */
-const CUSTOMER_JOURNEY_PAGES = ['/werknemer', '/werkgever', '/ondernemer'];
+const CUSTOMER_JOURNEY_PAGES = ['/', '/werknemer', '/werkgever', '/ondernemer'];
 export function applyCustomerJourney(main) {
   const { pathname } = window.location;
   const match = CUSTOMER_JOURNEY_PAGES.some(
