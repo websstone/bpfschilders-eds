@@ -146,6 +146,38 @@ function buildItem(row, title, bodyHtml, panelId, triggerId) {
 }
 
 /**
+ * Read raw item_title/item_body from a delivered accordion row.
+ * franklin.delivery serializes each item into a single cell:
+ *   - title + body item: <div><p>title</p><p>body</p>…</div> — first element is
+ *     the title, the rest is the body;
+ *   - body-only item: <div>question text</div> — the whole cell is the trigger.
+ * A two-cell form (gallery fixture) is still supported as a fallback.
+ * @param {Element} row
+ * @returns {{itemTitle: string, rawBody: string}}
+ */
+function readItem(row) {
+  const cells = [...row.children];
+  // Two-cell form: [title, body].
+  if (cells.length >= 2 && cells[1] && !isCellEmpty(cells[1])) {
+    return {
+      itemTitle: (cells[0].textContent || '').trim(),
+      rawBody: cells[1].innerHTML.trim(),
+    };
+  }
+  // Single-cell delivered form.
+  const cell = cells[0];
+  if (!cell) return { itemTitle: '', rawBody: '' };
+  const blocks = [...cell.children];
+  if (blocks.length >= 2) {
+    return {
+      itemTitle: (blocks[0].textContent || '').trim(),
+      rawBody: blocks.slice(1).map((el) => el.outerHTML).join(''),
+    };
+  }
+  return { itemTitle: (cell.textContent || '').trim(), rawBody: '' };
+}
+
+/**
  * Derive trigger title + panel body from raw item_title/item_body values.
  * Handles the well-formed case (separate title + body) and the item_body-only
  * form produced by the import, where the first line is the trigger and the rest
@@ -185,12 +217,7 @@ export default async function decorate(block) {
   // author/UE context, where the cells render empty.
   const resolved = await Promise.all(
     rows.map(async (row, index) => {
-      const cells = [...row.children];
-      const titleCell = cells[0] || row;
-      const bodyCell = cells[1] || null;
-
-      let itemTitle = titleCell.textContent.trim();
-      let rawBody = bodyCell && !isCellEmpty(bodyCell) ? bodyCell.innerHTML.trim() : '';
+      let { itemTitle, rawBody } = readItem(row);
 
       // Author/UE fallback: cells empty but the JCR node is reachable same-origin.
       if (!itemTitle && !rawBody) {
