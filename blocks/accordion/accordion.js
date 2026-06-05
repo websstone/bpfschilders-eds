@@ -146,6 +146,30 @@ function buildItem(row, title, bodyHtml, panelId, triggerId) {
 }
 
 /**
+ * Derive trigger title + panel body from raw item_title/item_body values.
+ * Handles the well-formed case (separate title + body) and the item_body-only
+ * form produced by the import, where the first line is the trigger and the rest
+ * (if any) is the panel.
+ * @param {string} itemTitle
+ * @param {string} rawBody
+ * @returns {{title: string, bodyHtml: string}}
+ */
+function deriveItem(itemTitle, rawBody) {
+  if (itemTitle) return { title: itemTitle, bodyHtml: rawBody };
+  if (rawBody) {
+    const nl = rawBody.indexOf('\n');
+    if (nl !== -1) {
+      return {
+        title: rawBody.slice(0, nl).trim(),
+        bodyHtml: rawBody.slice(nl + 1).replace(/^\n+/, '').trim(),
+      };
+    }
+    return { title: rawBody.trim(), bodyHtml: '' };
+  }
+  return { title: '', bodyHtml: '' };
+}
+
+/**
  * Loads and decorates the accordion block.
  * @param {Element} block
  */
@@ -156,77 +180,26 @@ export default async function decorate(block) {
   const blockIndex = Array.from(document.querySelectorAll('.accordion.block')).indexOf(block);
 
   // ── Resolve title + body for every row in parallel ──────────────────────
-  // Strategy:
-  //   1. If the row has a data-aue-resource attribute, it is a real authored
-  //      item — ALWAYS fetch from JCR so we read item_title and item_body
-  //      as separate properties (avoids concatenated trigger when AEM inlines
-  //      the scalar text into the cell).
-  //   2. Otherwise, if the title cell has text content, use cells directly
-  //      (backward compat for gallery fixture / non-instrumented HTML).
-  //   3. If cells are empty and no data-aue-resource, try JCR fetch anyway.
+  // Prefer the delivered cells (model order: item_title, item_body) — the only
+  // data source on the published site. Fall back to the JCR .json fetch for the
+  // author/UE context, where the cells render empty.
   const resolved = await Promise.all(
     rows.map(async (row, index) => {
       const cells = [...row.children];
       const titleCell = cells[0] || row;
       const bodyCell = cells[1] || null;
 
-      const hasAueResource = !!jcrPath(row);
+      let itemTitle = titleCell.textContent.trim();
+      let rawBody = bodyCell && !isCellEmpty(bodyCell) ? bodyCell.innerHTML.trim() : '';
 
-      // Path 1: row is a real UE-authored item — always read from JCR.
-      if (hasAueResource) {
-        const path = jcrPath(row);
-        const data = await fetchJcr(path);
-        const itemTitle = (data && data.item_title) ? String(data.item_title).trim() : '';
-        const rawBody = (data && data.item_body) ? String(data.item_body) : '';
-
-        let title;
-        let bodyHtml;
-        if (itemTitle) {
-          // Separate item_title and item_body properties present.
-          title = itemTitle;
-          bodyHtml = rawBody;
-        } else if (rawBody) {
-          // Only item_body — first line (up to the first newline) is the
-          // trigger question; everything after the first newline is the panel
-          // answer. Handles both single-newline and double-newline separators.
-          const firstNewline = rawBody.indexOf('\n');
-          if (firstNewline !== -1) {
-            title = rawBody.slice(0, firstNewline).trim();
-            bodyHtml = rawBody.slice(firstNewline + 1).replace(/^\n+/, '').trim();
-          } else {
-            title = rawBody.trim();
-            bodyHtml = '';
-          }
-        } else {
-          // Nothing in JCR — fall back to cell text so we show something.
-          title = titleCell.textContent.trim();
-          bodyHtml = '';
-        }
-        return {
-          row, index, title, bodyHtml,
-        };
+      // Author/UE fallback: cells empty but the JCR node is reachable same-origin.
+      if (!itemTitle && !rawBody) {
+        const data = await fetchJcr(jcrPath(row));
+        itemTitle = (data && data.item_title) ? String(data.item_title).trim() : '';
+        rawBody = (data && data.item_body) ? String(data.item_body) : '';
       }
 
-      // Path 2: no data-aue-resource — backward compat for non-instrumented DOM.
-      const cellTitle = titleCell.textContent.trim();
-      const cellBodyEmpty = isCellEmpty(bodyCell);
-
-      if (cellTitle) {
-        // Cell has content — use DOM directly (null signals buildItem to move child nodes).
-        const bodyHtml = (!cellBodyEmpty && bodyCell) ? null : '';
-        return {
-          row, index, title: cellTitle, bodyHtml,
-        };
-      }
-
-      // Path 3: empty cells and no JCR resource — attempt a JCR fetch by path anyway.
-      const fallbackPath = jcrPath(row);
-      const data = await fetchJcr(fallbackPath);
-      const itemTitle = (data && data.item_title) ? String(data.item_title).trim() : '';
-      const itemBody = (data && data.item_body) ? String(data.item_body) : '';
-      // Fallback: when item_title is absent, use item_body as trigger.
-      const title = itemTitle || itemBody;
-      const bodyHtml = itemTitle ? itemBody : '';
+      const { title, bodyHtml } = deriveItem(itemTitle, rawBody);
       return {
         row, index, title, bodyHtml,
       };
