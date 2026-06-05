@@ -42,18 +42,43 @@ async function fetchJcr(path) {
 }
 
 /**
+ * Read title/description/ctas from the delivered block cells.
+ * franklin.delivery serializes the text block as three rows (model order:
+ * title, description, ctas), each a single cell. This is the data source on the
+ * published site; the JCR .json fetch only works in the author/UE context.
+ * @param {Element} block
+ * @returns {{title: string, description: string, ctas: string}}
+ */
+function readFromCells(block) {
+  const cellOf = (row) => (row ? row.querySelector(':scope > div') || row : null);
+  const valueOf = (row) => {
+    const cell = cellOf(row);
+    if (!cell) return '';
+    // Preserve markup for richtext fields (description/ctas); plain text otherwise.
+    return cell.querySelector('*') ? cell.innerHTML.trim() : (cell.textContent || '').trim();
+  };
+  const rows = [...block.children];
+  return {
+    title: (cellOf(rows[0])?.textContent || '').trim(),
+    description: valueOf(rows[1]),
+    ctas: valueOf(rows[2]),
+  };
+}
+
+/**
  * Decorates the text block (SupplementaryLinksBlock).
  *
- * The block stores title, description, and ctas as direct JCR properties on the
- * block node itself (not as child items). aem.live's renderer does not expose
- * scalar JCR properties as table cells, so the block element is empty in HTML.
- * This decorator fetches the JCR node's .json to read those properties.
+ * Reads title, description, and ctas from the three delivered cells (works on
+ * the published site), falling back to the JCR node's .json for the author/UE
+ * context, where the cells render empty.
  *
  * @param {Element} block The block element
  */
 export default async function decorate(block) {
-  const path = jcrPath(block);
-  const data = await fetchJcr(path);
+  let data = readFromCells(block);
+  if (!data.title && !data.description && !data.ctas) {
+    data = await fetchJcr(jcrPath(block)) || data;
+  }
 
   // Build the replacement container.
   const container = document.createElement('div');

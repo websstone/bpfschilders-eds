@@ -225,8 +225,14 @@ export function applyInfoStrip(main) {
   if (!match) return;
   if (main.querySelector('.info-strip')) return; // already built
 
-  const dekInner = main.querySelector('.section [data-aue-resource*="dekkingsgraad"]');
-  const dekWrapper = dekInner && dekInner.closest('.text-wrapper, .cta-wrapper');
+  // Identify the dekkingsgraad block by its content (its title and href both
+  // contain "dekkingsgraad"). Runs after decorateBlocks but before block JS, so
+  // the raw delivered cells still carry the text. Content-based so it works on
+  // the published site, where data-aue-resource attributes are absent.
+  const dekBlock = [...main.querySelectorAll(
+    '.section [data-block-name="text"], .section [data-block-name="cta"]',
+  )].find((b) => /dekkingsgraad/i.test(b.textContent));
+  const dekWrapper = dekBlock && dekBlock.closest('.text-wrapper, .cta-wrapper');
   if (!dekWrapper) return;
 
   const section = dekWrapper.closest('.section');
