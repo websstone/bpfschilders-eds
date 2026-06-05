@@ -51,6 +51,27 @@ async function fetchJcr(path) {
   }
 }
 
+/**
+ * Read item fields from the delivered block cells.
+ * franklin.delivery serializes each carousel-item row as three cells in model
+ * order: icon_class, label, href. This is the only data source available on the
+ * published site (the JCR .json fetch works only in the author/UE context).
+ * @param {Element} row carousel-item row element
+ * @returns {{icon_class: string, label: string, href: string}}
+ */
+function readItemFromCells(row) {
+  const cells = [...row.children];
+  const cellText = (el) => (el ? (el.textContent || '').trim() : '');
+  const hrefCell = cells[2];
+  const anchor = hrefCell ? hrefCell.querySelector('a') : null;
+  const href = anchor ? (anchor.getAttribute('href') || '').trim() : cellText(hrefCell);
+  return {
+    icon_class: cellText(cells[0]),
+    label: cellText(cells[1]),
+    href,
+  };
+}
+
 /** Number of tiles visible at once depending on viewport width */
 function getItemsPerPage() {
   return window.innerWidth >= 769 ? 6 : 2;
@@ -232,11 +253,14 @@ function buildTile(itemRow, data) {
 export default async function decorate(block) {
   const allRows = [...block.children];
 
-  // Fetch all item JCR data in parallel.
+  // Read each item's fields. Prefer the delivered cells (works on the published
+  // site); fall back to the JCR .json fetch for the author/UE context, where the
+  // cells render empty but the node is reachable same-origin.
   const itemData = await Promise.all(
     allRows.map(async (row) => {
-      const path = jcrPath(row);
-      const data = await fetchJcr(path);
+      const fromCells = readItemFromCells(row);
+      if (fromCells.label || fromCells.href) return { row, data: fromCells };
+      const data = await fetchJcr(jcrPath(row));
       return { row, data };
     }),
   );

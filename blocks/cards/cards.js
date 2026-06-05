@@ -1,6 +1,24 @@
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
 /**
+ * AEM publish origin that serves DAM assets. Migrated content references images
+ * as raw `/content/dam/...` paths, which the EDS origin does not serve (404).
+ * The publish instance serves them (200), so DAM paths are rewritten to it.
+ * Environment-specific: update if the Cloud Manager program/environment changes.
+ */
+const AEM_PUBLISH_ORIGIN = 'https://publish-p24103-e71623.adobeaemcloud.com';
+
+/**
+ * Rewrites a `/content/dam/` path to an absolute, resolvable publish URL.
+ * Leaves already-absolute or non-DAM values untouched.
+ * @param {string} path
+ * @returns {string}
+ */
+function toAssetUrl(path) {
+  return path.startsWith('/content/dam/') ? `${AEM_PUBLISH_ORIGIN}${path}` : path;
+}
+
+/**
  * Returns trimmed text content of an element, or empty string.
  * @param {Element|null} el
  * @returns {string}
@@ -101,7 +119,7 @@ function extractDamPath(cell) {
  */
 function buildImgFromDam(damPath) {
   const img = document.createElement('img');
-  img.src = damPath;
+  img.src = toAssetUrl(damPath);
   img.loading = 'lazy';
   // Derive a plain alt text from the filename (strip path and extension).
   const filename = damPath.split('/').pop() || '';
